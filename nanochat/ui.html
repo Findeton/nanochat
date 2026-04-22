@@ -283,6 +283,13 @@
         const sendButton = document.getElementById('sendButton');
 
         let messages = [];
+        let sessionId = localStorage.getItem('nanochatSessionId');
+        if (!sessionId) {
+            sessionId = (window.crypto && window.crypto.randomUUID)
+                ? window.crypto.randomUUID()
+                : `session-${Date.now()}`;
+            localStorage.setItem('nanochatSessionId', sessionId);
+        }
         let isGenerating = false;
         let currentTemperature = 0.8;
         let currentTopK = 50;
@@ -400,7 +407,8 @@
                         messages: messages,
                         temperature: currentTemperature,
                         top_k: currentTopK,
-                        max_tokens: 512
+                        max_tokens: 512,
+                        session_id: sessionId
                     }),
                 });
 

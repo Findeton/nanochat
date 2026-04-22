@@ -7,6 +7,7 @@ import glob
 import json
 import logging
 import torch
+from dataclasses import fields
 
 from nanochat.common import get_base_dir
 from nanochat.gpt import GPT, GPTConfig
@@ -20,24 +21,43 @@ def log0(message):
     if int(os.environ.get('RANK', 0)) == 0:
         logger.info(message)
 
-def _patch_missing_config_keys(model_config_kwargs):
+def _patch_missing_config_keys(model_config_kwargs, model_data):
     """Add default values for new config keys missing in old checkpoints."""
+    valid_field_names = {field.name for field in fields(GPTConfig)}
+    for key in list(model_config_kwargs.keys()):
+        if key not in valid_field_names:
+            del model_config_kwargs[key]
+            log0(f"Dropping unknown config key {key!r} from checkpoint metadata")
     # Old models were trained with full context (no sliding window)
     if "window_pattern" not in model_config_kwargs:
         model_config_kwargs["window_pattern"] = "L"
         log0(f"Patching missing window_pattern in model config to 'L'")
+    # Older checkpoints did not persist the VE gate width in the config.
+    if "ve_gate_channels" not in model_config_kwargs:
+        ve_gate_key = next((k for k in model_data if k.endswith("attn.ve_gate.weight")), None)
+        if ve_gate_key is not None:
+            model_config_kwargs["ve_gate_channels"] = model_data[ve_gate_key].shape[1]
+            log0(f"Patching missing ve_gate_channels in model config to {model_config_kwargs['ve_gate_channels']}")
+        else:
+            model_config_kwargs["ve_gate_channels"] = GPTConfig().ve_gate_channels
+            log0(f"Patching missing ve_gate_channels in model config to {model_config_kwargs['ve_gate_channels']}")
+    default_config = GPTConfig()
+    for field in fields(GPTConfig):
+        if field.name not in model_config_kwargs:
+            model_config_kwargs[field.name] = getattr(default_config, field.name)
+            log0(f"Patching missing {field.name} in model config to {model_config_kwargs[field.name]!r}")
 
-def _patch_missing_keys(model_data, model_config):
-    """Add default values for new parameters that may be missing in old checkpoints."""
-    n_layer = model_config.n_layer
-    # resid_lambdas defaults to 1.0 (identity scaling)
-    if "resid_lambdas" not in model_data:
-        model_data["resid_lambdas"] = torch.ones(n_layer)
-        log0(f"Patching missing resid_lambdas in model data to 1.0")
-    # x0_lambdas defaults to 0.0 (disabled)
-    if "x0_lambdas" not in model_data:
-        model_data["x0_lambdas"] = torch.zeros(n_layer)
-        log0(f"Patching missing x0_lambdas in model data to 0.0")
+def _patch_missing_keys(model_data, model):
+    """Align checkpoint tensors to the current model state layout."""
+    expected_state = model.state_dict()
+    unexpected_keys = [key for key in model_data.keys() if key not in expected_state]
+    for key in unexpected_keys:
+        del model_data[key]
+        log0(f"Dropping unexpected legacy key {key} from model data")
+    for key, value in expected_state.items():
+        if key not in model_data:
+            model_data[key] = value.detach().clone()
+            log0(f"Patching missing {key} in model data from fresh model init")
 
 def save_checkpoint(checkpoint_dir, step, model_data, optimizer_data, meta_data, rank=0):
     if rank == 0:
@@ -93,15 +113,15 @@ def build_model(checkpoint_dir, step, device, phase):
     # Hack: fix torch compile issue, which prepends all keys with _orig_mod.
     model_data = {k.removeprefix("_orig_mod."): v for k, v in model_data.items()}
     model_config_kwargs = meta_data["model_config"]
-    _patch_missing_config_keys(model_config_kwargs)
+    _patch_missing_config_keys(model_config_kwargs, model_data)
     log0(f"Building model with config: {model_config_kwargs}")
     model_config = GPTConfig(**model_config_kwargs)
-    _patch_missing_keys(model_data, model_config)
     with torch.device("meta"):
         model = GPT(model_config)
     # Load the model state
     model.to_empty(device=device)
     model.init_weights() # note: this is dumb, but we need to init the rotary embeddings. TODO: fix model re-init
+    _patch_missing_keys(model_data, model)
     model.load_state_dict(model_data, strict=True, assign=True)
     # Put the model in the right training phase / mode
     if phase == "eval":
@@ -112,6 +132,7 @@ def build_model(checkpoint_dir, step, device, phase):
     tokenizer = get_tokenizer()
     # Sanity check: compatibility between model and tokenizer
     assert tokenizer.get_vocab_size() == model_config_kwargs["vocab_size"], f"Tokenizer vocab size {tokenizer.get_vocab_size()} does not match model config vocab size {model_config_kwargs['vocab_size']}"
+    model.set_tokenizer_special_ids(tokenizer)
     return model, tokenizer, meta_data
 
 
@@ -159,6 +180,9 @@ def load_model_from_dir(checkpoints_dir, device, phase, model_tag=None, step=Non
     # build the model
     log0(f"Loading model from {checkpoint_dir} with step {step}")
     model, tokenizer, meta_data = build_model(checkpoint_dir, step, device, phase)
+    meta_data = meta_data.copy()
+    meta_data["_model_tag"] = model_tag
+    meta_data["_step"] = step
     return model, tokenizer, meta_data
 
 def load_model(source, *args, **kwargs):

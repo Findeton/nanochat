@@ -1,6 +1,9 @@
 """
 CustomJSON task for loading conversations from JSONL files.
-Each line in the JSONL file should be a JSON array of messages.
+
+Supported row formats:
+1. a JSON array of messages
+2. a JSON object with a ``messages`` array plus optional metadata
 """
 
 import os
@@ -10,8 +13,9 @@ from tasks.common import Task
 class CustomJSON(Task):
     """
     Load conversations from a JSONL file.
-    Each line should be a JSON array of message objects with 'role' and 'content' fields.
-    Example line: [{"role":"user","content":"Hi"},{"role":"assistant","content":"Hello"}]
+    Each line should be either:
+    - a JSON array of message objects with 'role' and 'content' fields
+    - or a JSON object containing a ``messages`` array and optional metadata
     """
 
     def __init__(self, filepath, **kwargs):
@@ -37,7 +41,14 @@ class CustomJSON(Task):
                     line = line.strip()
                     if not line:  # skip empty lines
                         continue
-                    messages = json.loads(line)
+                    row = json.loads(line)
+                    if isinstance(row, list):
+                        conversation = {"messages": row}
+                    else:
+                        assert isinstance(row, dict), f"Expected list or dict, got {type(row)}"
+                        assert "messages" in row, "JSON object rows must contain a 'messages' field"
+                        conversation = row
+                    messages = conversation["messages"]
                     # Validate the conversation structure
                     assert isinstance(messages, list), f"Expected list of messages, got {type(messages)}"
                     assert len(messages) >= 2, f"Conversation must have at least 2 messages, got {len(messages)}"
@@ -49,7 +60,7 @@ class CustomJSON(Task):
                         assert message["role"] == expected_role, f"Message {i} has role {message['role']} but should be {expected_role}"
                         assert isinstance(message["content"], str), f"Message {i} content must be a string"
 
-                    self.conversations.append(messages)
+                    self.conversations.append(conversation)
 
         self.length = len(self.conversations)
 
@@ -57,9 +68,4 @@ class CustomJSON(Task):
         return self.length
 
     def get_example(self, index):
-        messages = self.conversations[index]
-        conversation = {
-            "messages": messages,
-        }
-        return conversation
-
+        return self.conversations[index]

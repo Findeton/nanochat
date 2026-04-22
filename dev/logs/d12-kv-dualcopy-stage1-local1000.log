@@ -1,0 +1,303 @@
+2026-04-21 21:07:10,152 - nanochat.common - [32m[1mINFO[0m - Distributed world size: 1
+2026-04-21 21:07:10,153 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Loading model from /Users/felixrobles/.cache/nanochat/chatsft_checkpoints/d12-episodic-proposal-a-r18-long1000 with step 1000
+2026-04-21 21:07:11,506 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing episodic_write_top_k in model config to 0
+2026-04-21 21:07:11,506 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing episodic_kv_injection in model config to False
+2026-04-21 21:07:11,506 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing episodic_add_logit_readouts in model config to True
+2026-04-21 21:07:11,506 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing episodic_low_rank in model config to 128
+2026-04-21 21:07:11,506 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing episodic_copy_bias_scale in model config to 12.0
+2026-04-21 21:07:11,506 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Building model with config: {'sequence_len': 2048, 'vocab_size': 65536, 'n_layer': 12, 'n_head': 6, 'n_kv_head': 6, 'n_embd': 768, 've_gate_channels': 32, 'window_pattern': 'L', 'episodic_dim': 256, 'episodic_slots': 256, 'episodic_decay': 0.995, 'episodic_gate_init': -8.0, 'episodic_beta': 24.0, 'episodic_top_k': 8, 'episodic_max_write_tokens': 128, 'episodic_write_top_k': 0, 'episodic_kv_injection': False, 'episodic_add_logit_readouts': True, 'episodic_low_rank': 128, 'episodic_copy_bias_scale': 12.0}
+2026-04-21 21:07:12,070 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Migrating legacy episodic weights into episodic_controller.query_proj.weight
+2026-04-21 21:07:12,071 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Migrating legacy episodic weights into episodic_controller.copy_query_proj.weight
+2026-04-21 21:07:12,071 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Migrating legacy episodic weights into episodic_controller.key_proj.weight
+2026-04-21 21:07:12,071 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Migrating legacy episodic weights into episodic_controller.value_proj.weight
+2026-04-21 21:07:12,080 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Migrating legacy episodic weights into episodic_controller.out_proj.weight
+2026-04-21 21:07:12,080 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Dropping unexpected legacy key episodic_logit_scale from model data
+2026-04-21 21:07:12,080 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Dropping unexpected legacy key transformer.h.0.episodic_query_proj.weight from model data
+2026-04-21 21:07:12,080 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Dropping unexpected legacy key transformer.h.0.episodic_key_proj.weight from model data
+2026-04-21 21:07:12,080 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Dropping unexpected legacy key transformer.h.0.episodic_value_proj.weight from model data
+2026-04-21 21:07:12,080 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Dropping unexpected legacy key transformer.h.0.episodic_out_proj.weight from model data
+2026-04-21 21:07:12,080 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Dropping unexpected legacy key transformer.h.0.episodic_memory.gate from model data
+2026-04-21 21:07:12,080 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Dropping unexpected legacy key transformer.h.1.episodic_query_proj.weight from model data
+2026-04-21 21:07:12,080 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Dropping unexpected legacy key transformer.h.1.episodic_key_proj.weight from model data
+2026-04-21 21:07:12,080 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Dropping unexpected legacy key transformer.h.1.episodic_value_proj.weight from model data
+2026-04-21 21:07:12,080 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Dropping unexpected legacy key transformer.h.1.episodic_out_proj.weight from model data
+2026-04-21 21:07:12,080 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Dropping unexpected legacy key transformer.h.1.episodic_memory.gate from model data
+2026-04-21 21:07:12,080 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Dropping unexpected legacy key transformer.h.2.episodic_query_proj.weight from model data
+2026-04-21 21:07:12,080 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Dropping unexpected legacy key transformer.h.2.episodic_key_proj.weight from model data
+2026-04-21 21:07:12,080 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Dropping unexpected legacy key transformer.h.2.episodic_value_proj.weight from model data
+2026-04-21 21:07:12,080 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Dropping unexpected legacy key transformer.h.2.episodic_out_proj.weight from model data
+2026-04-21 21:07:12,080 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Dropping unexpected legacy key transformer.h.2.episodic_memory.gate from model data
+2026-04-21 21:07:12,081 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Dropping unexpected legacy key transformer.h.3.episodic_query_proj.weight from model data
+2026-04-21 21:07:12,081 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Dropping unexpected legacy key transformer.h.3.episodic_key_proj.weight from model data
+2026-04-21 21:07:12,081 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Dropping unexpected legacy key transformer.h.3.episodic_value_proj.weight from model data
+2026-04-21 21:07:12,081 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Dropping unexpected legacy key transformer.h.3.episodic_out_proj.weight from model data
+2026-04-21 21:07:12,081 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Dropping unexpected legacy key transformer.h.3.episodic_memory.gate from model data
+2026-04-21 21:07:12,081 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Dropping unexpected legacy key transformer.h.4.episodic_query_proj.weight from model data
+2026-04-21 21:07:12,081 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Dropping unexpected legacy key transformer.h.4.episodic_key_proj.weight from model data
+2026-04-21 21:07:12,081 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Dropping unexpected legacy key transformer.h.4.episodic_value_proj.weight from model data
+2026-04-21 21:07:12,081 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Dropping unexpected legacy key transformer.h.4.episodic_out_proj.weight from model data
+2026-04-21 21:07:12,081 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Dropping unexpected legacy key transformer.h.4.episodic_memory.gate from model data
+2026-04-21 21:07:12,081 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Dropping unexpected legacy key transformer.h.5.episodic_query_proj.weight from model data
+2026-04-21 21:07:12,081 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Dropping unexpected legacy key transformer.h.5.episodic_key_proj.weight from model data
+2026-04-21 21:07:12,081 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Dropping unexpected legacy key transformer.h.5.episodic_value_proj.weight from model data
+2026-04-21 21:07:12,081 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Dropping unexpected legacy key transformer.h.5.episodic_out_proj.weight from model data
+2026-04-21 21:07:12,081 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Dropping unexpected legacy key transformer.h.5.episodic_memory.gate from model data
+2026-04-21 21:07:12,081 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Dropping unexpected legacy key transformer.h.6.episodic_query_proj.weight from model data
+2026-04-21 21:07:12,081 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Dropping unexpected legacy key transformer.h.6.episodic_key_proj.weight from model data
+2026-04-21 21:07:12,081 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Dropping unexpected legacy key transformer.h.6.episodic_value_proj.weight from model data
+2026-04-21 21:07:12,081 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Dropping unexpected legacy key transformer.h.6.episodic_out_proj.weight from model data
+2026-04-21 21:07:12,081 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Dropping unexpected legacy key transformer.h.6.episodic_memory.gate from model data
+2026-04-21 21:07:12,081 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Dropping unexpected legacy key transformer.h.7.episodic_query_proj.weight from model data
+2026-04-21 21:07:12,081 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Dropping unexpected legacy key transformer.h.7.episodic_key_proj.weight from model data
+2026-04-21 21:07:12,081 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Dropping unexpected legacy key transformer.h.7.episodic_value_proj.weight from model data
+2026-04-21 21:07:12,081 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Dropping unexpected legacy key transformer.h.7.episodic_out_proj.weight from model data
+2026-04-21 21:07:12,081 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Dropping unexpected legacy key transformer.h.7.episodic_memory.gate from model data
+2026-04-21 21:07:12,081 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Dropping unexpected legacy key transformer.h.8.episodic_query_proj.weight from model data
+2026-04-21 21:07:12,082 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Dropping unexpected legacy key transformer.h.8.episodic_key_proj.weight from model data
+2026-04-21 21:07:12,082 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Dropping unexpected legacy key transformer.h.8.episodic_value_proj.weight from model data
+2026-04-21 21:07:12,082 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Dropping unexpected legacy key transformer.h.8.episodic_out_proj.weight from model data
+2026-04-21 21:07:12,082 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Dropping unexpected legacy key transformer.h.8.episodic_memory.gate from model data
+2026-04-21 21:07:12,082 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Dropping unexpected legacy key transformer.h.9.episodic_query_proj.weight from model data
+2026-04-21 21:07:12,082 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Dropping unexpected legacy key transformer.h.9.episodic_key_proj.weight from model data
+2026-04-21 21:07:12,082 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Dropping unexpected legacy key transformer.h.9.episodic_value_proj.weight from model data
+2026-04-21 21:07:12,082 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Dropping unexpected legacy key transformer.h.9.episodic_out_proj.weight from model data
+2026-04-21 21:07:12,082 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Dropping unexpected legacy key transformer.h.9.episodic_memory.gate from model data
+2026-04-21 21:07:12,082 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Dropping unexpected legacy key transformer.h.10.episodic_query_proj.weight from model data
+2026-04-21 21:07:12,082 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Dropping unexpected legacy key transformer.h.10.episodic_key_proj.weight from model data
+2026-04-21 21:07:12,082 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Dropping unexpected legacy key transformer.h.10.episodic_value_proj.weight from model data
+2026-04-21 21:07:12,082 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Dropping unexpected legacy key transformer.h.10.episodic_out_proj.weight from model data
+2026-04-21 21:07:12,082 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Dropping unexpected legacy key transformer.h.10.episodic_memory.gate from model data
+2026-04-21 21:07:12,082 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Dropping unexpected legacy key transformer.h.11.episodic_query_proj.weight from model data
+2026-04-21 21:07:12,082 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Dropping unexpected legacy key transformer.h.11.episodic_key_proj.weight from model data
+2026-04-21 21:07:12,082 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Dropping unexpected legacy key transformer.h.11.episodic_value_proj.weight from model data
+2026-04-21 21:07:12,082 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Dropping unexpected legacy key transformer.h.11.episodic_out_proj.weight from model data
+2026-04-21 21:07:12,082 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Dropping unexpected legacy key transformer.h.11.episodic_memory.gate from model data
+2026-04-21 21:07:12,083 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Dropping unexpected legacy key episodic_lm_head.weight from model data
+2026-04-21 21:07:12,083 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing episodic_controller.workspace_seed_proj.in_proj.weight in model data from fresh model init
+2026-04-21 21:07:12,083 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing episodic_controller.workspace_seed_proj.out_proj.weight in model data from fresh model init
+2026-04-21 21:07:12,083 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing episodic_controller.kv_seed_proj.in_proj.weight in model data from fresh model init
+2026-04-21 21:07:12,083 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing episodic_controller.kv_seed_proj.out_proj.weight in model data from fresh model init
+2026-04-21 21:07:12,083 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing episodic_controller.kv_k_proj.in_proj.weight in model data from fresh model init
+2026-04-21 21:07:12,083 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing episodic_controller.kv_k_proj.out_proj.weight in model data from fresh model init
+2026-04-21 21:07:12,083 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing episodic_controller.kv_v_proj.in_proj.weight in model data from fresh model init
+2026-04-21 21:07:12,083 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing episodic_controller.kv_v_proj.out_proj.weight in model data from fresh model init
+2026-04-21 21:07:12,083 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing episodic_controller.payload_mix_proj.weight in model data from fresh model init
+2026-04-21 21:07:12,083 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing episodic_controller.copy_router_proj.weight in model data from fresh model init
+2026-04-21 21:07:12,083 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing episodic_controller.write_gate.weight in model data from fresh model init
+2026-04-21 21:07:12,083 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.0.episodic_query_adapter in model data from fresh model init
+2026-04-21 21:07:12,083 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.0.episodic_copy_query_adapter in model data from fresh model init
+2026-04-21 21:07:12,083 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.0.episodic_key_adapter in model data from fresh model init
+2026-04-21 21:07:12,083 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.0.episodic_value_adapter in model data from fresh model init
+2026-04-21 21:07:12,083 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.0.episodic_out_adapter in model data from fresh model init
+2026-04-21 21:07:12,083 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.0.episodic_workspace_seed_adapter in model data from fresh model init
+2026-04-21 21:07:12,083 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.0.episodic_kv_seed_adapter in model data from fresh model init
+2026-04-21 21:07:12,083 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.0.episodic_kv_k_adapter in model data from fresh model init
+2026-04-21 21:07:12,084 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.0.episodic_kv_v_adapter in model data from fresh model init
+2026-04-21 21:07:12,084 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.0.episodic_plan_score_gate in model data from fresh model init
+2026-04-21 21:07:12,084 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.0.episodic_plan_value_gate in model data from fresh model init
+2026-04-21 21:07:12,084 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.0.episodic_payload_score_gate in model data from fresh model init
+2026-04-21 21:07:12,084 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.0.episodic_payload_value_gate in model data from fresh model init
+2026-04-21 21:07:12,084 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.0.episodic_payload_mix_bias in model data from fresh model init
+2026-04-21 21:07:12,084 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.0.episodic_lexical_gate in model data from fresh model init
+2026-04-21 21:07:12,084 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.0.episodic_copy_start_bias in model data from fresh model init
+2026-04-21 21:07:12,084 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.0.episodic_copy_continue_bias in model data from fresh model init
+2026-04-21 21:07:12,084 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.0.episodic_write_adapter in model data from fresh model init
+2026-04-21 21:07:12,084 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.1.episodic_query_adapter in model data from fresh model init
+2026-04-21 21:07:12,084 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.1.episodic_copy_query_adapter in model data from fresh model init
+2026-04-21 21:07:12,084 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.1.episodic_key_adapter in model data from fresh model init
+2026-04-21 21:07:12,084 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.1.episodic_value_adapter in model data from fresh model init
+2026-04-21 21:07:12,084 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.1.episodic_out_adapter in model data from fresh model init
+2026-04-21 21:07:12,084 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.1.episodic_workspace_seed_adapter in model data from fresh model init
+2026-04-21 21:07:12,084 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.1.episodic_kv_seed_adapter in model data from fresh model init
+2026-04-21 21:07:12,084 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.1.episodic_kv_k_adapter in model data from fresh model init
+2026-04-21 21:07:12,084 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.1.episodic_kv_v_adapter in model data from fresh model init
+2026-04-21 21:07:12,084 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.1.episodic_plan_score_gate in model data from fresh model init
+2026-04-21 21:07:12,084 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.1.episodic_plan_value_gate in model data from fresh model init
+2026-04-21 21:07:12,084 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.1.episodic_payload_score_gate in model data from fresh model init
+2026-04-21 21:07:12,084 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.1.episodic_payload_value_gate in model data from fresh model init
+2026-04-21 21:07:12,084 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.1.episodic_payload_mix_bias in model data from fresh model init
+2026-04-21 21:07:12,084 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.1.episodic_lexical_gate in model data from fresh model init
+2026-04-21 21:07:12,084 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.1.episodic_copy_start_bias in model data from fresh model init
+2026-04-21 21:07:12,084 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.1.episodic_copy_continue_bias in model data from fresh model init
+2026-04-21 21:07:12,084 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.1.episodic_write_adapter in model data from fresh model init
+2026-04-21 21:07:12,084 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.2.episodic_query_adapter in model data from fresh model init
+2026-04-21 21:07:12,085 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.2.episodic_copy_query_adapter in model data from fresh model init
+2026-04-21 21:07:12,085 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.2.episodic_key_adapter in model data from fresh model init
+2026-04-21 21:07:12,085 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.2.episodic_value_adapter in model data from fresh model init
+2026-04-21 21:07:12,085 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.2.episodic_out_adapter in model data from fresh model init
+2026-04-21 21:07:12,085 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.2.episodic_workspace_seed_adapter in model data from fresh model init
+2026-04-21 21:07:12,085 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.2.episodic_kv_seed_adapter in model data from fresh model init
+2026-04-21 21:07:12,085 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.2.episodic_kv_k_adapter in model data from fresh model init
+2026-04-21 21:07:12,085 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.2.episodic_kv_v_adapter in model data from fresh model init
+2026-04-21 21:07:12,085 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.2.episodic_plan_score_gate in model data from fresh model init
+2026-04-21 21:07:12,085 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.2.episodic_plan_value_gate in model data from fresh model init
+2026-04-21 21:07:12,085 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.2.episodic_payload_score_gate in model data from fresh model init
+2026-04-21 21:07:12,085 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.2.episodic_payload_value_gate in model data from fresh model init
+2026-04-21 21:07:12,085 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.2.episodic_payload_mix_bias in model data from fresh model init
+2026-04-21 21:07:12,085 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.2.episodic_lexical_gate in model data from fresh model init
+2026-04-21 21:07:12,085 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.2.episodic_copy_start_bias in model data from fresh model init
+2026-04-21 21:07:12,085 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.2.episodic_copy_continue_bias in model data from fresh model init
+2026-04-21 21:07:12,085 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.2.episodic_write_adapter in model data from fresh model init
+2026-04-21 21:07:12,085 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.3.episodic_query_adapter in model data from fresh model init
+2026-04-21 21:07:12,085 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.3.episodic_copy_query_adapter in model data from fresh model init
+2026-04-21 21:07:12,085 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.3.episodic_key_adapter in model data from fresh model init
+2026-04-21 21:07:12,085 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.3.episodic_value_adapter in model data from fresh model init
+2026-04-21 21:07:12,085 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.3.episodic_out_adapter in model data from fresh model init
+2026-04-21 21:07:12,085 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.3.episodic_workspace_seed_adapter in model data from fresh model init
+2026-04-21 21:07:12,085 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.3.episodic_kv_seed_adapter in model data from fresh model init
+2026-04-21 21:07:12,085 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.3.episodic_kv_k_adapter in model data from fresh model init
+2026-04-21 21:07:12,085 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.3.episodic_kv_v_adapter in model data from fresh model init
+2026-04-21 21:07:12,085 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.3.episodic_plan_score_gate in model data from fresh model init
+2026-04-21 21:07:12,085 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.3.episodic_plan_value_gate in model data from fresh model init
+2026-04-21 21:07:12,085 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.3.episodic_payload_score_gate in model data from fresh model init
+2026-04-21 21:07:12,085 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.3.episodic_payload_value_gate in model data from fresh model init
+2026-04-21 21:07:12,086 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.3.episodic_payload_mix_bias in model data from fresh model init
+2026-04-21 21:07:12,086 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.3.episodic_lexical_gate in model data from fresh model init
+2026-04-21 21:07:12,086 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.3.episodic_copy_start_bias in model data from fresh model init
+2026-04-21 21:07:12,086 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.3.episodic_copy_continue_bias in model data from fresh model init
+2026-04-21 21:07:12,086 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.3.episodic_write_adapter in model data from fresh model init
+2026-04-21 21:07:12,086 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.4.episodic_query_adapter in model data from fresh model init
+2026-04-21 21:07:12,086 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.4.episodic_copy_query_adapter in model data from fresh model init
+2026-04-21 21:07:12,086 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.4.episodic_key_adapter in model data from fresh model init
+2026-04-21 21:07:12,086 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.4.episodic_value_adapter in model data from fresh model init
+2026-04-21 21:07:12,086 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.4.episodic_out_adapter in model data from fresh model init
+2026-04-21 21:07:12,086 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.4.episodic_workspace_seed_adapter in model data from fresh model init
+2026-04-21 21:07:12,086 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.4.episodic_kv_seed_adapter in model data from fresh model init
+2026-04-21 21:07:12,086 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.4.episodic_kv_k_adapter in model data from fresh model init
+2026-04-21 21:07:12,086 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.4.episodic_kv_v_adapter in model data from fresh model init
+2026-04-21 21:07:12,086 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.4.episodic_plan_score_gate in model data from fresh model init
+2026-04-21 21:07:12,086 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.4.episodic_plan_value_gate in model data from fresh model init
+2026-04-21 21:07:12,086 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.4.episodic_payload_score_gate in model data from fresh model init
+2026-04-21 21:07:12,086 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.4.episodic_payload_value_gate in model data from fresh model init
+2026-04-21 21:07:12,086 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.4.episodic_payload_mix_bias in model data from fresh model init
+2026-04-21 21:07:12,086 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.4.episodic_lexical_gate in model data from fresh model init
+2026-04-21 21:07:12,086 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.4.episodic_copy_start_bias in model data from fresh model init
+2026-04-21 21:07:12,086 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.4.episodic_copy_continue_bias in model data from fresh model init
+2026-04-21 21:07:12,086 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.4.episodic_write_adapter in model data from fresh model init
+2026-04-21 21:07:12,086 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.5.episodic_query_adapter in model data from fresh model init
+2026-04-21 21:07:12,086 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.5.episodic_copy_query_adapter in model data from fresh model init
+2026-04-21 21:07:12,086 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.5.episodic_key_adapter in model data from fresh model init
+2026-04-21 21:07:12,086 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.5.episodic_value_adapter in model data from fresh model init
+2026-04-21 21:07:12,086 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.5.episodic_out_adapter in model data from fresh model init
+2026-04-21 21:07:12,086 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.5.episodic_workspace_seed_adapter in model data from fresh model init
+2026-04-21 21:07:12,087 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.5.episodic_kv_seed_adapter in model data from fresh model init
+2026-04-21 21:07:12,087 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.5.episodic_kv_k_adapter in model data from fresh model init
+2026-04-21 21:07:12,087 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.5.episodic_kv_v_adapter in model data from fresh model init
+2026-04-21 21:07:12,087 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.5.episodic_plan_score_gate in model data from fresh model init
+2026-04-21 21:07:12,087 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.5.episodic_plan_value_gate in model data from fresh model init
+2026-04-21 21:07:12,087 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.5.episodic_payload_score_gate in model data from fresh model init
+2026-04-21 21:07:12,087 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.5.episodic_payload_value_gate in model data from fresh model init
+2026-04-21 21:07:12,087 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.5.episodic_payload_mix_bias in model data from fresh model init
+2026-04-21 21:07:12,087 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.5.episodic_lexical_gate in model data from fresh model init
+2026-04-21 21:07:12,087 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.5.episodic_copy_start_bias in model data from fresh model init
+2026-04-21 21:07:12,087 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.5.episodic_copy_continue_bias in model data from fresh model init
+2026-04-21 21:07:12,087 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.5.episodic_write_adapter in model data from fresh model init
+2026-04-21 21:07:12,087 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.6.episodic_query_adapter in model data from fresh model init
+2026-04-21 21:07:12,087 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.6.episodic_copy_query_adapter in model data from fresh model init
+2026-04-21 21:07:12,087 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.6.episodic_key_adapter in model data from fresh model init
+2026-04-21 21:07:12,087 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.6.episodic_value_adapter in model data from fresh model init
+2026-04-21 21:07:12,087 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.6.episodic_out_adapter in model data from fresh model init
+2026-04-21 21:07:12,087 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.6.episodic_workspace_seed_adapter in model data from fresh model init
+2026-04-21 21:07:12,087 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.6.episodic_kv_seed_adapter in model data from fresh model init
+2026-04-21 21:07:12,087 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.6.episodic_kv_k_adapter in model data from fresh model init
+2026-04-21 21:07:12,087 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.6.episodic_kv_v_adapter in model data from fresh model init
+2026-04-21 21:07:12,087 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.6.episodic_plan_score_gate in model data from fresh model init
+2026-04-21 21:07:12,087 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.6.episodic_plan_value_gate in model data from fresh model init
+2026-04-21 21:07:12,087 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.6.episodic_payload_score_gate in model data from fresh model init
+2026-04-21 21:07:12,088 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.6.episodic_payload_value_gate in model data from fresh model init
+2026-04-21 21:07:12,088 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.6.episodic_payload_mix_bias in model data from fresh model init
+2026-04-21 21:07:12,088 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.6.episodic_lexical_gate in model data from fresh model init
+2026-04-21 21:07:12,088 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.6.episodic_copy_start_bias in model data from fresh model init
+2026-04-21 21:07:12,088 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.6.episodic_copy_continue_bias in model data from fresh model init
+2026-04-21 21:07:12,088 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.6.episodic_write_adapter in model data from fresh model init
+2026-04-21 21:07:12,088 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.7.episodic_query_adapter in model data from fresh model init
+2026-04-21 21:07:12,088 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.7.episodic_copy_query_adapter in model data from fresh model init
+2026-04-21 21:07:12,088 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.7.episodic_key_adapter in model data from fresh model init
+2026-04-21 21:07:12,088 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.7.episodic_value_adapter in model data from fresh model init
+2026-04-21 21:07:12,088 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.7.episodic_out_adapter in model data from fresh model init
+2026-04-21 21:07:12,088 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.7.episodic_workspace_seed_adapter in model data from fresh model init
+2026-04-21 21:07:12,088 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.7.episodic_kv_seed_adapter in model data from fresh model init
+2026-04-21 21:07:12,088 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.7.episodic_kv_k_adapter in model data from fresh model init
+2026-04-21 21:07:12,088 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.7.episodic_kv_v_adapter in model data from fresh model init
+2026-04-21 21:07:12,089 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.7.episodic_plan_score_gate in model data from fresh model init
+2026-04-21 21:07:12,089 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.7.episodic_plan_value_gate in model data from fresh model init
+2026-04-21 21:07:12,089 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.7.episodic_payload_score_gate in model data from fresh model init
+2026-04-21 21:07:12,089 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.7.episodic_payload_value_gate in model data from fresh model init
+2026-04-21 21:07:12,089 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.7.episodic_payload_mix_bias in model data from fresh model init
+2026-04-21 21:07:12,089 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.7.episodic_lexical_gate in model data from fresh model init
+2026-04-21 21:07:12,089 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.7.episodic_copy_start_bias in model data from fresh model init
+2026-04-21 21:07:12,089 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.7.episodic_copy_continue_bias in model data from fresh model init
+2026-04-21 21:07:12,089 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.7.episodic_write_adapter in model data from fresh model init
+2026-04-21 21:07:12,089 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.8.episodic_query_adapter in model data from fresh model init
+2026-04-21 21:07:12,089 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.8.episodic_copy_query_adapter in model data from fresh model init
+2026-04-21 21:07:12,089 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.8.episodic_key_adapter in model data from fresh model init
+2026-04-21 21:07:12,089 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.8.episodic_value_adapter in model data from fresh model init
+2026-04-21 21:07:12,089 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.8.episodic_out_adapter in model data from fresh model init
+2026-04-21 21:07:12,089 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.8.episodic_workspace_seed_adapter in model data from fresh model init
+2026-04-21 21:07:12,089 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.8.episodic_kv_seed_adapter in model data from fresh model init
+2026-04-21 21:07:12,089 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.8.episodic_kv_k_adapter in model data from fresh model init
+2026-04-21 21:07:12,089 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.8.episodic_kv_v_adapter in model data from fresh model init
+2026-04-21 21:07:12,089 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.8.episodic_plan_score_gate in model data from fresh model init
+2026-04-21 21:07:12,090 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.8.episodic_plan_value_gate in model data from fresh model init
+2026-04-21 21:07:12,090 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.8.episodic_payload_score_gate in model data from fresh model init
+2026-04-21 21:07:12,090 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.8.episodic_payload_value_gate in model data from fresh model init
+2026-04-21 21:07:12,090 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.8.episodic_payload_mix_bias in model data from fresh model init
+2026-04-21 21:07:12,090 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.8.episodic_lexical_gate in model data from fresh model init
+2026-04-21 21:07:12,090 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.8.episodic_copy_start_bias in model data from fresh model init
+2026-04-21 21:07:12,090 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.8.episodic_copy_continue_bias in model data from fresh model init
+2026-04-21 21:07:12,090 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.8.episodic_write_adapter in model data from fresh model init
+2026-04-21 21:07:12,090 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.9.episodic_query_adapter in model data from fresh model init
+2026-04-21 21:07:12,090 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.9.episodic_copy_query_adapter in model data from fresh model init
+2026-04-21 21:07:12,090 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.9.episodic_key_adapter in model data from fresh model init
+2026-04-21 21:07:12,090 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.9.episodic_value_adapter in model data from fresh model init
+2026-04-21 21:07:12,090 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.9.episodic_out_adapter in model data from fresh model init
+2026-04-21 21:07:12,090 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.9.episodic_workspace_seed_adapter in model data from fresh model init
+2026-04-21 21:07:12,090 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.9.episodic_kv_seed_adapter in model data from fresh model init
+2026-04-21 21:07:12,090 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.9.episodic_kv_k_adapter in model data from fresh model init
+2026-04-21 21:07:12,090 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.9.episodic_kv_v_adapter in model data from fresh model init
+2026-04-21 21:07:12,090 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.9.episodic_plan_score_gate in model data from fresh model init
+2026-04-21 21:07:12,090 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.9.episodic_plan_value_gate in model data from fresh model init
+2026-04-21 21:07:12,090 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.9.episodic_payload_score_gate in model data from fresh model init
+2026-04-21 21:07:12,090 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.9.episodic_payload_value_gate in model data from fresh model init
+2026-04-21 21:07:12,090 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.9.episodic_payload_mix_bias in model data from fresh model init
+2026-04-21 21:07:12,090 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.9.episodic_lexical_gate in model data from fresh model init
+2026-04-21 21:07:12,090 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.9.episodic_copy_start_bias in model data from fresh model init
+2026-04-21 21:07:12,090 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.9.episodic_copy_continue_bias in model data from fresh model init
+2026-04-21 21:07:12,090 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.9.episodic_write_adapter in model data from fresh model init
+2026-04-21 21:07:12,090 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.10.episodic_query_adapter in model data from fresh model init
+2026-04-21 21:07:12,090 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.10.episodic_copy_query_adapter in model data from fresh model init
+2026-04-21 21:07:12,091 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.10.episodic_key_adapter in model data from fresh model init
+2026-04-21 21:07:12,091 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.10.episodic_value_adapter in model data from fresh model init
+2026-04-21 21:07:12,091 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.10.episodic_out_adapter in model data from fresh model init
+2026-04-21 21:07:12,091 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.10.episodic_workspace_seed_adapter in model data from fresh model init
+2026-04-21 21:07:12,091 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.10.episodic_kv_seed_adapter in model data from fresh model init
+2026-04-21 21:07:12,091 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.10.episodic_kv_k_adapter in model data from fresh model init
+2026-04-21 21:07:12,091 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.10.episodic_kv_v_adapter in model data from fresh model init
+2026-04-21 21:07:12,091 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.10.episodic_plan_score_gate in model data from fresh model init
+2026-04-21 21:07:12,091 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.10.episodic_plan_value_gate in model data from fresh model init
+2026-04-21 21:07:12,091 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.10.episodic_payload_score_gate in model data from fresh model init
+2026-04-21 21:07:12,091 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.10.episodic_payload_value_gate in model data from fresh model init
+2026-04-21 21:07:12,091 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.10.episodic_payload_mix_bias in model data from fresh model init
+2026-04-21 21:07:12,091 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.10.episodic_lexical_gate in model data from fresh model init
+2026-04-21 21:07:12,091 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.10.episodic_copy_start_bias in model data from fresh model init
+2026-04-21 21:07:12,091 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.10.episodic_copy_continue_bias in model data from fresh model init
+2026-04-21 21:07:12,091 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.10.episodic_write_adapter in model data from fresh model init
+2026-04-21 21:07:12,091 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.11.episodic_query_adapter in model data from fresh model init
+2026-04-21 21:07:12,091 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.11.episodic_copy_query_adapter in model data from fresh model init
+2026-04-21 21:07:12,091 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.11.episodic_key_adapter in model data from fresh model init
+2026-04-21 21:07:12,091 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.11.episodic_value_adapter in model data from fresh model init
+2026-04-21 21:07:12,091 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.11.episodic_out_adapter in model data from fresh model init
+2026-04-21 21:07:12,091 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.11.episodic_workspace_seed_adapter in model data from fresh model init
+2026-04-21 21:07:12,091 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.11.episodic_kv_seed_adapter in model data from fresh model init
+2026-04-21 21:07:12,091 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.11.episodic_kv_k_adapter in model data from fresh model init
+2026-04-21 21:07:12,092 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.11.episodic_kv_v_adapter in model data from fresh model init
+2026-04-21 21:07:12,092 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.11.episodic_plan_score_gate in model data from fresh model init
+2026-04-21 21:07:12,092 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.11.episodic_plan_value_gate in model data from fresh model init
+2026-04-21 21:07:12,092 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.11.episodic_payload_score_gate in model data from fresh model init
+2026-04-21 21:07:12,092 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.11.episodic_payload_value_gate in model data from fresh model init
+2026-04-21 21:07:12,092 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.11.episodic_payload_mix_bias in model data from fresh model init
+2026-04-21 21:07:12,092 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.11.episodic_lexical_gate in model data from fresh model init
+2026-04-21 21:07:12,092 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.11.episodic_copy_start_bias in model data from fresh model init
+2026-04-21 21:07:12,092 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.11.episodic_copy_continue_bias in model data from fresh model init
+2026-04-21 21:07:12,092 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Patching missing transformer.h.11.episodic_write_adapter in model data from fresh model init
+2026-04-21 21:07:12,183 - nanochat.checkpoint_manager - [32m[1mINFO[0m - Loading model from /Users/felixrobles/.cache/nanochat/chatsft_checkpoints/d12-episodic-proposal-a-r18-long1000 with step 1000

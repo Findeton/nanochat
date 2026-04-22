@@ -1,0 +1,83 @@
+{
+  "model_tag": "d12-kv-dualcopy-stage1-local1000-live",
+  "step": 1000,
+  "limit_per_dataset": 10,
+  "sampled_temperature": 0.8,
+  "sampled_top_k": 20,
+  "sampled_seeds": [
+    1,
+    2,
+    3
+  ],
+  "overall_det_accuracy": 0.0,
+  "overall_det_core_accuracy": 0.0,
+  "overall_sampled_accuracy": 0.0,
+  "overall_sampled_core_accuracy": 0.0,
+  "results": [
+    {
+      "dataset": "memory_dogname_focus_eval.jsonl",
+      "num_examples": 10,
+      "det_accuracy": 0.0,
+      "det_core_accuracy": 0.0,
+      "sampled_accuracy": 0.0,
+      "sampled_core_accuracy": 0.0,
+      "sampled_total": 30,
+      "det_failures": [
+        [
+          "Remind me of my dog's name.",
+          "Your dog's name is Lumen.",
+          "The dog name you told me is Luna."
+        ],
+        [
+          "What's my dog's name?",
+          "Your dog's name is Aster-Pine.",
+          "The dog name you told me you told me you told me"
+        ],
+        [
+          "Can you tell me my dog's name?",
+          "Your dog's name is Pebble-Cloud.",
+          "The dog name you told me is Puna."
+        ],
+        [
+          "Remind me of my dog's name.",
+          "Your dog's name is Taro-Otter.",
+          "The dog name you told me is Tari."
+        ],
+        [
+          "What's my dog's name?",
+          "Your dog's name is Nova-Grove.",
+          "The dog name you told me you told me you told me"
+        ]
+      ],
+      "det_soft_successes": [],
+      "sampled_failures": [
+        [
+          "Remind me of my dog's name.",
+          "Your dog's name is Lumen.",
+          "The dog name you chose."
+        ],
+        [
+          "Remind me of my dog's name.",
+          "Your dog's name is Lumen.",
+          "The dog name you told me you told me you told me"
+        ],
+        [
+          "Remind me of my dog's name.",
+          "Your dog's name is Lumen.",
+          "You told me from you told me you told me you know"
+        ],
+        [
+          "What's my dog's name?",
+          "Your dog's name is Aster-Pine.",
+          "The dog name you told me from you."
+        ],
+        [
+          "What's my dog's name?",
+          "Your dog's name is Aster-Pine.",
+          "The dog name your dog's name is Aster."
+        ]
+      ],
+      "sampled_soft_successes": []
+    }
+  ]
+}

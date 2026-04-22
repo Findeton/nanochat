@@ -1,0 +1,62 @@
+{
+  "recall_user": "Remind me of my dog's name.",
+  "expected_answer": "Your dog's name is Lumen.",
+  "rows": [
+    {
+      "position": 0,
+      "correct_token_text": "Your",
+      "max_abs_logit_diff": 3.0755057334899902,
+      "pred_live": "I",
+      "pred_nomem": "Rem"
+    },
+    {
+      "position": 1,
+      "correct_token_text": " dog",
+      "max_abs_logit_diff": 2.363024950027466,
+      "pred_live": " dog",
+      "pred_nomem": " dog"
+    },
+    {
+      "position": 2,
+      "correct_token_text": "'s",
+      "max_abs_logit_diff": 2.269876480102539,
+      "pred_live": "'s",
+      "pred_nomem": "'s"
+    },
+    {
+      "position": 3,
+      "correct_token_text": " name",
+      "max_abs_logit_diff": 1.9419810771942139,
+      "pred_live": " name",
+      "pred_nomem": " name"
+    },
+    {
+      "position": 4,
+      "correct_token_text": " is",
+      "max_abs_logit_diff": 2.1403017044067383,
+      "pred_live": " is",
+      "pred_nomem": " is"
+    },
+    {
+      "position": 5,
+      "correct_token_text": " L",
+      "max_abs_logit_diff": 1.605677843093872,
+      "pred_live": " Max",
+      "pred_nomem": " Max"
+    },
+    {
+      "position": 6,
+      "correct_token_text": "umen",
+      "max_abs_logit_diff": 0.9508572816848755,
+      "pred_live": "ola",
+      "pred_nomem": "ola"
+    },
+    {
+      "position": 7,
+      "correct_token_text": ".",
+      "max_abs_logit_diff": 1.709873914718628,
+      "pred_live": ",",
+      "pred_nomem": ","
+    }
+  ]
+}

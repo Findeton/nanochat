@@ -1,0 +1,6365 @@
+{
+  "model_tag": "d12-kv-dualcopy-stage1-local1000-live",
+  "step": 1000,
+  "dataset": "memory_dogname_focus_eval.jsonl",
+  "limit": 10,
+  "by_position": {
+    "0": {
+      "mean_rank_with_memory": 3.3,
+      "mean_rank_no_memory": 3.0,
+      "mean_rank_gain": -0.3,
+      "mean_logprob_with_memory": -2.9468849182128904,
+      "mean_logprob_no_memory": -1.5481380641460418,
+      "mean_logprob_gain": -1.3987468540668488,
+      "top1_with_memory": 0.0,
+      "top1_no_memory": 0.6,
+      "mean_copy_correct_logit": 0.0,
+      "mean_semantic_correct_logit": -6.392129898071289,
+      "mean_token_branch_correct_logit": -6.392129898071289,
+      "mean_workspace_correct_logit": -3.3366744756698608,
+      "mean_start_gate": 2.6045310463906903e-09,
+      "mean_continue_gate": 3.902724134974278e-08
+    },
+    "1": {
+      "mean_rank_with_memory": 1.0,
+      "mean_rank_no_memory": 1.0,
+      "mean_rank_gain": 0.0,
+      "mean_logprob_with_memory": -0.25974193662405015,
+      "mean_logprob_no_memory": -0.08940726071596146,
+      "mean_logprob_gain": -0.17033467590808868,
+      "top1_with_memory": 1.0,
+      "top1_no_memory": 1.0,
+      "mean_copy_correct_logit": 0.0,
+      "mean_semantic_correct_logit": 1.9471536874771118,
+      "mean_token_branch_correct_logit": 1.9471536874771118,
+      "mean_workspace_correct_logit": -1.3646073698997498,
+      "mean_start_gate": 5.661923929700663e-10,
+      "mean_continue_gate": 2.6891171387433135e-07
+    },
+    "2": {
+      "mean_rank_with_memory": 1.1,
+      "mean_rank_no_memory": 1.0,
+      "mean_rank_gain": -0.1,
+      "mean_logprob_with_memory": -0.4528148531913757,
+      "mean_logprob_no_memory": -0.20696362257003784,
+      "mean_logprob_gain": -0.2458512306213379,
+      "top1_with_memory": 0.9,
+      "top1_no_memory": 1.0,
+      "mean_copy_correct_logit": 0.0,
+      "mean_semantic_correct_logit": 0.5322200059890747,
+      "mean_token_branch_correct_logit": 0.5322196304798126,
+      "mean_workspace_correct_logit": -4.4798253059387205,
+      "mean_start_gate": 1.2919331186453387e-12,
+      "mean_continue_gate": 3.3987227396892197e-07
+    },
+    "3": {
+      "mean_rank_with_memory": 1.0,
+      "mean_rank_no_memory": 1.0,
+      "mean_rank_gain": 0.0,
+      "mean_logprob_with_memory": -0.08829465135931969,
+      "mean_logprob_no_memory": -0.010659449128434062,
+      "mean_logprob_gain": -0.07763520223088563,
+      "top1_with_memory": 1.0,
+      "top1_no_memory": 1.0,
+      "mean_copy_correct_logit": 0.0,
+      "mean_semantic_correct_logit": -2.0992822647094727,
+      "mean_token_branch_correct_logit": -2.099282741546631,
+      "mean_workspace_correct_logit": -5.6713791847229,
+      "mean_start_gate": 1.727251730532231e-10,
+      "mean_continue_gate": 9.297594215240679e-05
+    },
+    "4": {
+      "mean_rank_with_memory": 1.0,
+      "mean_rank_no_memory": 1.0,
+      "mean_rank_gain": 0.0,
+      "mean_logprob_with_memory": -0.17633355855941774,
+      "mean_logprob_no_memory": -0.6597512185573577,
+      "mean_logprob_gain": 0.48341765999794006,
+      "top1_with_memory": 1.0,
+      "top1_no_memory": 1.0,
+      "mean_copy_correct_logit": 2.0066409200502483e-12,
+      "mean_semantic_correct_logit": 0.7203052043914795,
+      "mean_token_branch_correct_logit": 0.7203054428100586,
+      "mean_workspace_correct_logit": -2.7260042428970337,
+      "mean_start_gate": 1.6722007689672947e-13,
+      "mean_continue_gate": 1.9536634994210543e-07
+    },
+    "5": {
+      "mean_rank_with_memory": 1.0,
+      "mean_rank_no_memory": 4578.5,
+      "mean_rank_gain": 4577.5,
+      "mean_logprob_with_memory": -0.4117174714803696,
+      "mean_logprob_no_memory": -9.32422640323639,
+      "mean_logprob_gain": 8.912508931756019,
+      "top1_with_memory": 1.0,
+      "top1_no_memory": 0.0,
+      "mean_copy_correct_logit": 9.960490608215332,
+      "mean_semantic_correct_logit": 1.8358598425984383,
+      "mean_token_branch_correct_logit": 1.8358605429530144,
+      "mean_workspace_correct_logit": -6.337089693546295,
+      "mean_start_gate": 4.982642676232274e-09,
+      "mean_continue_gate": 0.999990952014923
+    },
+    "6": {
+      "mean_rank_with_memory": 573.6,
+      "mean_rank_no_memory": 2902.0,
+      "mean_rank_gain": 2328.4,
+      "mean_logprob_with_memory": -7.924767088890076,
+      "mean_logprob_no_memory": -9.620643985271453,
+      "mean_logprob_gain": 1.6958768963813782,
+      "top1_with_memory": 0.1,
+      "top1_no_memory": 0.0,
+      "mean_copy_correct_logit": 0.0,
+      "mean_semantic_correct_logit": -3.5306975126266478,
+      "mean_token_branch_correct_logit": -3.530697524547577,
+      "mean_workspace_correct_logit": -8.597951626777649,
+      "mean_start_gate": 8.057071227557389e-08,
+      "mean_continue_gate": 3.803194830939716e-09
+    },
+    "7": {
+      "mean_rank_with_memory": 1036.9,
+      "mean_rank_no_memory": 1133.6,
+      "mean_rank_gain": 96.7,
+      "mean_logprob_with_memory": -7.9179904226213695,
+      "mean_logprob_no_memory": -6.206586414575577,
+      "mean_logprob_gain": -1.7114040080457926,
+      "top1_with_memory": 0.2,
+      "top1_no_memory": 0.2,
+      "mean_copy_correct_logit": 0.0,
+      "mean_semantic_correct_logit": -3.3362537145614626,
+      "mean_token_branch_correct_logit": -3.3362541675567625,
+      "mean_workspace_correct_logit": -6.814647507667542,
+      "mean_start_gate": 8.329637576909299e-09,
+      "mean_continue_gate": 1.037978345427848e-08
+    },
+    "8": {
+      "mean_rank_with_memory": 1118.125,
+      "mean_rank_no_memory": 1376.75,
+      "mean_rank_gain": 258.625,
+      "mean_logprob_with_memory": -5.906326549127698,
+      "mean_logprob_no_memory": -6.4423534870147705,
+      "mean_logprob_gain": 0.5360269378870726,
+      "top1_with_memory": 0.375,
+      "top1_no_memory": 0.0,
+      "mean_copy_correct_logit": 0.0,
+      "mean_semantic_correct_logit": -2.2217818200588226,
+      "mean_token_branch_correct_logit": -2.2217820584774017,
+      "mean_workspace_correct_logit": -9.039942145347595,
+      "mean_start_gate": 1.8660151457870755e-09,
+      "mean_continue_gate": 4.858566533469388e-09
+    },
+    "9": {
+      "mean_rank_with_memory": 198.6,
+      "mean_rank_no_memory": 79.0,
+      "mean_rank_gain": -119.6,
+      "mean_logprob_with_memory": -2.358805088698864,
+      "mean_logprob_no_memory": -3.9469440817832946,
+      "mean_logprob_gain": 1.5881389930844307,
+      "top1_with_memory": 0.8,
+      "top1_no_memory": 0.4,
+      "mean_copy_correct_logit": 0.0,
+      "mean_semantic_correct_logit": 0.36484127044677733,
+      "mean_token_branch_correct_logit": 0.364841365814209,
+      "mean_workspace_correct_logit": -9.29476203918457,
+      "mean_start_gate": 3.1723838885694413e-10,
+      "mean_continue_gate": 6.123953010982869e-07
+    },
+    "10": {
+      "mean_rank_with_memory": 1.0,
+      "mean_rank_no_memory": 3.5,
+      "mean_rank_gain": 2.5,
+      "mean_logprob_with_memory": -0.06802767887711525,
+      "mean_logprob_no_memory": -1.8521710634231567,
+      "mean_logprob_gain": 1.7841433845460415,
+      "top1_with_memory": 1.0,
+      "top1_no_memory": 0.0,
+      "mean_copy_correct_logit": 0.0,
+      "mean_semantic_correct_logit": 4.554166793823242,
+      "mean_token_branch_correct_logit": 4.554166793823242,
+      "mean_workspace_correct_logit": -9.061668395996094,
+      "mean_start_gate": 1.2504213983688395e-10,
+      "mean_continue_gate": 1.014058068515844e-06
+    }
+  },
+  "examples": [
+    {
+      "example_index": 0,
+      "recall_user": "Remind me of my dog's name.",
+      "expected_answer": "Your dog's name is Lumen.",
+      "positions": [
+        {
+          "example_index": 0,
+          "position": 0,
+          "correct_token_id": 6207,
+          "correct_token_text": "Your",
+          "rank_with_memory": 3,
+          "rank_no_memory": 6,
+          "logprob_with_memory": -2.333812952041626,
+          "logprob_no_memory": -2.9369313716888428,
+          "pred_with_memory_id": 449,
+          "pred_with_memory_text": "The",
+          "pred_no_memory_id": 73,
+          "pred_no_memory_text": "I",
+          "copy_correct_logit": 0.0,
+          "semantic_correct_logit": -6.392129898071289,
+          "token_branch_correct_logit": -6.392129898071289,
+          "workspace_correct_logit": -3.2914748191833496,
+          "start_gate": 4.933513597649153e-09,
+          "continue_gate": 4.279899812331678e-08,
+          "top_tokens_with_memory": [
+            {
+              "token_id": 449,
+              "token_text": "The",
+              "logit": 5.1858720779418945
+            },
+            {
+              "token_id": 2287,
+              "token_text": "You",
+              "logit": 4.1022748947143555
+            },
+            {
+              "token_id": 6207,
+              "token_text": "Your",
+              "logit": 3.817420482635498
+            },
+            {
+              "token_id": 68,
+              "token_text": "D",
+              "logit": 2.0549557209014893
+            },
+            {
+              "token_id": 69,
+              "token_text": "E",
+              "logit": 1.9074079990386963
+            }
+          ],
+          "top_tokens_no_memory": [
+            {
+              "token_id": 73,
+              "token_text": "I",
+              "logit": 11.777379989624023
+            },
+            {
+              "token_id": 449,
+              "token_text": "The",
+              "logit": 11.521268844604492
+            },
+            {
+              "token_id": 9220,
+              "token_text": "Rem",
+              "logit": 11.087068557739258
+            },
+            {
+              "token_id": 5873,
+              "token_text": "My",
+              "logit": 10.91688060760498
+            },
+            {
+              "token_id": 65,
+              "token_text": "A",
+              "logit": 10.733989715576172
+            }
+          ],
+          "top_copy_tokens": [
+            {
+              "token_id": 446,
+              "token_text": " L",
+              "logit": 5.135879632689466e-07
+            },
+            {
+              "token_id": 309,
+              "token_text": " is",
+              "logit": 5.9202164948146674e-08
+            },
+            {
+              "token_id": 0,
+              "token_text": "\u0000",
+              "logit": 0.0
+            },
+            {
+              "token_id": 1,
+              "token_text": "\u0001",
+              "logit": 0.0
+            },
+            {
+              "token_id": 2,
+              "token_text": "\u0002",
+              "logit": 0.0
+            }
+          ],
+          "top_semantic_tokens": [
+            {
+              "token_id": 9097,
+              "token_text": " Max",
+              "logit": 10.056554794311523
+            },
+            {
+              "token_id": 48495,
+              "token_text": " Luna",
+              "logit": 8.225948333740234
+            },
+            {
+              "token_id": 428,
+              "token_text": " F",
+              "logit": 8.216598510742188
+            },
+            {
+              "token_id": 10450,
+              "token_text": " Jack",
+              "logit": 8.023003578186035
+            },
+            {
+              "token_id": 12797,
+              "token_text": " Bob",
+              "logit": 7.9867448806762695
+            }
+          ]
+        },
+        {
+          "example_index": 0,
+          "position": 1,
+          "correct_token_id": 2222,
+          "correct_token_text": " dog",
+          "rank_with_memory": 1,
+          "rank_no_memory": 1,
+          "logprob_with_memory": -0.3019750714302063,
+          "logprob_no_memory": -0.14007709920406342,
+          "pred_with_memory_id": 2222,
+          "pred_with_memory_text": " dog",
+          "pred_no_memory_id": 2222,
+          "pred_no_memory_text": " dog",
+          "copy_correct_logit": 0.0,
+          "semantic_correct_logit": 1.9471536874771118,
+          "token_branch_correct_logit": 1.9471536874771118,
+          "workspace_correct_logit": -1.3841938972473145,
+          "start_gate": 5.047135487323828e-10,
+          "continue_gate": 3.3004326382979343e-07,
+          "top_tokens_with_memory": [
+            {
+              "token_id": 2222,
+              "token_text": " dog",
+              "logit": 3.8678905963897705
+            },
+            {
+              "token_id": 1783,
+              "token_text": " specific",
+              "logit": 2.3318891525268555
+            },
+            {
+              "token_id": 2309,
+              "token_text": " cat",
+              "logit": -0.11452634632587433
+            },
+            {
+              "token_id": 3487,
+              "token_text": " pet",
+              "logit": -0.790602445602417
+            },
+            {
+              "token_id": 1473,
+              "token_text": " current",
+              "logit": -1.4012486934661865
+            }
+          ],
+          "top_tokens_no_memory": [
+            {
+              "token_id": 2222,
+              "token_text": " dog",
+              "logit": 12.717082977294922
+            },
+            {
+              "token_id": 3487,
+              "token_text": " pet",
+              "logit": 8.960054397583008
+            },
+            {
+              "token_id": 1788,
+              "token_text": " words",
+              "logit": 7.790805816650391
+            },
+            {
+              "token_id": 6006,
+              "token_text": " sentence",
+              "logit": 7.734867572784424
+            },
+            {
+              "token_id": 20242,
+              "token_text": " canine",
+              "logit": 7.7338714599609375
+            }
+          ],
+          "top_copy_tokens": [
+            {
+              "token_id": 446,
+              "token_text": " L",
+              "logit": 3.960519279644359e-06
+            },
+            {
+              "token_id": 309,
+              "token_text": " is",
+              "logit": 6.056562362743989e-09
+            },
+            {
+              "token_id": 0,
+              "token_text": "\u0000",
+              "logit": 0.0
+            },
+            {
+              "token_id": 1,
+              "token_text": "\u0001",
+              "logit": 0.0
+            },
+            {
+              "token_id": 2,
+              "token_text": "\u0002",
+              "logit": 0.0
+            }
+          ],
+          "top_semantic_tokens": [
+            {
+              "token_id": 9097,
+              "token_text": " Max",
+              "logit": 10.056554794311523
+            },
+            {
+              "token_id": 48495,
+              "token_text": " Luna",
+              "logit": 8.225948333740234
+            },
+            {
+              "token_id": 428,
+              "token_text": " F",
+              "logit": 8.216598510742188
+            },
+            {
+              "token_id": 10450,
+              "token_text": " Jack",
+              "logit": 8.023003578186035
+            },
+            {
+              "token_id": 12797,
+              "token_text": " Bob",
+              "logit": 7.9867448806762695
+            }
+          ]
+        },
+        {
+          "example_index": 0,
+          "position": 2,
+          "correct_token_id": 566,
+          "correct_token_text": "'s",
+          "rank_with_memory": 1,
+          "rank_no_memory": 1,
+          "logprob_with_memory": -0.2621177136898041,
+          "logprob_no_memory": -0.07015296071767807,
+          "pred_with_memory_id": 566,
+          "pred_with_memory_text": "'s",
+          "pred_no_memory_id": 566,
+          "pred_no_memory_text": "'s",
+          "copy_correct_logit": 0.0,
+          "semantic_correct_logit": 0.5322200059890747,
+          "token_branch_correct_logit": 0.5322194695472717,
+          "workspace_correct_logit": -4.492082595825195,
+          "start_gate": 9.574076557591904e-13,
+          "continue_gate": 4.468586212169612e-07,
+          "top_tokens_with_memory": [
+            {
+              "token_id": 566,
+              "token_text": "'s",
+              "logit": 2.7334070205688477
+            },
+            {
+              "token_id": 1588,
+              "token_text": " name",
+              "logit": 0.9015012979507446
+            },
+            {
+              "token_id": 348,
+              "token_text": " you",
+              "logit": -0.08179878443479538
+            },
+            {
+              "token_id": 309,
+              "token_text": " is",
+              "logit": -2.0102295875549316
+            },
+            {
+              "token_id": 46,
+              "token_text": ".",
+              "logit": -2.043262004852295
+            }
+          ],
+          "top_tokens_no_memory": [
+            {
+              "token_id": 566,
+              "token_text": "'s",
+              "logit": 13.684261322021484
+            },
+            {
+              "token_id": 309,
+              "token_text": " is",
+              "logit": 10.199666976928711
+            },
+            {
+              "token_id": 44,
+              "token_text": ",",
+              "logit": 9.03277587890625
+            },
+            {
+              "token_id": 511,
+              "token_text": " has",
+              "logit": 8.595972061157227
+            },
+            {
+              "token_id": 3268,
+              "token_text": " seems",
+              "logit": 7.803988933563232
+            }
+          ],
+          "top_copy_tokens": [
+            {
+              "token_id": 446,
+              "token_text": " L",
+              "logit": 5.362303454603534e-06
+            },
+            {
+              "token_id": 309,
+              "token_text": " is",
+              "logit": 1.1488891435429416e-11
+            },
+            {
+              "token_id": 0,
+              "token_text": "\u0000",
+              "logit": 0.0
+            },
+            {
+              "token_id": 1,
+              "token_text": "\u0001",
+              "logit": 0.0
+            },
+            {
+              "token_id": 2,
+              "token_text": "\u0002",
+              "logit": 0.0
+            }
+          ],
+          "top_semantic_tokens": [
+            {
+              "token_id": 9097,
+              "token_text": " Max",
+              "logit": 10.056554794311523
+            },
+            {
+              "token_id": 48495,
+              "token_text": " Luna",
+              "logit": 8.225948333740234
+            },
+            {
+              "token_id": 428,
+              "token_text": " F",
+              "logit": 8.216598510742188
+            },
+            {
+              "token_id": 10450,
+              "token_text": " Jack",
+              "logit": 8.023003578186035
+            },
+            {
+              "token_id": 12797,
+              "token_text": " Bob",
+              "logit": 7.9867448806762695
+            }
+          ]
+        },
+        {
+          "example_index": 0,
+          "position": 3,
+          "correct_token_id": 1588,
+          "correct_token_text": " name",
+          "rank_with_memory": 1,
+          "rank_no_memory": 1,
+          "logprob_with_memory": -0.11183074861764908,
+          "logprob_no_memory": -0.013502108864486217,
+          "pred_with_memory_id": 1588,
+          "pred_with_memory_text": " name",
+          "pred_no_memory_id": 1588,
+          "pred_no_memory_text": " name",
+          "copy_correct_logit": 0.0,
+          "semantic_correct_logit": -2.0992822647094727,
+          "token_branch_correct_logit": -2.099282741546631,
+          "workspace_correct_logit": -5.666572093963623,
+          "start_gate": 2.2305551850010374e-10,
+          "continue_gate": 0.00019408430671319366,
+          "top_tokens_with_memory": [
+            {
+              "token_id": 1588,
+              "token_text": " name",
+              "logit": 6.186839580535889
+            },
+            {
+              "token_id": 13752,
+              "token_text": " signature",
+              "logit": 3.23274827003479
+            },
+            {
+              "token_id": 2222,
+              "token_text": " dog",
+              "logit": 2.0990142822265625
+            },
+            {
+              "token_id": 41706,
+              "token_text": " LinkedIn",
+              "logit": 0.8776671886444092
+            },
+            {
+              "token_id": 746,
+              "token_text": " first",
+              "logit": -0.17307430505752563
+            }
+          ],
+          "top_tokens_no_memory": [
+            {
+              "token_id": 1588,
+              "token_text": " name",
+              "logit": 13.505685806274414
+            },
+            {
+              "token_id": 10300,
+              "token_text": " Name",
+              "logit": 6.721805572509766
+            },
+            {
+              "token_id": 1770,
+              "token_text": " given",
+              "logit": 6.638052940368652
+            },
+            {
+              "token_id": 44,
+              "token_text": ",",
+              "logit": 6.290404796600342
+            },
+            {
+              "token_id": 1446,
+              "token_text": " last",
+              "logit": 6.27550745010376
+            }
+          ],
+          "top_copy_tokens": [
+            {
+              "token_id": 446,
+              "token_text": " L",
+              "logit": 0.002329011680558324
+            },
+            {
+              "token_id": 309,
+              "token_text": " is",
+              "logit": 2.676666222001245e-09
+            },
+            {
+              "token_id": 0,
+              "token_text": "\u0000",
+              "logit": 0.0
+            },
+            {
+              "token_id": 1,
+              "token_text": "\u0001",
+              "logit": 0.0
+            },
+            {
+              "token_id": 2,
+              "token_text": "\u0002",
+              "logit": 0.0
+            }
+          ],
+          "top_semantic_tokens": [
+            {
+              "token_id": 9097,
+              "token_text": " Max",
+              "logit": 10.056554794311523
+            },
+            {
+              "token_id": 48495,
+              "token_text": " Luna",
+              "logit": 8.225948333740234
+            },
+            {
+              "token_id": 428,
+              "token_text": " F",
+              "logit": 8.216598510742188
+            },
+            {
+              "token_id": 10450,
+              "token_text": " Jack",
+              "logit": 8.023003578186035
+            },
+            {
+              "token_id": 12797,
+              "token_text": " Bob",
+              "logit": 7.9867448806762695
+            }
+          ]
+        },
+        {
+          "example_index": 0,
+          "position": 4,
+          "correct_token_id": 309,
+          "correct_token_text": " is",
+          "rank_with_memory": 1,
+          "rank_no_memory": 1,
+          "logprob_with_memory": -0.24761322140693665,
+          "logprob_no_memory": -0.6502372622489929,
+          "pred_with_memory_id": 309,
+          "pred_with_memory_text": " is",
+          "pred_no_memory_id": 309,
+          "pred_no_memory_text": " is",
+          "copy_correct_logit": 2.4648269536520218e-12,
+          "semantic_correct_logit": 0.7203052043914795,
+          "token_branch_correct_logit": 0.7203054428100586,
+          "workspace_correct_logit": -2.72912335395813,
+          "start_gate": 2.0540225065517753e-13,
+          "continue_gate": 9.366095810037223e-08,
+          "top_tokens_with_memory": [
+            {
+              "token_id": 309,
+              "token_text": " is",
+              "logit": 5.709360122680664
+            },
+            {
+              "token_id": 348,
+              "token_text": " you",
+              "logit": 4.236526966094971
+            },
+            {
+              "token_id": 421,
+              "token_text": " was",
+              "logit": 1.6136785745620728
+            },
+            {
+              "token_id": 414,
+              "token_text": " from",
+              "logit": 0.4093603789806366
+            },
+            {
+              "token_id": 3378,
+              "token_text": " remains",
+              "logit": 0.21125707030296326
+            }
+          ],
+          "top_tokens_no_memory": [
+            {
+              "token_id": 309,
+              "token_text": " is",
+              "logit": 12.559661865234375
+            },
+            {
+              "token_id": 46,
+              "token_text": ".",
+              "logit": 10.875182151794434
+            },
+            {
+              "token_id": 44,
+              "token_text": ",",
+              "logit": 10.529868125915527
+            },
+            {
+              "token_id": 616,
+              "token_text": " may",
+              "logit": 9.802361488342285
+            },
+            {
+              "token_id": 400,
+              "token_text": " can",
+              "logit": 9.762614250183105
+            }
+          ],
+          "top_copy_tokens": [
+            {
+              "token_id": 446,
+              "token_text": " L",
+              "logit": 1.1239314972044667e-06
+            },
+            {
+              "token_id": 309,
+              "token_text": " is",
+              "logit": 2.4648269536520218e-12
+            },
+            {
+              "token_id": 0,
+              "token_text": "\u0000",
+              "logit": 0.0
+            },
+            {
+              "token_id": 1,
+              "token_text": "\u0001",
+              "logit": 0.0
+            },
+            {
+              "token_id": 2,
+              "token_text": "\u0002",
+              "logit": 0.0
+            }
+          ],
+          "top_semantic_tokens": [
+            {
+              "token_id": 9097,
+              "token_text": " Max",
+              "logit": 10.056554794311523
+            },
+            {
+              "token_id": 48495,
+              "token_text": " Luna",
+              "logit": 8.225948333740234
+            },
+            {
+              "token_id": 428,
+              "token_text": " F",
+              "logit": 8.216598510742188
+            },
+            {
+              "token_id": 10450,
+              "token_text": " Jack",
+              "logit": 8.023003578186035
+            },
+            {
+              "token_id": 12797,
+              "token_text": " Bob",
+              "logit": 7.9867448806762695
+            }
+          ]
+        },
+        {
+          "example_index": 0,
+          "position": 5,
+          "correct_token_id": 446,
+          "correct_token_text": " L",
+          "rank_with_memory": 1,
+          "rank_no_memory": 39,
+          "logprob_with_memory": -0.0657196119427681,
+          "logprob_no_memory": -5.726309776306152,
+          "pred_with_memory_id": 446,
+          "pred_with_memory_text": " L",
+          "pred_no_memory_id": 9097,
+          "pred_no_memory_text": " Max",
+          "copy_correct_logit": 9.960515022277832,
+          "semantic_correct_logit": 7.970430850982666,
+          "token_branch_correct_logit": 7.970432758331299,
+          "workspace_correct_logit": -3.4024808406829834,
+          "start_gate": 6.6672818377355725e-09,
+          "continue_gate": 0.9999945163726807,
+          "top_tokens_with_memory": [
+            {
+              "token_id": 446,
+              "token_text": " L",
+              "logit": 12.454572677612305
+            },
+            {
+              "token_id": 11240,
+              "token_text": " Rose",
+              "logit": 6.807888031005859
+            },
+            {
+              "token_id": 15605,
+              "token_text": " Silver",
+              "logit": 6.156128883361816
+            },
+            {
+              "token_id": 56988,
+              "token_text": " Bella",
+              "logit": 6.111327171325684
+            },
+            {
+              "token_id": 489,
+              "token_text": " O",
+              "logit": 6.021006107330322
+            }
+          ],
+          "top_tokens_no_memory": [
+            {
+              "token_id": 9097,
+              "token_text": " Max",
+              "logit": 10.719527244567871
+            },
+            {
+              "token_id": 48495,
+              "token_text": " Luna",
+              "logit": 10.296741485595703
+            },
+            {
+              "token_id": 678,
+              "token_text": " \"",
+              "logit": 9.623523712158203
+            },
+            {
+              "token_id": 629,
+              "token_text": " K",
+              "logit": 9.610685348510742
+            },
+            {
+              "token_id": 11813,
+              "token_text": " Ak",
+              "logit": 9.276248931884766
+            }
+          ],
+          "top_copy_tokens": [
+            {
+              "token_id": 446,
+              "token_text": " L",
+              "logit": 9.960515022277832
+            },
+            {
+              "token_id": 309,
+              "token_text": " is",
+              "logit": 8.000738205282687e-08
+            },
+            {
+              "token_id": 0,
+              "token_text": "\u0000",
+              "logit": 0.0
+            },
+            {
+              "token_id": 1,
+              "token_text": "\u0001",
+              "logit": 0.0
+            },
+            {
+              "token_id": 2,
+              "token_text": "\u0002",
+              "logit": 0.0
+            }
+          ],
+          "top_semantic_tokens": [
+            {
+              "token_id": 9097,
+              "token_text": " Max",
+              "logit": 10.056554794311523
+            },
+            {
+              "token_id": 48495,
+              "token_text": " Luna",
+              "logit": 8.225948333740234
+            },
+            {
+              "token_id": 428,
+              "token_text": " F",
+              "logit": 8.216598510742188
+            },
+            {
+              "token_id": 10450,
+              "token_text": " Jack",
+              "logit": 8.023003578186035
+            },
+            {
+              "token_id": 12797,
+              "token_text": " Bob",
+              "logit": 7.9867448806762695
+            }
+          ]
+        },
+        {
+          "example_index": 0,
+          "position": 6,
+          "correct_token_id": 16949,
+          "correct_token_text": "umen",
+          "rank_with_memory": 6,
+          "rank_no_memory": 13,
+          "logprob_with_memory": -3.8328123092651367,
+          "logprob_no_memory": -5.457798004150391,
+          "pred_with_memory_id": 5089,
+          "pred_with_memory_text": "umin",
+          "pred_no_memory_id": 6642,
+          "pred_no_memory_text": "ola",
+          "copy_correct_logit": 0.0,
+          "semantic_correct_logit": -8.8526029586792,
+          "token_branch_correct_logit": -8.852603912353516,
+          "workspace_correct_logit": -7.338777542114258,
+          "start_gate": 4.86153268752787e-08,
+          "continue_gate": 2.855119030087394e-09,
+          "top_tokens_with_memory": [
+            {
+              "token_id": 5089,
+              "token_text": "umin",
+              "logit": 3.0133867263793945
+            },
+            {
+              "token_id": 8471,
+              "token_text": "una",
+              "logit": 2.622952461242676
+            },
+            {
+              "token_id": 576,
+              "token_text": "ace",
+              "logit": 1.1439266204833984
+            },
+            {
+              "token_id": 7096,
+              "token_text": "adder",
+              "logit": 0.8987014889717102
+            },
+            {
+              "token_id": 6685,
+              "token_text": "ighter",
+              "logit": 0.5406259894371033
+            }
+          ],
+          "top_tokens_no_memory": [
+            {
+              "token_id": 6642,
+              "token_text": "ola",
+              "logit": 10.468000411987305
+            },
+            {
+              "token_id": 2314,
+              "token_text": "iam",
+              "logit": 8.24319076538086
+            },
+            {
+              "token_id": 5089,
+              "token_text": "umin",
+              "logit": 8.227456092834473
+            },
+            {
+              "token_id": 9491,
+              "token_text": "ila",
+              "logit": 8.088706016540527
+            },
+            {
+              "token_id": 65016,
+              "token_text": "assie",
+              "logit": 7.974695682525635
+            }
+          ],
+          "top_copy_tokens": [
+            {
+              "token_id": 309,
+              "token_text": " is",
+              "logit": 5.833838940816349e-07
+            },
+            {
+              "token_id": 446,
+              "token_text": " L",
+              "logit": 3.426142924922715e-08
+            },
+            {
+              "token_id": 0,
+              "token_text": "\u0000",
+              "logit": 0.0
+            },
+            {
+              "token_id": 1,
+              "token_text": "\u0001",
+              "logit": 0.0
+            },
+            {
+              "token_id": 2,
+              "token_text": "\u0002",
+              "logit": 0.0
+            }
+          ],
+          "top_semantic_tokens": [
+            {
+              "token_id": 9097,
+              "token_text": " Max",
+              "logit": 10.056554794311523
+            },
+            {
+              "token_id": 48495,
+              "token_text": " Luna",
+              "logit": 8.225948333740234
+            },
+            {
+              "token_id": 428,
+              "token_text": " F",
+              "logit": 8.216598510742188
+            },
+            {
+              "token_id": 10450,
+              "token_text": " Jack",
+              "logit": 8.023003578186035
+            },
+            {
+              "token_id": 12797,
+              "token_text": " Bob",
+              "logit": 7.9867448806762695
+            }
+          ]
+        },
+        {
+          "example_index": 0,
+          "position": 7,
+          "correct_token_id": 46,
+          "correct_token_text": ".",
+          "rank_with_memory": 1,
+          "rank_no_memory": 2,
+          "logprob_with_memory": -0.004979470744729042,
+          "logprob_no_memory": -1.002455472946167,
+          "pred_with_memory_id": 46,
+          "pred_with_memory_text": ".",
+          "pred_no_memory_id": 44,
+          "pred_no_memory_text": ",",
+          "copy_correct_logit": 0.0,
+          "semantic_correct_logit": 4.554166793823242,
+          "token_branch_correct_logit": 4.554166793823242,
+          "workspace_correct_logit": -9.094342231750488,
+          "start_gate": 9.506653242397078e-10,
+          "continue_gate": 3.509873724993895e-09,
+          "top_tokens_with_memory": [
+            {
+              "token_id": 46,
+              "token_text": ".",
+              "logit": 6.653805732727051
+            },
+            {
+              "token_id": 288,
+              "token_text": " and",
+              "logit": -0.2841370701789856
+            },
+            {
+              "token_id": 44,
+              "token_text": ",",
+              "logit": -0.47015440464019775
+            },
+            {
+              "token_id": 355,
+              "token_text": " or",
+              "logit": -1.0430712699890137
+            },
+            {
+              "token_id": 105,
+              "token_text": "i",
+              "logit": -1.1613025665283203
+            }
+          ],
+          "top_tokens_no_memory": [
+            {
+              "token_id": 44,
+              "token_text": ",",
+              "logit": 9.575308799743652
+            },
+            {
+              "token_id": 46,
+              "token_text": ".",
+              "logit": 9.449349403381348
+            },
+            {
+              "token_id": 269,
+              "token_text": "es",
+              "logit": 7.464442729949951
+            },
+            {
+              "token_id": 1122,
+              "token_text": "ides",
+              "logit": 6.831541538238525
+            },
+            {
+              "token_id": 120,
+              "token_text": "x",
+              "logit": 5.695721626281738
+            }
+          ],
+          "top_copy_tokens": [
+            {
+              "token_id": 446,
+              "token_text": " L",
+              "logit": 4.211848647628358e-08
+            },
+            {
+              "token_id": 309,
+              "token_text": " is",
+              "logit": 1.1407983890876494e-08
+            },
+            {
+              "token_id": 0,
+              "token_text": "\u0000",
+              "logit": 0.0
+            },
+            {
+              "token_id": 1,
+              "token_text": "\u0001",
+              "logit": 0.0
+            },
+            {
+              "token_id": 2,
+              "token_text": "\u0002",
+              "logit": 0.0
+            }
+          ],
+          "top_semantic_tokens": [
+            {
+              "token_id": 9097,
+              "token_text": " Max",
+              "logit": 10.056554794311523
+            },
+            {
+              "token_id": 48495,
+              "token_text": " Luna",
+              "logit": 8.225948333740234
+            },
+            {
+              "token_id": 428,
+              "token_text": " F",
+              "logit": 8.216598510742188
+            },
+            {
+              "token_id": 10450,
+              "token_text": " Jack",
+              "logit": 8.023003578186035
+            },
+            {
+              "token_id": 12797,
+              "token_text": " Bob",
+              "logit": 7.9867448806762695
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "example_index": 1,
+      "recall_user": "What's my dog's name?",
+      "expected_answer": "Your dog's name is Aster-Pine.",
+      "positions": [
+        {
+          "example_index": 1,
+          "position": 0,
+          "correct_token_id": 6207,
+          "correct_token_text": "Your",
+          "rank_with_memory": 3,
+          "rank_no_memory": 1,
+          "logprob_with_memory": -2.8916983604431152,
+          "logprob_no_memory": -0.7876185774803162,
+          "pred_with_memory_id": 449,
+          "pred_with_memory_text": "The",
+          "pred_no_memory_id": 6207,
+          "pred_no_memory_text": "Your",
+          "copy_correct_logit": 0.0,
+          "semantic_correct_logit": -6.392129898071289,
+          "token_branch_correct_logit": -6.392129898071289,
+          "workspace_correct_logit": -3.325105905532837,
+          "start_gate": 1.1285812284711483e-09,
+          "continue_gate": 2.3170738217004327e-08,
+          "top_tokens_with_memory": [
+            {
+              "token_id": 449,
+              "token_text": "The",
+              "logit": 4.21589994430542
+            },
+            {
+              "token_id": 2287,
+              "token_text": "You",
+              "logit": 3.403087854385376
+            },
+            {
+              "token_id": 6207,
+              "token_text": "Your",
+              "logit": 2.5254569053649902
+            },
+            {
+              "token_id": 1138,
+              "token_text": "This",
+              "logit": 2.0138866901397705
+            },
+            {
+              "token_id": 73,
+              "token_text": "I",
+              "logit": 1.9643239974975586
+            }
+          ],
+          "top_tokens_no_memory": [
+            {
+              "token_id": 6207,
+              "token_text": "Your",
+              "logit": 12.158283233642578
+            },
+            {
+              "token_id": 5873,
+              "token_text": "My",
+              "logit": 11.566692352294922
+            },
+            {
+              "token_id": 65,
+              "token_text": "A",
+              "logit": 10.04525089263916
+            },
+            {
+              "token_id": 449,
+              "token_text": "The",
+              "logit": 9.566367149353027
+            },
+            {
+              "token_id": 1344,
+              "token_text": "It",
+              "logit": 8.636441230773926
+            }
+          ],
+          "top_copy_tokens": [
+            {
+              "token_id": 31038,
+              "token_text": " Aster",
+              "logit": 2.780488443931972e-07
+            },
+            {
+              "token_id": 309,
+              "token_text": " is",
+              "logit": 1.354297474165378e-08
+            },
+            {
+              "token_id": 0,
+              "token_text": "\u0000",
+              "logit": 0.0
+            },
+            {
+              "token_id": 1,
+              "token_text": "\u0001",
+              "logit": 0.0
+            },
+            {
+              "token_id": 2,
+              "token_text": "\u0002",
+              "logit": 0.0
+            }
+          ],
+          "top_semantic_tokens": [
+            {
+              "token_id": 9097,
+              "token_text": " Max",
+              "logit": 10.056554794311523
+            },
+            {
+              "token_id": 48495,
+              "token_text": " Luna",
+              "logit": 8.225948333740234
+            },
+            {
+              "token_id": 428,
+              "token_text": " F",
+              "logit": 8.216598510742188
+            },
+            {
+              "token_id": 10450,
+              "token_text": " Jack",
+              "logit": 8.023003578186035
+            },
+            {
+              "token_id": 12797,
+              "token_text": " Bob",
+              "logit": 7.9867448806762695
+            }
+          ]
+        },
+        {
+          "example_index": 1,
+          "position": 1,
+          "correct_token_id": 2222,
+          "correct_token_text": " dog",
+          "rank_with_memory": 1,
+          "rank_no_memory": 1,
+          "logprob_with_memory": -0.21839185059070587,
+          "logprob_no_memory": -0.07835662364959717,
+          "pred_with_memory_id": 2222,
+          "pred_with_memory_text": " dog",
+          "pred_no_memory_id": 2222,
+          "pred_no_memory_text": " dog",
+          "copy_correct_logit": 0.0,
+          "semantic_correct_logit": 1.9471536874771118,
+          "token_branch_correct_logit": 1.9471536874771118,
+          "workspace_correct_logit": -1.3517506122589111,
+          "start_gate": 6.742962854744405e-10,
+          "continue_gate": 1.4531237013670761e-07,
+          "top_tokens_with_memory": [
+            {
+              "token_id": 2222,
+              "token_text": " dog",
+              "logit": 4.052299976348877
+            },
+            {
+              "token_id": 1783,
+              "token_text": " specific",
+              "logit": 1.6895827054977417
+            },
+            {
+              "token_id": 1391,
+              "token_text": " pass",
+              "logit": -0.4085119068622589
+            },
+            {
+              "token_id": 5484,
+              "token_text": " horse",
+              "logit": -0.4440023899078369
+            },
+            {
+              "token_id": 2309,
+              "token_text": " cat",
+              "logit": -0.5529581904411316
+            }
+          ],
+          "top_tokens_no_memory": [
+            {
+              "token_id": 2222,
+              "token_text": " dog",
+              "logit": 12.381830215454102
+            },
+            {
+              "token_id": 33694,
+              "token_text": " furry",
+              "logit": 8.626092910766602
+            },
+            {
+              "token_id": 3487,
+              "token_text": " pet",
+              "logit": 7.920379161834717
+            },
+            {
+              "token_id": 26323,
+              "token_text": " Labrador",
+              "logit": 6.989901065826416
+            },
+            {
+              "token_id": 20242,
+              "token_text": " canine",
+              "logit": 6.314761161804199
+            }
+          ],
+          "top_copy_tokens": [
+            {
+              "token_id": 31038,
+              "token_text": " Aster",
+              "logit": 1.7437484984839102e-06
+            },
+            {
+              "token_id": 309,
+              "token_text": " is",
+              "logit": 8.091555869782496e-09
+            },
+            {
+              "token_id": 0,
+              "token_text": "\u0000",
+              "logit": 0.0
+            },
+            {
+              "token_id": 1,
+              "token_text": "\u0001",
+              "logit": 0.0
+            },
+            {
+              "token_id": 2,
+              "token_text": "\u0002",
+              "logit": 0.0
+            }
+          ],
+          "top_semantic_tokens": [
+            {
+              "token_id": 9097,
+              "token_text": " Max",
+              "logit": 10.056554794311523
+            },
+            {
+              "token_id": 48495,
+              "token_text": " Luna",
+              "logit": 8.225948333740234
+            },
+            {
+              "token_id": 428,
+              "token_text": " F",
+              "logit": 8.216598510742188
+            },
+            {
+              "token_id": 10450,
+              "token_text": " Jack",
+              "logit": 8.023003578186035
+            },
+            {
+              "token_id": 12797,
+              "token_text": " Bob",
+              "logit": 7.9867448806762695
+            }
+          ]
+        },
+        {
+          "example_index": 1,
+          "position": 2,
+          "correct_token_id": 566,
+          "correct_token_text": "'s",
+          "rank_with_memory": 1,
+          "rank_no_memory": 1,
+          "logprob_with_memory": -0.7465527653694153,
+          "logprob_no_memory": -0.44743603467941284,
+          "pred_with_memory_id": 566,
+          "pred_with_memory_text": "'s",
+          "pred_no_memory_id": 566,
+          "pred_no_memory_text": "'s",
+          "copy_correct_logit": 0.0,
+          "semantic_correct_logit": 0.5322200059890747,
+          "token_branch_correct_logit": 0.5322200059890747,
+          "workspace_correct_logit": -4.473963737487793,
+          "start_gate": 1.1155078596947199e-12,
+          "continue_gate": 3.0484710578093654e-07,
+          "top_tokens_with_memory": [
+            {
+              "token_id": 566,
+              "token_text": "'s",
+              "logit": 2.461275100708008
+            },
+            {
+              "token_id": 1588,
+              "token_text": " name",
+              "logit": 2.3045241832733154
+            },
+            {
+              "token_id": 348,
+              "token_text": " you",
+              "logit": 0.5087117552757263
+            },
+            {
+              "token_id": 46,
+              "token_text": ".",
+              "logit": -1.036440134048462
+            },
+            {
+              "token_id": 468,
+              "token_text": " your",
+              "logit": -2.20548939704895
+            }
+          ],
+          "top_tokens_no_memory": [
+            {
+              "token_id": 566,
+              "token_text": "'s",
+              "logit": 12.64670181274414
+            },
+            {
+              "token_id": 309,
+              "token_text": " is",
+              "logit": 11.747274398803711
+            },
+            {
+              "token_id": 44,
+              "token_text": ",",
+              "logit": 10.0799560546875
+            },
+            {
+              "token_id": 616,
+              "token_text": " may",
+              "logit": 8.68883228302002
+            },
+            {
+              "token_id": 1693,
+              "token_text": " likely",
+              "logit": 7.854162216186523
+            }
+          ],
+          "top_copy_tokens": [
+            {
+              "token_id": 31038,
+              "token_text": " Aster",
+              "logit": 3.6581652693712385e-06
+            },
+            {
+              "token_id": 309,
+              "token_text": " is",
+              "logit": 1.3386094316336639e-11
+            },
+            {
+              "token_id": 0,
+              "token_text": "\u0000",
+              "logit": 0.0
+            },
+            {
+              "token_id": 1,
+              "token_text": "\u0001",
+              "logit": 0.0
+            },
+            {
+              "token_id": 2,
+              "token_text": "\u0002",
+              "logit": 0.0
+            }
+          ],
+          "top_semantic_tokens": [
+            {
+              "token_id": 9097,
+              "token_text": " Max",
+              "logit": 10.056554794311523
+            },
+            {
+              "token_id": 48495,
+              "token_text": " Luna",
+              "logit": 8.225948333740234
+            },
+            {
+              "token_id": 428,
+              "token_text": " F",
+              "logit": 8.216598510742188
+            },
+            {
+              "token_id": 10450,
+              "token_text": " Jack",
+              "logit": 8.023003578186035
+            },
+            {
+              "token_id": 12797,
+              "token_text": " Bob",
+              "logit": 7.9867448806762695
+            }
+          ]
+        },
+        {
+          "example_index": 1,
+          "position": 3,
+          "correct_token_id": 1588,
+          "correct_token_text": " name",
+          "rank_with_memory": 1,
+          "rank_no_memory": 1,
+          "logprob_with_memory": -0.07727251946926117,
+          "logprob_no_memory": -0.014354892075061798,
+          "pred_with_memory_id": 1588,
+          "pred_with_memory_text": " name",
+          "pred_no_memory_id": 1588,
+          "pred_no_memory_text": " name",
+          "copy_correct_logit": 0.0,
+          "semantic_correct_logit": -2.0992822647094727,
+          "token_branch_correct_logit": -2.099282741546631,
+          "workspace_correct_logit": -5.6656341552734375,
+          "start_gate": 1.3258094622159433e-10,
+          "continue_gate": 1.2074831829522736e-05,
+          "top_tokens_with_memory": [
+            {
+              "token_id": 1588,
+              "token_text": " name",
+              "logit": 6.355064392089844
+            },
+            {
+              "token_id": 13752,
+              "token_text": " signature",
+              "logit": 2.833057165145874
+            },
+            {
+              "token_id": 2222,
+              "token_text": " dog",
+              "logit": 2.5375189781188965
+            },
+            {
+              "token_id": 746,
+              "token_text": " first",
+              "logit": 0.3191271424293518
+            },
+            {
+              "token_id": 41706,
+              "token_text": " LinkedIn",
+              "logit": -0.3364339768886566
+            }
+          ],
+          "top_tokens_no_memory": [
+            {
+              "token_id": 1588,
+              "token_text": " name",
+              "logit": 12.383764266967773
+            },
+            {
+              "token_id": 1923,
+              "token_text": " full",
+              "logit": 5.91741943359375
+            },
+            {
+              "token_id": 3297,
+              "token_text": " got",
+              "logit": 5.363407611846924
+            },
+            {
+              "token_id": 1470,
+              "token_text": " real",
+              "logit": 4.907926082611084
+            },
+            {
+              "token_id": 8053,
+              "token_text": " personality",
+              "logit": 4.877634525299072
+            }
+          ],
+          "top_copy_tokens": [
+            {
+              "token_id": 31038,
+              "token_text": " Aster",
+              "logit": 0.00014489798923023045
+            },
+            {
+              "token_id": 309,
+              "token_text": " is",
+              "logit": 1.590971354659132e-09
+            },
+            {
+              "token_id": 0,
+              "token_text": "\u0000",
+              "logit": 0.0
+            },
+            {
+              "token_id": 1,
+              "token_text": "\u0001",
+              "logit": 0.0
+            },
+            {
+              "token_id": 2,
+              "token_text": "\u0002",
+              "logit": 0.0
+            }
+          ],
+          "top_semantic_tokens": [
+            {
+              "token_id": 9097,
+              "token_text": " Max",
+              "logit": 10.056554794311523
+            },
+            {
+              "token_id": 48495,
+              "token_text": " Luna",
+              "logit": 8.225948333740234
+            },
+            {
+              "token_id": 428,
+              "token_text": " F",
+              "logit": 8.216598510742188
+            },
+            {
+              "token_id": 10450,
+              "token_text": " Jack",
+              "logit": 8.023003578186035
+            },
+            {
+              "token_id": 12797,
+              "token_text": " Bob",
+              "logit": 7.9867448806762695
+            }
+          ]
+        },
+        {
+          "example_index": 1,
+          "position": 4,
+          "correct_token_id": 309,
+          "correct_token_text": " is",
+          "rank_with_memory": 1,
+          "rank_no_memory": 1,
+          "logprob_with_memory": -0.175991952419281,
+          "logprob_no_memory": -0.460094690322876,
+          "pred_with_memory_id": 309,
+          "pred_with_memory_text": " is",
+          "pred_no_memory_id": 309,
+          "pred_no_memory_text": " is",
+          "copy_correct_logit": 8.604645316580284e-13,
+          "semantic_correct_logit": 0.7203052043914795,
+          "token_branch_correct_logit": 0.7203054428100586,
+          "workspace_correct_logit": -2.728179454803467,
+          "start_gate": 7.170537763816903e-14,
+          "continue_gate": 2.5350658461320563e-07,
+          "top_tokens_with_memory": [
+            {
+              "token_id": 309,
+              "token_text": " is",
+              "logit": 5.8504319190979
+            },
+            {
+              "token_id": 348,
+              "token_text": " you",
+              "logit": 3.9431803226470947
+            },
+            {
+              "token_id": 421,
+              "token_text": " was",
+              "logit": 2.1797287464141846
+            },
+            {
+              "token_id": 566,
+              "token_text": "'s",
+              "logit": 0.3894493579864502
+            },
+            {
+              "token_id": 468,
+              "token_text": " your",
+              "logit": -0.058157049119472504
+            }
+          ],
+          "top_tokens_no_memory": [
+            {
+              "token_id": 309,
+              "token_text": " is",
+              "logit": 12.641590118408203
+            },
+            {
+              "token_id": 400,
+              "token_text": " can",
+              "logit": 10.669124603271484
+            },
+            {
+              "token_id": 616,
+              "token_text": " may",
+              "logit": 10.300951957702637
+            },
+            {
+              "token_id": 1273,
+              "token_text": " might",
+              "logit": 9.958283424377441
+            },
+            {
+              "token_id": 44,
+              "token_text": ",",
+              "logit": 9.79088306427002
+            }
+          ],
+          "top_copy_tokens": [
+            {
+              "token_id": 31038,
+              "token_text": " Aster",
+              "logit": 3.0420790153584676e-06
+            },
+            {
+              "token_id": 309,
+              "token_text": " is",
+              "logit": 8.604645316580284e-13
+            },
+            {
+              "token_id": 0,
+              "token_text": "\u0000",
+              "logit": 0.0
+            },
+            {
+              "token_id": 1,
+              "token_text": "\u0001",
+              "logit": 0.0
+            },
+            {
+              "token_id": 2,
+              "token_text": "\u0002",
+              "logit": 0.0
+            }
+          ],
+          "top_semantic_tokens": [
+            {
+              "token_id": 9097,
+              "token_text": " Max",
+              "logit": 10.056554794311523
+            },
+            {
+              "token_id": 48495,
+              "token_text": " Luna",
+              "logit": 8.225948333740234
+            },
+            {
+              "token_id": 428,
+              "token_text": " F",
+              "logit": 8.216598510742188
+            },
+            {
+              "token_id": 10450,
+              "token_text": " Jack",
+              "logit": 8.023003578186035
+            },
+            {
+              "token_id": 12797,
+              "token_text": " Bob",
+              "logit": 7.9867448806762695
+            }
+          ]
+        },
+        {
+          "example_index": 1,
+          "position": 5,
+          "correct_token_id": 31038,
+          "correct_token_text": " Aster",
+          "rank_with_memory": 1,
+          "rank_no_memory": 9304,
+          "logprob_with_memory": -1.1140621900558472,
+          "logprob_no_memory": -13.534860610961914,
+          "pred_with_memory_id": 31038,
+          "pred_with_memory_text": " Aster",
+          "pred_no_memory_id": 48495,
+          "pred_no_memory_text": " Luna",
+          "copy_correct_logit": 9.960434913635254,
+          "semantic_correct_logit": -3.148348331451416,
+          "token_branch_correct_logit": -3.148348093032837,
+          "workspace_correct_logit": -10.116475105285645,
+          "start_gate": 1.8765049514257726e-09,
+          "continue_gate": 0.9999827146530151,
+          "top_tokens_with_memory": [
+            {
+              "token_id": 31038,
+              "token_text": " Aster",
+              "logit": 8.093751907348633
+            },
+            {
+              "token_id": 11240,
+              "token_text": " Rose",
+              "logit": 6.319276332855225
+            },
+            {
+              "token_id": 44616,
+              "token_text": " Willow",
+              "logit": 5.861911773681641
+            },
+            {
+              "token_id": 13984,
+              "token_text": " Oak",
+              "logit": 5.498296737670898
+            },
+            {
+              "token_id": 56988,
+              "token_text": " Bella",
+              "logit": 5.262173175811768
+            }
+          ],
+          "top_tokens_no_memory": [
+            {
+              "token_id": 48495,
+              "token_text": " Luna",
+              "logit": 10.871735572814941
+            },
+            {
+              "token_id": 9097,
+              "token_text": " Max",
+              "logit": 10.420463562011719
+            },
+            {
+              "token_id": 36563,
+              "token_text": " Rex",
+              "logit": 9.087535858154297
+            },
+            {
+              "token_id": 257,
+              "token_text": " a",
+              "logit": 9.020051956176758
+            },
+            {
+              "token_id": 11813,
+              "token_text": " Ak",
+              "logit": 8.593754768371582
+            }
+          ],
+          "top_copy_tokens": [
+            {
+              "token_id": 31038,
+              "token_text": " Aster",
+              "logit": 9.960434913635254
+            },
+            {
+              "token_id": 309,
+              "token_text": " is",
+              "logit": 2.251805852893085e-08
+            },
+            {
+              "token_id": 0,
+              "token_text": "\u0000",
+              "logit": 0.0
+            },
+            {
+              "token_id": 1,
+              "token_text": "\u0001",
+              "logit": 0.0
+            },
+            {
+              "token_id": 2,
+              "token_text": "\u0002",
+              "logit": 0.0
+            }
+          ],
+          "top_semantic_tokens": [
+            {
+              "token_id": 9097,
+              "token_text": " Max",
+              "logit": 10.056554794311523
+            },
+            {
+              "token_id": 48495,
+              "token_text": " Luna",
+              "logit": 8.225948333740234
+            },
+            {
+              "token_id": 428,
+              "token_text": " F",
+              "logit": 8.216598510742188
+            },
+            {
+              "token_id": 10450,
+              "token_text": " Jack",
+              "logit": 8.023003578186035
+            },
+            {
+              "token_id": 12797,
+              "token_text": " Bob",
+              "logit": 7.9867448806762695
+            }
+          ]
+        },
+        {
+          "example_index": 1,
+          "position": 6,
+          "correct_token_id": 5941,
+          "correct_token_text": "-P",
+          "rank_with_memory": 219,
+          "rank_no_memory": 18844,
+          "logprob_with_memory": -9.168073654174805,
+          "logprob_no_memory": -16.67447853088379,
+          "pred_with_memory_id": 105,
+          "pred_with_memory_text": "i",
+          "pred_no_memory_id": 291,
+          "pred_no_memory_text": "ion",
+          "copy_correct_logit": 0.0,
+          "semantic_correct_logit": 2.016970157623291,
+          "token_branch_correct_logit": 2.0169715881347656,
+          "workspace_correct_logit": -9.763233184814453,
+          "start_gate": 2.1355718582416472e-10,
+          "continue_gate": 1.9603463297102053e-10,
+          "top_tokens_with_memory": [
+            {
+              "token_id": 105,
+              "token_text": "i",
+              "logit": 0.09277152270078659
+            },
+            {
+              "token_id": 46,
+              "token_text": ".",
+              "logit": -0.04610149562358856
+            },
+            {
+              "token_id": 3431,
+              "token_text": " told",
+              "logit": -2.357306480407715
+            },
+            {
+              "token_id": 4179,
+              "token_text": "42",
+              "logit": -2.6962621212005615
+            },
+            {
+              "token_id": 291,
+              "token_text": "ion",
+              "logit": -2.7008001804351807
+            }
+          ],
+          "top_tokens_no_memory": [
+            {
+              "token_id": 291,
+              "token_text": "ion",
+              "logit": 10.819089889526367
+            },
+            {
+              "token_id": 524,
+              "token_text": "ia",
+              "logit": 9.606215476989746
+            },
+            {
+              "token_id": 1057,
+              "token_text": "io",
+              "logit": 9.267966270446777
+            },
+            {
+              "token_id": 46,
+              "token_text": ".",
+              "logit": 8.756715774536133
+            },
+            {
+              "token_id": 6857,
+              "token_text": "isk",
+              "logit": 8.43942642211914
+            }
+          ],
+          "top_copy_tokens": [
+            {
+              "token_id": 309,
+              "token_text": " is",
+              "logit": 2.562686285401128e-09
+            },
+            {
+              "token_id": 31038,
+              "token_text": " Aster",
+              "logit": 2.3524155956522463e-09
+            },
+            {
+              "token_id": 0,
+              "token_text": "\u0000",
+              "logit": 0.0
+            },
+            {
+              "token_id": 1,
+              "token_text": "\u0001",
+              "logit": 0.0
+            },
+            {
+              "token_id": 2,
+              "token_text": "\u0002",
+              "logit": 0.0
+            }
+          ],
+          "top_semantic_tokens": [
+            {
+              "token_id": 9097,
+              "token_text": " Max",
+              "logit": 10.056554794311523
+            },
+            {
+              "token_id": 48495,
+              "token_text": " Luna",
+              "logit": 8.225948333740234
+            },
+            {
+              "token_id": 428,
+              "token_text": " F",
+              "logit": 8.216598510742188
+            },
+            {
+              "token_id": 10450,
+              "token_text": " Jack",
+              "logit": 8.023003578186035
+            },
+            {
+              "token_id": 12797,
+              "token_text": " Bob",
+              "logit": 7.9867448806762695
+            }
+          ]
+        },
+        {
+          "example_index": 1,
+          "position": 7,
+          "correct_token_id": 466,
+          "correct_token_text": "ine",
+          "rank_with_memory": 77,
+          "rank_no_memory": 111,
+          "logprob_with_memory": -7.1540656089782715,
+          "logprob_no_memory": -6.938198089599609,
+          "pred_with_memory_id": 111,
+          "pred_with_memory_text": "o",
+          "pred_no_memory_id": 121,
+          "pred_no_memory_text": "y",
+          "copy_correct_logit": 0.0,
+          "semantic_correct_logit": -5.259225368499756,
+          "token_branch_correct_logit": -5.259225368499756,
+          "workspace_correct_logit": -4.945719242095947,
+          "start_gate": 3.0419200491849097e-09,
+          "continue_gate": 9.154603186622978e-10,
+          "top_tokens_with_memory": [
+            {
+              "token_id": 111,
+              "token_text": "o",
+              "logit": 0.9347802996635437
+            },
+            {
+              "token_id": 319,
+              "token_text": "et",
+              "logit": -0.04976858198642731
+            },
+            {
+              "token_id": 46,
+              "token_text": ".",
+              "logit": -0.335027813911438
+            },
+            {
+              "token_id": 303,
+              "token_text": "om",
+              "logit": -1.1635684967041016
+            },
+            {
+              "token_id": 105,
+              "token_text": "i",
+              "logit": -1.3461240530014038
+            }
+          ],
+          "top_tokens_no_memory": [
+            {
+              "token_id": 121,
+              "token_text": "y",
+              "logit": 6.342770099639893
+            },
+            {
+              "token_id": 3082,
+              "token_text": "erson",
+              "logit": 5.987778663635254
+            },
+            {
+              "token_id": 14074,
+              "token_text": "ige",
+              "logit": 5.934629917144775
+            },
+            {
+              "token_id": 291,
+              "token_text": "ion",
+              "logit": 4.938709735870361
+            },
+            {
+              "token_id": 328,
+              "token_text": "ig",
+              "logit": 4.871549606323242
+            }
+          ],
+          "top_copy_tokens": [
+            {
+              "token_id": 309,
+              "token_text": " is",
+              "logit": 3.6503038813862076e-08
+            },
+            {
+              "token_id": 31038,
+              "token_text": " Aster",
+              "logit": 1.0985523601902969e-08
+            },
+            {
+              "token_id": 0,
+              "token_text": "\u0000",
+              "logit": 0.0
+            },
+            {
+              "token_id": 1,
+              "token_text": "\u0001",
+              "logit": 0.0
+            },
+            {
+              "token_id": 2,
+              "token_text": "\u0002",
+              "logit": 0.0
+            }
+          ],
+          "top_semantic_tokens": [
+            {
+              "token_id": 9097,
+              "token_text": " Max",
+              "logit": 10.056554794311523
+            },
+            {
+              "token_id": 48495,
+              "token_text": " Luna",
+              "logit": 8.225948333740234
+            },
+            {
+              "token_id": 428,
+              "token_text": " F",
+              "logit": 8.216598510742188
+            },
+            {
+              "token_id": 10450,
+              "token_text": " Jack",
+              "logit": 8.023003578186035
+            },
+            {
+              "token_id": 12797,
+              "token_text": " Bob",
+              "logit": 7.9867448806762695
+            }
+          ]
+        },
+        {
+          "example_index": 1,
+          "position": 8,
+          "correct_token_id": 46,
+          "correct_token_text": ".",
+          "rank_with_memory": 1,
+          "rank_no_memory": 2,
+          "logprob_with_memory": -0.1973802000284195,
+          "logprob_no_memory": -2.0734879970550537,
+          "pred_with_memory_id": 46,
+          "pred_with_memory_text": ".",
+          "pred_no_memory_id": 44,
+          "pred_no_memory_text": ",",
+          "copy_correct_logit": 0.0,
+          "semantic_correct_logit": 4.554166793823242,
+          "token_branch_correct_logit": 4.554166793823242,
+          "workspace_correct_logit": -9.098824501037598,
+          "start_gate": 4.434821399001976e-10,
+          "continue_gate": 3.5634925565908304e-10,
+          "top_tokens_with_memory": [
+            {
+              "token_id": 46,
+              "token_text": ".",
+              "logit": 3.612851142883301
+            },
+            {
+              "token_id": 120,
+              "token_text": "x",
+              "logit": 1.2848390340805054
+            },
+            {
+              "token_id": 355,
+              "token_text": " or",
+              "logit": 0.5203316807746887
+            },
+            {
+              "token_id": 348,
+              "token_text": " you",
+              "logit": -0.8904136419296265
+            },
+            {
+              "token_id": 44,
+              "token_text": ",",
+              "logit": -1.4297561645507812
+            }
+          ],
+          "top_tokens_no_memory": [
+            {
+              "token_id": 44,
+              "token_text": ",",
+              "logit": 9.416301727294922
+            },
+            {
+              "token_id": 46,
+              "token_text": ".",
+              "logit": 8.303794860839844
+            },
+            {
+              "token_id": 261,
+              "token_text": " the",
+              "logit": 7.648691654205322
+            },
+            {
+              "token_id": 288,
+              "token_text": " and",
+              "logit": 7.520747661590576
+            },
+            {
+              "token_id": 1272,
+              "token_text": "ee",
+              "logit": 6.225902080535889
+            }
+          ],
+          "top_copy_tokens": [
+            {
+              "token_id": 309,
+              "token_text": " is",
+              "logit": 5.321785678802371e-09
+            },
+            {
+              "token_id": 31038,
+              "token_text": " Aster",
+              "logit": 4.276190956886694e-09
+            },
+            {
+              "token_id": 0,
+              "token_text": "\u0000",
+              "logit": 0.0
+            },
+            {
+              "token_id": 1,
+              "token_text": "\u0001",
+              "logit": 0.0
+            },
+            {
+              "token_id": 2,
+              "token_text": "\u0002",
+              "logit": 0.0
+            }
+          ],
+          "top_semantic_tokens": [
+            {
+              "token_id": 9097,
+              "token_text": " Max",
+              "logit": 10.056554794311523
+            },
+            {
+              "token_id": 48495,
+              "token_text": " Luna",
+              "logit": 8.225948333740234
+            },
+            {
+              "token_id": 428,
+              "token_text": " F",
+              "logit": 8.216598510742188
+            },
+            {
+              "token_id": 10450,
+              "token_text": " Jack",
+              "logit": 8.023003578186035
+            },
+            {
+              "token_id": 12797,
+              "token_text": " Bob",
+              "logit": 7.9867448806762695
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "example_index": 2,
+      "recall_user": "Can you tell me my dog's name?",
+      "expected_answer": "Your dog's name is Pebble-Cloud.",
+      "positions": [
+        {
+          "example_index": 2,
+          "position": 0,
+          "correct_token_id": 6207,
+          "correct_token_text": "Your",
+          "rank_with_memory": 3,
+          "rank_no_memory": 1,
+          "logprob_with_memory": -2.9795687198638916,
+          "logprob_no_memory": -0.4569331407546997,
+          "pred_with_memory_id": 449,
+          "pred_with_memory_text": "The",
+          "pred_no_memory_id": 6207,
+          "pred_no_memory_text": "Your",
+          "copy_correct_logit": 0.0,
+          "semantic_correct_logit": -6.392129898071289,
+          "token_branch_correct_logit": -6.392129898071289,
+          "workspace_correct_logit": -3.403581142425537,
+          "start_gate": 3.5794891495299908e-09,
+          "continue_gate": 4.66550034161628e-08,
+          "top_tokens_with_memory": [
+            {
+              "token_id": 449,
+              "token_text": "The",
+              "logit": 5.507608890533447
+            },
+            {
+              "token_id": 2287,
+              "token_text": "You",
+              "logit": 4.378713130950928
+            },
+            {
+              "token_id": 6207,
+              "token_text": "Your",
+              "logit": 3.4108762741088867
+            },
+            {
+              "token_id": 68,
+              "token_text": "D",
+              "logit": 2.3447391986846924
+            },
+            {
+              "token_id": 1563,
+              "token_text": "We",
+              "logit": 2.3158113956451416
+            }
+          ],
+          "top_tokens_no_memory": [
+            {
+              "token_id": 6207,
+              "token_text": "Your",
+              "logit": 13.028739929199219
+            },
+            {
+              "token_id": 5873,
+              "token_text": "My",
+              "logit": 11.45871639251709
+            },
+            {
+              "token_id": 65,
+              "token_text": "A",
+              "logit": 10.093318939208984
+            },
+            {
+              "token_id": 1344,
+              "token_text": "It",
+              "logit": 9.677160263061523
+            },
+            {
+              "token_id": 468,
+              "token_text": " your",
+              "logit": 9.544036865234375
+            }
+          ],
+          "top_copy_tokens": [
+            {
+              "token_id": 377,
+              "token_text": " P",
+              "logit": 5.598600409939536e-07
+            },
+            {
+              "token_id": 309,
+              "token_text": " is",
+              "logit": 4.295387157071673e-08
+            },
+            {
+              "token_id": 0,
+              "token_text": "\u0000",
+              "logit": 0.0
+            },
+            {
+              "token_id": 1,
+              "token_text": "\u0001",
+              "logit": 0.0
+            },
+            {
+              "token_id": 2,
+              "token_text": "\u0002",
+              "logit": 0.0
+            }
+          ],
+          "top_semantic_tokens": [
+            {
+              "token_id": 9097,
+              "token_text": " Max",
+              "logit": 10.056554794311523
+            },
+            {
+              "token_id": 48495,
+              "token_text": " Luna",
+              "logit": 8.225948333740234
+            },
+            {
+              "token_id": 428,
+              "token_text": " F",
+              "logit": 8.216598510742188
+            },
+            {
+              "token_id": 10450,
+              "token_text": " Jack",
+              "logit": 8.023003578186035
+            },
+            {
+              "token_id": 12797,
+              "token_text": " Bob",
+              "logit": 7.9867448806762695
+            }
+          ]
+        },
+        {
+          "example_index": 2,
+          "position": 1,
+          "correct_token_id": 2222,
+          "correct_token_text": " dog",
+          "rank_with_memory": 1,
+          "rank_no_memory": 1,
+          "logprob_with_memory": -0.21118120849132538,
+          "logprob_no_memory": -0.03289811313152313,
+          "pred_with_memory_id": 2222,
+          "pred_with_memory_text": " dog",
+          "pred_no_memory_id": 2222,
+          "pred_no_memory_text": " dog",
+          "copy_correct_logit": 0.0,
+          "semantic_correct_logit": 1.9471536874771118,
+          "token_branch_correct_logit": 1.9471536874771118,
+          "workspace_correct_logit": -1.3457924127578735,
+          "start_gate": 5.545466863488002e-10,
+          "continue_gate": 3.188953314747778e-07,
+          "top_tokens_with_memory": [
+            {
+              "token_id": 2222,
+              "token_text": " dog",
+              "logit": 4.21904993057251
+            },
+            {
+              "token_id": 1783,
+              "token_text": " specific",
+              "logit": 2.157266616821289
+            },
+            {
+              "token_id": 2309,
+              "token_text": " cat",
+              "logit": -0.004075406584888697
+            },
+            {
+              "token_id": 3487,
+              "token_text": " pet",
+              "logit": -0.8084273338317871
+            },
+            {
+              "token_id": 5484,
+              "token_text": " horse",
+              "logit": -0.9497828483581543
+            }
+          ],
+          "top_tokens_no_memory": [
+            {
+              "token_id": 2222,
+              "token_text": " dog",
+              "logit": 12.945650100708008
+            },
+            {
+              "token_id": 3487,
+              "token_text": " pet",
+              "logit": 8.213746070861816
+            },
+            {
+              "token_id": 33694,
+              "token_text": " furry",
+              "logit": 7.909205913543701
+            },
+            {
+              "token_id": 20242,
+              "token_text": " canine",
+              "logit": 6.760135650634766
+            },
+            {
+              "token_id": 26323,
+              "token_text": " Labrador",
+              "logit": 6.37393856048584
+            }
+          ],
+          "top_copy_tokens": [
+            {
+              "token_id": 377,
+              "token_text": " P",
+              "logit": 3.826743977697333e-06
+            },
+            {
+              "token_id": 309,
+              "token_text": " is",
+              "logit": 6.654560458230208e-09
+            },
+            {
+              "token_id": 0,
+              "token_text": "\u0000",
+              "logit": 0.0
+            },
+            {
+              "token_id": 1,
+              "token_text": "\u0001",
+              "logit": 0.0
+            },
+            {
+              "token_id": 2,
+              "token_text": "\u0002",
+              "logit": 0.0
+            }
+          ],
+          "top_semantic_tokens": [
+            {
+              "token_id": 9097,
+              "token_text": " Max",
+              "logit": 10.056554794311523
+            },
+            {
+              "token_id": 48495,
+              "token_text": " Luna",
+              "logit": 8.225948333740234
+            },
+            {
+              "token_id": 428,
+              "token_text": " F",
+              "logit": 8.216598510742188
+            },
+            {
+              "token_id": 10450,
+              "token_text": " Jack",
+              "logit": 8.023003578186035
+            },
+            {
+              "token_id": 12797,
+              "token_text": " Bob",
+              "logit": 7.9867448806762695
+            }
+          ]
+        },
+        {
+          "example_index": 2,
+          "position": 2,
+          "correct_token_id": 566,
+          "correct_token_text": "'s",
+          "rank_with_memory": 1,
+          "rank_no_memory": 1,
+          "logprob_with_memory": -0.3858272433280945,
+          "logprob_no_memory": -0.1489054262638092,
+          "pred_with_memory_id": 566,
+          "pred_with_memory_text": "'s",
+          "pred_no_memory_id": 566,
+          "pred_no_memory_text": "'s",
+          "copy_correct_logit": 0.0,
+          "semantic_correct_logit": 0.5322200059890747,
+          "token_branch_correct_logit": 0.5322194695472717,
+          "workspace_correct_logit": -4.465901851654053,
+          "start_gate": 1.6931810771156353e-12,
+          "continue_gate": 3.287565562004602e-07,
+          "top_tokens_with_memory": [
+            {
+              "token_id": 566,
+              "token_text": "'s",
+              "logit": 2.51487135887146
+            },
+            {
+              "token_id": 1588,
+              "token_text": " name",
+              "logit": 1.4556636810302734
+            },
+            {
+              "token_id": 348,
+              "token_text": " you",
+              "logit": -1.1671597957611084
+            },
+            {
+              "token_id": 309,
+              "token_text": " is",
+              "logit": -2.0961196422576904
+            },
+            {
+              "token_id": 468,
+              "token_text": " your",
+              "logit": -2.6754651069641113
+            }
+          ],
+          "top_tokens_no_memory": [
+            {
+              "token_id": 566,
+              "token_text": "'s",
+              "logit": 13.6980562210083
+            },
+            {
+              "token_id": 309,
+              "token_text": " is",
+              "logit": 11.477665901184082
+            },
+            {
+              "token_id": 44,
+              "token_text": ",",
+              "logit": 9.22044849395752
+            },
+            {
+              "token_id": 616,
+              "token_text": " may",
+              "logit": 9.045805931091309
+            },
+            {
+              "token_id": 400,
+              "token_text": " can",
+              "logit": 8.91004467010498
+            }
+          ],
+          "top_copy_tokens": [
+            {
+              "token_id": 377,
+              "token_text": " P",
+              "logit": 3.94507878809236e-06
+            },
+            {
+              "token_id": 309,
+              "token_text": " is",
+              "logit": 2.0318172491706754e-11
+            },
+            {
+              "token_id": 0,
+              "token_text": "\u0000",
+              "logit": 0.0
+            },
+            {
+              "token_id": 1,
+              "token_text": "\u0001",
+              "logit": 0.0
+            },
+            {
+              "token_id": 2,
+              "token_text": "\u0002",
+              "logit": 0.0
+            }
+          ],
+          "top_semantic_tokens": [
+            {
+              "token_id": 9097,
+              "token_text": " Max",
+              "logit": 10.056554794311523
+            },
+            {
+              "token_id": 48495,
+              "token_text": " Luna",
+              "logit": 8.225948333740234
+            },
+            {
+              "token_id": 428,
+              "token_text": " F",
+              "logit": 8.216598510742188
+            },
+            {
+              "token_id": 10450,
+              "token_text": " Jack",
+              "logit": 8.023003578186035
+            },
+            {
+              "token_id": 12797,
+              "token_text": " Bob",
+              "logit": 7.9867448806762695
+            }
+          ]
+        },
+        {
+          "example_index": 2,
+          "position": 3,
+          "correct_token_id": 1588,
+          "correct_token_text": " name",
+          "rank_with_memory": 1,
+          "rank_no_memory": 1,
+          "logprob_with_memory": -0.06761368364095688,
+          "logprob_no_memory": -0.003173793200403452,
+          "pred_with_memory_id": 1588,
+          "pred_with_memory_text": " name",
+          "pred_no_memory_id": 1588,
+          "pred_no_memory_text": " name",
+          "copy_correct_logit": 0.0,
+          "semantic_correct_logit": -2.0992822647094727,
+          "token_branch_correct_logit": -2.099282741546631,
+          "workspace_correct_logit": -5.683284759521484,
+          "start_gate": 1.5707271594500583e-10,
+          "continue_gate": 2.6170793717028573e-05,
+          "top_tokens_with_memory": [
+            {
+              "token_id": 1588,
+              "token_text": " name",
+              "logit": 6.414924621582031
+            },
+            {
+              "token_id": 13752,
+              "token_text": " signature",
+              "logit": 2.9434266090393066
+            },
+            {
+              "token_id": 2222,
+              "token_text": " dog",
+              "logit": 2.2550008296966553
+            },
+            {
+              "token_id": 2309,
+              "token_text": " cat",
+              "logit": -0.19121943414211273
+            },
+            {
+              "token_id": 746,
+              "token_text": " first",
+              "logit": -0.23127692937850952
+            }
+          ],
+          "top_tokens_no_memory": [
+            {
+              "token_id": 1588,
+              "token_text": " name",
+              "logit": 13.133341789245605
+            },
+            {
+              "token_id": 1923,
+              "token_text": " full",
+              "logit": 5.3897199630737305
+            },
+            {
+              "token_id": 1770,
+              "token_text": " given",
+              "logit": 4.7868971824646
+            },
+            {
+              "token_id": 44,
+              "token_text": ",",
+              "logit": 4.406157493591309
+            },
+            {
+              "token_id": 1470,
+              "token_text": " real",
+              "logit": 4.047507286071777
+            }
+          ],
+          "top_copy_tokens": [
+            {
+              "token_id": 377,
+              "token_text": " P",
+              "logit": 0.0003140495391562581
+            },
+            {
+              "token_id": 309,
+              "token_text": " is",
+              "logit": 1.8848727023623724e-09
+            },
+            {
+              "token_id": 0,
+              "token_text": "\u0000",
+              "logit": 0.0
+            },
+            {
+              "token_id": 1,
+              "token_text": "\u0001",
+              "logit": 0.0
+            },
+            {
+              "token_id": 2,
+              "token_text": "\u0002",
+              "logit": 0.0
+            }
+          ],
+          "top_semantic_tokens": [
+            {
+              "token_id": 9097,
+              "token_text": " Max",
+              "logit": 10.056554794311523
+            },
+            {
+              "token_id": 48495,
+              "token_text": " Luna",
+              "logit": 8.225948333740234
+            },
+            {
+              "token_id": 428,
+              "token_text": " F",
+              "logit": 8.216598510742188
+            },
+            {
+              "token_id": 10450,
+              "token_text": " Jack",
+              "logit": 8.023003578186035
+            },
+            {
+              "token_id": 12797,
+              "token_text": " Bob",
+              "logit": 7.9867448806762695
+            }
+          ]
+        },
+        {
+          "example_index": 2,
+          "position": 4,
+          "correct_token_id": 309,
+          "correct_token_text": " is",
+          "rank_with_memory": 1,
+          "rank_no_memory": 1,
+          "logprob_with_memory": -0.15166828036308289,
+          "logprob_no_memory": -0.8720930218696594,
+          "pred_with_memory_id": 309,
+          "pred_with_memory_text": " is",
+          "pred_no_memory_id": 309,
+          "pred_no_memory_text": " is",
+          "copy_correct_logit": 2.3018355884557584e-12,
+          "semantic_correct_logit": 0.7203052043914795,
+          "token_branch_correct_logit": 0.7203054428100586,
+          "workspace_correct_logit": -2.719888687133789,
+          "start_gate": 1.9181963688882225e-13,
+          "continue_gate": 1.3181032443299046e-07,
+          "top_tokens_with_memory": [
+            {
+              "token_id": 309,
+              "token_text": " is",
+              "logit": 5.9184465408325195
+            },
+            {
+              "token_id": 348,
+              "token_text": " you",
+              "logit": 3.7962892055511475
+            },
+            {
+              "token_id": 421,
+              "token_text": " was",
+              "logit": 1.7263673543930054
+            },
+            {
+              "token_id": 414,
+              "token_text": " from",
+              "logit": 0.46540191769599915
+            },
+            {
+              "token_id": 3378,
+              "token_text": " remains",
+              "logit": 0.26645952463150024
+            }
+          ],
+          "top_tokens_no_memory": [
+            {
+              "token_id": 309,
+              "token_text": " is",
+              "logit": 12.39617919921875
+            },
+            {
+              "token_id": 400,
+              "token_text": " can",
+              "logit": 12.035600662231445
+            },
+            {
+              "token_id": 616,
+              "token_text": " may",
+              "logit": 10.841180801391602
+            },
+            {
+              "token_id": 1273,
+              "token_text": " might",
+              "logit": 10.420265197753906
+            },
+            {
+              "token_id": 836,
+              "token_text": " could",
+              "logit": 10.042474746704102
+            }
+          ],
+          "top_copy_tokens": [
+            {
+              "token_id": 377,
+              "token_text": " P",
+              "logit": 1.5817238363524666e-06
+            },
+            {
+              "token_id": 309,
+              "token_text": " is",
+              "logit": 2.3018355884557584e-12
+            },
+            {
+              "token_id": 0,
+              "token_text": "\u0000",
+              "logit": 0.0
+            },
+            {
+              "token_id": 1,
+              "token_text": "\u0001",
+              "logit": 0.0
+            },
+            {
+              "token_id": 2,
+              "token_text": "\u0002",
+              "logit": 0.0
+            }
+          ],
+          "top_semantic_tokens": [
+            {
+              "token_id": 9097,
+              "token_text": " Max",
+              "logit": 10.056554794311523
+            },
+            {
+              "token_id": 48495,
+              "token_text": " Luna",
+              "logit": 8.225948333740234
+            },
+            {
+              "token_id": 428,
+              "token_text": " F",
+              "logit": 8.216598510742188
+            },
+            {
+              "token_id": 10450,
+              "token_text": " Jack",
+              "logit": 8.023003578186035
+            },
+            {
+              "token_id": 12797,
+              "token_text": " Bob",
+              "logit": 7.9867448806762695
+            }
+          ]
+        },
+        {
+          "example_index": 2,
+          "position": 5,
+          "correct_token_id": 377,
+          "correct_token_text": " P",
+          "rank_with_memory": 1,
+          "rank_no_memory": 7,
+          "logprob_with_memory": -0.19447416067123413,
+          "logprob_no_memory": -3.9195749759674072,
+          "pred_with_memory_id": 377,
+          "pred_with_memory_text": " P",
+          "pred_no_memory_id": 48495,
+          "pred_no_memory_text": " Luna",
+          "copy_correct_logit": 9.960508346557617,
+          "semantic_correct_logit": 7.336373329162598,
+          "token_branch_correct_logit": 7.336374282836914,
+          "workspace_correct_logit": -1.8926312923431396,
+          "start_gate": 6.022777387926226e-09,
+          "continue_gate": 0.9999936819076538,
+          "top_tokens_with_memory": [
+            {
+              "token_id": 377,
+              "token_text": " P",
+              "logit": 11.329258918762207
+            },
+            {
+              "token_id": 11240,
+              "token_text": " Rose",
+              "logit": 6.732567310333252
+            },
+            {
+              "token_id": 15605,
+              "token_text": " Silver",
+              "logit": 6.206021308898926
+            },
+            {
+              "token_id": 56988,
+              "token_text": " Bella",
+              "logit": 6.155468463897705
+            },
+            {
+              "token_id": 489,
+              "token_text": " O",
+              "logit": 6.0781378746032715
+            }
+          ],
+          "top_tokens_no_memory": [
+            {
+              "token_id": 48495,
+              "token_text": " Luna",
+              "logit": 10.488481521606445
+            },
+            {
+              "token_id": 9097,
+              "token_text": " Max",
+              "logit": 9.908868789672852
+            },
+            {
+              "token_id": 36563,
+              "token_text": " Rex",
+              "logit": 9.360379219055176
+            },
+            {
+              "token_id": 678,
+              "token_text": " \"",
+              "logit": 8.918048858642578
+            },
+            {
+              "token_id": 11813,
+              "token_text": " Ak",
+              "logit": 8.79658031463623
+            }
+          ],
+          "top_copy_tokens": [
+            {
+              "token_id": 377,
+              "token_text": " P",
+              "logit": 9.960508346557617
+            },
+            {
+              "token_id": 309,
+              "token_text": " is",
+              "logit": 7.227333043147155e-08
+            },
+            {
+              "token_id": 0,
+              "token_text": "\u0000",
+              "logit": 0.0
+            },
+            {
+              "token_id": 1,
+              "token_text": "\u0001",
+              "logit": 0.0
+            },
+            {
+              "token_id": 2,
+              "token_text": "\u0002",
+              "logit": 0.0
+            }
+          ],
+          "top_semantic_tokens": [
+            {
+              "token_id": 9097,
+              "token_text": " Max",
+              "logit": 10.056554794311523
+            },
+            {
+              "token_id": 48495,
+              "token_text": " Luna",
+              "logit": 8.225948333740234
+            },
+            {
+              "token_id": 428,
+              "token_text": " F",
+              "logit": 8.216598510742188
+            },
+            {
+              "token_id": 10450,
+              "token_text": " Jack",
+              "logit": 8.023003578186035
+            },
+            {
+              "token_id": 12797,
+              "token_text": " Bob",
+              "logit": 7.9867448806762695
+            }
+          ]
+        },
+        {
+          "example_index": 2,
+          "position": 6,
+          "correct_token_id": 2552,
+          "correct_token_text": "eb",
+          "rank_with_memory": 12,
+          "rank_no_memory": 951,
+          "logprob_with_memory": -5.083370208740234,
+          "logprob_no_memory": -11.889716148376465,
+          "pred_with_memory_id": 8471,
+          "pred_with_memory_text": "una",
+          "pred_no_memory_id": 21373,
+          "pred_no_memory_text": "oodle",
+          "copy_correct_logit": 0.0,
+          "semantic_correct_logit": -4.271042346954346,
+          "token_branch_correct_logit": -4.271042346954346,
+          "workspace_correct_logit": -10.885303497314453,
+          "start_gate": 7.43938187497406e-07,
+          "continue_gate": 2.1083750301187365e-09,
+          "top_tokens_with_memory": [
+            {
+              "token_id": 8471,
+              "token_text": "una",
+              "logit": 2.9388427734375
+            },
+            {
+              "token_id": 2923,
+              "token_text": "ender",
+              "logit": 2.1018009185791016
+            },
+            {
+              "token_id": 5267,
+              "token_text": "uls",
+              "logit": 1.3228092193603516
+            },
+            {
+              "token_id": 46,
+              "token_text": ".",
+              "logit": 0.5675689578056335
+            },
+            {
+              "token_id": 3351,
+              "token_text": "oud",
+              "logit": 0.33905792236328125
+            }
+          ],
+          "top_tokens_no_memory": [
+            {
+              "token_id": 21373,
+              "token_text": "oodle",
+              "logit": 7.853489398956299
+            },
+            {
+              "token_id": 14074,
+              "token_text": "ige",
+              "logit": 4.7524027824401855
+            },
+            {
+              "token_id": 3163,
+              "token_text": "iers",
+              "logit": 4.55348014831543
+            },
+            {
+              "token_id": 1369,
+              "token_text": "oun",
+              "logit": 4.425359725952148
+            },
+            {
+              "token_id": 27687,
+              "token_text": "iao",
+              "logit": 4.371256351470947
+            }
+          ],
+          "top_copy_tokens": [
+            {
+              "token_id": 309,
+              "token_text": " is",
+              "logit": 8.927258022595197e-06
+            },
+            {
+              "token_id": 377,
+              "token_text": " P",
+              "logit": 2.5300501249603258e-08
+            },
+            {
+              "token_id": 0,
+              "token_text": "\u0000",
+              "logit": 0.0
+            },
+            {
+              "token_id": 1,
+              "token_text": "\u0001",
+              "logit": 0.0
+            },
+            {
+              "token_id": 2,
+              "token_text": "\u0002",
+              "logit": 0.0
+            }
+          ],
+          "top_semantic_tokens": [
+            {
+              "token_id": 9097,
+              "token_text": " Max",
+              "logit": 10.056554794311523
+            },
+            {
+              "token_id": 48495,
+              "token_text": " Luna",
+              "logit": 8.225948333740234
+            },
+            {
+              "token_id": 428,
+              "token_text": " F",
+              "logit": 8.216598510742188
+            },
+            {
+              "token_id": 10450,
+              "token_text": " Jack",
+              "logit": 8.023003578186035
+            },
+            {
+              "token_id": 12797,
+              "token_text": " Bob",
+              "logit": 7.9867448806762695
+            }
+          ]
+        },
+        {
+          "example_index": 2,
+          "position": 7,
+          "correct_token_id": 797,
+          "correct_token_text": "ble",
+          "rank_with_memory": 2279,
+          "rank_no_memory": 1,
+          "logprob_with_memory": -12.19747543334961,
+          "logprob_no_memory": -0.44167596101760864,
+          "pred_with_memory_id": 46,
+          "pred_with_memory_text": ".",
+          "pred_no_memory_id": 797,
+          "pred_no_memory_text": "ble",
+          "copy_correct_logit": 0.0,
+          "semantic_correct_logit": -5.7220892906188965,
+          "token_branch_correct_logit": -5.7220892906188965,
+          "workspace_correct_logit": -7.6558942794799805,
+          "start_gate": 8.721670496925071e-09,
+          "continue_gate": 5.041043277254076e-11,
+          "top_tokens_with_memory": [
+            {
+              "token_id": 46,
+              "token_text": ".",
+              "logit": 2.76798415184021
+            },
+            {
+              "token_id": 105,
+              "token_text": "i",
+              "logit": 2.6100261211395264
+            },
+            {
+              "token_id": 370,
+              "token_text": "ill",
+              "logit": 0.7334219813346863
+            },
+            {
+              "token_id": 466,
+              "token_text": "ine",
+              "logit": 0.6128363609313965
+            },
+            {
+              "token_id": 447,
+              "token_text": "ight",
+              "logit": 0.2991361618041992
+            }
+          ],
+          "top_tokens_no_memory": [
+            {
+              "token_id": 797,
+              "token_text": "ble",
+              "logit": 10.7852144241333
+            },
+            {
+              "token_id": 7357,
+              "token_text": "bles",
+              "logit": 10.155580520629883
+            },
+            {
+              "token_id": 13783,
+              "token_text": "bled",
+              "logit": 5.803032398223877
+            },
+            {
+              "token_id": 13867,
+              "token_text": "bling",
+              "logit": 5.533817291259766
+            },
+            {
+              "token_id": 1896,
+              "token_text": "be",
+              "logit": 4.171037673950195
+            }
+          ],
+          "top_copy_tokens": [
+            {
+              "token_id": 309,
+              "token_text": " is",
+              "logit": 1.0466004596310086e-07
+            },
+            {
+              "token_id": 377,
+              "token_text": " P",
+              "logit": 6.049252210260647e-10
+            },
+            {
+              "token_id": 0,
+              "token_text": "\u0000",
+              "logit": 0.0
+            },
+            {
+              "token_id": 1,
+              "token_text": "\u0001",
+              "logit": 0.0
+            },
+            {
+              "token_id": 2,
+              "token_text": "\u0002",
+              "logit": 0.0
+            }
+          ],
+          "top_semantic_tokens": [
+            {
+              "token_id": 9097,
+              "token_text": " Max",
+              "logit": 10.056554794311523
+            },
+            {
+              "token_id": 48495,
+              "token_text": " Luna",
+              "logit": 8.225948333740234
+            },
+            {
+              "token_id": 428,
+              "token_text": " F",
+              "logit": 8.216598510742188
+            },
+            {
+              "token_id": 10450,
+              "token_text": " Jack",
+              "logit": 8.023003578186035
+            },
+            {
+              "token_id": 12797,
+              "token_text": " Bob",
+              "logit": 7.9867448806762695
+            }
+          ]
+        },
+        {
+          "example_index": 2,
+          "position": 8,
+          "correct_token_id": 52083,
+          "correct_token_text": "-Cl",
+          "rank_with_memory": 6822,
+          "rank_no_memory": 10441,
+          "logprob_with_memory": -14.790562629699707,
+          "logprob_no_memory": -14.912360191345215,
+          "pred_with_memory_id": 46,
+          "pred_with_memory_text": ".",
+          "pred_no_memory_id": 46,
+          "pred_no_memory_text": ".",
+          "copy_correct_logit": 0.0,
+          "semantic_correct_logit": -7.157288074493408,
+          "token_branch_correct_logit": -7.157288074493408,
+          "workspace_correct_logit": -9.487320899963379,
+          "start_gate": 9.350067595170763e-12,
+          "continue_gate": 2.9565422110522377e-08,
+          "top_tokens_with_memory": [
+            {
+              "token_id": 46,
+              "token_text": ".",
+              "logit": 3.825944423675537
+            },
+            {
+              "token_id": 3431,
+              "token_text": " told",
+              "logit": 0.5869003534317017
+            },
+            {
+              "token_id": 13429,
+              "token_text": " Dog",
+              "logit": -1.508888840675354
+            },
+            {
+              "token_id": 804,
+              "token_text": ").",
+              "logit": -2.355924367904663
+            },
+            {
+              "token_id": 44,
+              "token_text": ",",
+              "logit": -2.5160820484161377
+            }
+          ],
+          "top_tokens_no_memory": [
+            {
+              "token_id": 46,
+              "token_text": ".",
+              "logit": 7.125091075897217
+            },
+            {
+              "token_id": 283,
+              "token_text": " in",
+              "logit": 4.929039478302002
+            },
+            {
+              "token_id": 44,
+              "token_text": ",",
+              "logit": 4.8098649978637695
+            },
+            {
+              "token_id": 13224,
+              "token_text": " Beach",
+              "logit": 4.593101978302002
+            },
+            {
+              "token_id": 101,
+              "token_text": "e",
+              "logit": 4.540333271026611
+            }
+          ],
+          "top_copy_tokens": [
+            {
+              "token_id": 377,
+              "token_text": " P",
+              "logit": 3.547850724316959e-07
+            },
+            {
+              "token_id": 309,
+              "token_text": " is",
+              "logit": 1.1220081114204916e-10
+            },
+            {
+              "token_id": 0,
+              "token_text": "\u0000",
+              "logit": 0.0
+            },
+            {
+              "token_id": 1,
+              "token_text": "\u0001",
+              "logit": 0.0
+            },
+            {
+              "token_id": 2,
+              "token_text": "\u0002",
+              "logit": 0.0
+            }
+          ],
+          "top_semantic_tokens": [
+            {
+              "token_id": 9097,
+              "token_text": " Max",
+              "logit": 10.056554794311523
+            },
+            {
+              "token_id": 48495,
+              "token_text": " Luna",
+              "logit": 8.225948333740234
+            },
+            {
+              "token_id": 428,
+              "token_text": " F",
+              "logit": 8.216598510742188
+            },
+            {
+              "token_id": 10450,
+              "token_text": " Jack",
+              "logit": 8.023003578186035
+            },
+            {
+              "token_id": 12797,
+              "token_text": " Bob",
+              "logit": 7.9867448806762695
+            }
+          ]
+        },
+        {
+          "example_index": 2,
+          "position": 9,
+          "correct_token_id": 3351,
+          "correct_token_text": "oud",
+          "rank_with_memory": 1,
+          "rank_no_memory": 7,
+          "logprob_with_memory": -0.9605187177658081,
+          "logprob_no_memory": -5.735379695892334,
+          "pred_with_memory_id": 3351,
+          "pred_with_memory_text": "oud",
+          "pred_no_memory_id": 758,
+          "pred_no_memory_text": "ark",
+          "copy_correct_logit": 0.0,
+          "semantic_correct_logit": -5.649050712585449,
+          "token_branch_correct_logit": -5.649049758911133,
+          "workspace_correct_logit": -8.332233428955078,
+          "start_gate": 1.346583178296612e-09,
+          "continue_gate": 2.2444967759382983e-11,
+          "top_tokens_with_memory": [
+            {
+              "token_id": 3351,
+              "token_text": "oud",
+              "logit": 0.2433391958475113
+            },
+            {
+              "token_id": 8471,
+              "token_text": "una",
+              "logit": -1.4395850896835327
+            },
+            {
+              "token_id": 348,
+              "token_text": " you",
+              "logit": -2.1364800930023193
+            },
+            {
+              "token_id": 46,
+              "token_text": ".",
+              "logit": -2.449676513671875
+            },
+            {
+              "token_id": 105,
+              "token_text": "i",
+              "logit": -3.3065006732940674
+            }
+          ],
+          "top_tokens_no_memory": [
+            {
+              "token_id": 758,
+              "token_text": "ark",
+              "logit": 9.731646537780762
+            },
+            {
+              "token_id": 53488,
+              "token_text": "ubber",
+              "logit": 7.82269287109375
+            },
+            {
+              "token_id": 12198,
+              "token_text": "inton",
+              "logit": 6.0499114990234375
+            },
+            {
+              "token_id": 1736,
+              "token_text": "over",
+              "logit": 5.840423583984375
+            },
+            {
+              "token_id": 646,
+              "token_text": "ough",
+              "logit": 5.756237506866455
+            }
+          ],
+          "top_copy_tokens": [
+            {
+              "token_id": 309,
+              "token_text": " is",
+              "logit": 1.6158997695470134e-08
+            },
+            {
+              "token_id": 377,
+              "token_text": " P",
+              "logit": 2.693396061737019e-10
+            },
+            {
+              "token_id": 0,
+              "token_text": "\u0000",
+              "logit": 0.0
+            },
+            {
+              "token_id": 1,
+              "token_text": "\u0001",
+              "logit": 0.0
+            },
+            {
+              "token_id": 2,
+              "token_text": "\u0002",
+              "logit": 0.0
+            }
+          ],
+          "top_semantic_tokens": [
+            {
+              "token_id": 9097,
+              "token_text": " Max",
+              "logit": 10.056554794311523
+            },
+            {
+              "token_id": 48495,
+              "token_text": " Luna",
+              "logit": 8.225948333740234
+            },
+            {
+              "token_id": 428,
+              "token_text": " F",
+              "logit": 8.216598510742188
+            },
+            {
+              "token_id": 10450,
+              "token_text": " Jack",
+              "logit": 8.023003578186035
+            },
+            {
+              "token_id": 12797,
+              "token_text": " Bob",
+              "logit": 7.9867448806762695
+            }
+          ]
+        },
+        {
+          "example_index": 2,
+          "position": 10,
+          "correct_token_id": 46,
+          "correct_token_text": ".",
+          "rank_with_memory": 1,
+          "rank_no_memory": 2,
+          "logprob_with_memory": -0.03241513669490814,
+          "logprob_no_memory": -1.3456425666809082,
+          "pred_with_memory_id": 46,
+          "pred_with_memory_text": ".",
+          "pred_no_memory_id": 44,
+          "pred_no_memory_text": ",",
+          "copy_correct_logit": 0.0,
+          "semantic_correct_logit": 4.554166793823242,
+          "token_branch_correct_logit": 4.554166793823242,
+          "workspace_correct_logit": -9.038666725158691,
+          "start_gate": 5.3330416471819575e-11,
+          "continue_gate": 2.0253016828064574e-06,
+          "top_tokens_with_memory": [
+            {
+              "token_id": 46,
+              "token_text": ".",
+              "logit": 4.85923433303833
+            },
+            {
+              "token_id": 65531,
+              "token_text": "<|assistant_end|>",
+              "logit": 0.10263366997241974
+            },
+            {
+              "token_id": 348,
+              "token_text": " you",
+              "logit": -1.434452772140503
+            },
+            {
+              "token_id": 11240,
+              "token_text": " Rose",
+              "logit": -1.4809300899505615
+            },
+            {
+              "token_id": 309,
+              "token_text": " is",
+              "logit": -1.7244871854782104
+            }
+          ],
+          "top_tokens_no_memory": [
+            {
+              "token_id": 44,
+              "token_text": ",",
+              "logit": 10.007365226745605
+            },
+            {
+              "token_id": 46,
+              "token_text": ".",
+              "logit": 9.644158363342285
+            },
+            {
+              "token_id": 288,
+              "token_text": " and",
+              "logit": 7.624055862426758
+            },
+            {
+              "token_id": 121,
+              "token_text": "y",
+              "logit": 7.566553592681885
+            },
+            {
+              "token_id": 33,
+              "token_text": "!",
+              "logit": 6.903984546661377
+            }
+          ],
+          "top_copy_tokens": [
+            {
+              "token_id": 377,
+              "token_text": " P",
+              "logit": 2.4303619284182787e-05
+            },
+            {
+              "token_id": 309,
+              "token_text": " is",
+              "logit": 6.399649699062593e-10
+            },
+            {
+              "token_id": 0,
+              "token_text": "\u0000",
+              "logit": 0.0
+            },
+            {
+              "token_id": 1,
+              "token_text": "\u0001",
+              "logit": 0.0
+            },
+            {
+              "token_id": 2,
+              "token_text": "\u0002",
+              "logit": 0.0
+            }
+          ],
+          "top_semantic_tokens": [
+            {
+              "token_id": 9097,
+              "token_text": " Max",
+              "logit": 10.056554794311523
+            },
+            {
+              "token_id": 48495,
+              "token_text": " Luna",
+              "logit": 8.225948333740234
+            },
+            {
+              "token_id": 428,
+              "token_text": " F",
+              "logit": 8.216598510742188
+            },
+            {
+              "token_id": 10450,
+              "token_text": " Jack",
+              "logit": 8.023003578186035
+            },
+            {
+              "token_id": 12797,
+              "token_text": " Bob",
+              "logit": 7.9867448806762695
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "example_index": 3,
+      "recall_user": "Remind me of my dog's name.",
+      "expected_answer": "Your dog's name is Taro-Otter.",
+      "positions": [
+        {
+          "example_index": 3,
+          "position": 0,
+          "correct_token_id": 6207,
+          "correct_token_text": "Your",
+          "rank_with_memory": 3,
+          "rank_no_memory": 6,
+          "logprob_with_memory": -3.1429216861724854,
+          "logprob_no_memory": -2.9369313716888428,
+          "pred_with_memory_id": 449,
+          "pred_with_memory_text": "The",
+          "pred_no_memory_id": 73,
+          "pred_no_memory_text": "I",
+          "copy_correct_logit": 0.0,
+          "semantic_correct_logit": -6.392129898071289,
+          "token_branch_correct_logit": -6.392129898071289,
+          "workspace_correct_logit": -3.2945034503936768,
+          "start_gate": 3.7200287295036105e-09,
+          "continue_gate": 5.236007893927308e-08,
+          "top_tokens_with_memory": [
+            {
+              "token_id": 449,
+              "token_text": "The",
+              "logit": 5.156630992889404
+            },
+            {
+              "token_id": 2287,
+              "token_text": "You",
+              "logit": 4.923154830932617
+            },
+            {
+              "token_id": 6207,
+              "token_text": "Your",
+              "logit": 3.1301615238189697
+            },
+            {
+              "token_id": 69,
+              "token_text": "E",
+              "logit": 2.6768558025360107
+            },
+            {
+              "token_id": 68,
+              "token_text": "D",
+              "logit": 2.2788519859313965
+            }
+          ],
+          "top_tokens_no_memory": [
+            {
+              "token_id": 73,
+              "token_text": "I",
+              "logit": 11.777379989624023
+            },
+            {
+              "token_id": 449,
+              "token_text": "The",
+              "logit": 11.521268844604492
+            },
+            {
+              "token_id": 9220,
+              "token_text": "Rem",
+              "logit": 11.087068557739258
+            },
+            {
+              "token_id": 5873,
+              "token_text": "My",
+              "logit": 10.91688060760498
+            },
+            {
+              "token_id": 65,
+              "token_text": "A",
+              "logit": 10.733989715576172
+            }
+          ],
+          "top_copy_tokens": [
+            {
+              "token_id": 11158,
+              "token_text": " Tar",
+              "logit": 6.28320947271277e-07
+            },
+            {
+              "token_id": 309,
+              "token_text": " is",
+              "logit": 4.4640344754043326e-08
+            },
+            {
+              "token_id": 0,
+              "token_text": "\u0000",
+              "logit": 0.0
+            },
+            {
+              "token_id": 1,
+              "token_text": "\u0001",
+              "logit": 0.0
+            },
+            {
+              "token_id": 2,
+              "token_text": "\u0002",
+              "logit": 0.0
+            }
+          ],
+          "top_semantic_tokens": [
+            {
+              "token_id": 9097,
+              "token_text": " Max",
+              "logit": 10.056554794311523
+            },
+            {
+              "token_id": 48495,
+              "token_text": " Luna",
+              "logit": 8.225948333740234
+            },
+            {
+              "token_id": 428,
+              "token_text": " F",
+              "logit": 8.216598510742188
+            },
+            {
+              "token_id": 10450,
+              "token_text": " Jack",
+              "logit": 8.023003578186035
+            },
+            {
+              "token_id": 12797,
+              "token_text": " Bob",
+              "logit": 7.9867448806762695
+            }
+          ]
+        },
+        {
+          "example_index": 3,
+          "position": 1,
+          "correct_token_id": 2222,
+          "correct_token_text": " dog",
+          "rank_with_memory": 1,
+          "rank_no_memory": 1,
+          "logprob_with_memory": -0.29998213052749634,
+          "logprob_no_memory": -0.14007709920406342,
+          "pred_with_memory_id": 2222,
+          "pred_with_memory_text": " dog",
+          "pred_no_memory_id": 2222,
+          "pred_no_memory_text": " dog",
+          "copy_correct_logit": 0.0,
+          "semantic_correct_logit": 1.9471536874771118,
+          "token_branch_correct_logit": 1.9471536874771118,
+          "workspace_correct_logit": -1.3826367855072021,
+          "start_gate": 5.549372072977121e-10,
+          "continue_gate": 4.1461652244834113e-07,
+          "top_tokens_with_memory": [
+            {
+              "token_id": 2222,
+              "token_text": " dog",
+              "logit": 3.959390163421631
+            },
+            {
+              "token_id": 1783,
+              "token_text": " specific",
+              "logit": 2.430001735687256
+            },
+            {
+              "token_id": 2309,
+              "token_text": " cat",
+              "logit": -0.08121953904628754
+            },
+            {
+              "token_id": 3487,
+              "token_text": " pet",
+              "logit": -0.8239791989326477
+            },
+            {
+              "token_id": 1473,
+              "token_text": " current",
+              "logit": -1.222052812576294
+            }
+          ],
+          "top_tokens_no_memory": [
+            {
+              "token_id": 2222,
+              "token_text": " dog",
+              "logit": 12.717082977294922
+            },
+            {
+              "token_id": 3487,
+              "token_text": " pet",
+              "logit": 8.960054397583008
+            },
+            {
+              "token_id": 1788,
+              "token_text": " words",
+              "logit": 7.790805816650391
+            },
+            {
+              "token_id": 6006,
+              "token_text": " sentence",
+              "logit": 7.734867572784424
+            },
+            {
+              "token_id": 20242,
+              "token_text": " canine",
+              "logit": 7.7338714599609375
+            }
+          ],
+          "top_copy_tokens": [
+            {
+              "token_id": 11158,
+              "token_text": " Tar",
+              "logit": 4.975398042006418e-06
+            },
+            {
+              "token_id": 309,
+              "token_text": " is",
+              "logit": 6.6592464875725454e-09
+            },
+            {
+              "token_id": 0,
+              "token_text": "\u0000",
+              "logit": 0.0
+            },
+            {
+              "token_id": 1,
+              "token_text": "\u0001",
+              "logit": 0.0
+            },
+            {
+              "token_id": 2,
+              "token_text": "\u0002",
+              "logit": 0.0
+            }
+          ],
+          "top_semantic_tokens": [
+            {
+              "token_id": 9097,
+              "token_text": " Max",
+              "logit": 10.056554794311523
+            },
+            {
+              "token_id": 48495,
+              "token_text": " Luna",
+              "logit": 8.225948333740234
+            },
+            {
+              "token_id": 428,
+              "token_text": " F",
+              "logit": 8.216598510742188
+            },
+            {
+              "token_id": 10450,
+              "token_text": " Jack",
+              "logit": 8.023003578186035
+            },
+            {
+              "token_id": 12797,
+              "token_text": " Bob",
+              "logit": 7.9867448806762695
+            }
+          ]
+        },
+        {
+          "example_index": 3,
+          "position": 2,
+          "correct_token_id": 566,
+          "correct_token_text": "'s",
+          "rank_with_memory": 1,
+          "rank_no_memory": 1,
+          "logprob_with_memory": -0.3532618582248688,
+          "logprob_no_memory": -0.07015296071767807,
+          "pred_with_memory_id": 566,
+          "pred_with_memory_text": "'s",
+          "pred_no_memory_id": 566,
+          "pred_no_memory_text": "'s",
+          "copy_correct_logit": 0.0,
+          "semantic_correct_logit": 0.5322200059890747,
+          "token_branch_correct_logit": 0.5322194695472717,
+          "workspace_correct_logit": -4.491204738616943,
+          "start_gate": 9.264533584740775e-13,
+          "continue_gate": 4.101778756648855e-07,
+          "top_tokens_with_memory": [
+            {
+              "token_id": 566,
+              "token_text": "'s",
+              "logit": 2.5690112113952637
+            },
+            {
+              "token_id": 1588,
+              "token_text": " name",
+              "logit": 1.1609736680984497
+            },
+            {
+              "token_id": 348,
+              "token_text": " you",
+              "logit": 0.032932545989751816
+            },
+            {
+              "token_id": 46,
+              "token_text": ".",
+              "logit": -1.990108609199524
+            },
+            {
+              "token_id": 309,
+              "token_text": " is",
+              "logit": -2.1962804794311523
+            }
+          ],
+          "top_tokens_no_memory": [
+            {
+              "token_id": 566,
+              "token_text": "'s",
+              "logit": 13.684261322021484
+            },
+            {
+              "token_id": 309,
+              "token_text": " is",
+              "logit": 10.199666976928711
+            },
+            {
+              "token_id": 44,
+              "token_text": ",",
+              "logit": 9.03277587890625
+            },
+            {
+              "token_id": 511,
+              "token_text": " has",
+              "logit": 8.595972061157227
+            },
+            {
+              "token_id": 3268,
+              "token_text": " seems",
+              "logit": 7.803988933563232
+            }
+          ],
+          "top_copy_tokens": [
+            {
+              "token_id": 11158,
+              "token_text": " Tar",
+              "logit": 4.922134394291788e-06
+            },
+            {
+              "token_id": 309,
+              "token_text": " is",
+              "logit": 1.111744030168893e-11
+            },
+            {
+              "token_id": 0,
+              "token_text": "\u0000",
+              "logit": 0.0
+            },
+            {
+              "token_id": 1,
+              "token_text": "\u0001",
+              "logit": 0.0
+            },
+            {
+              "token_id": 2,
+              "token_text": "\u0002",
+              "logit": 0.0
+            }
+          ],
+          "top_semantic_tokens": [
+            {
+              "token_id": 9097,
+              "token_text": " Max",
+              "logit": 10.056554794311523
+            },
+            {
+              "token_id": 48495,
+              "token_text": " Luna",
+              "logit": 8.225948333740234
+            },
+            {
+              "token_id": 428,
+              "token_text": " F",
+              "logit": 8.216598510742188
+            },
+            {
+              "token_id": 10450,
+              "token_text": " Jack",
+              "logit": 8.023003578186035
+            },
+            {
+              "token_id": 12797,
+              "token_text": " Bob",
+              "logit": 7.9867448806762695
+            }
+          ]
+        },
+        {
+          "example_index": 3,
+          "position": 3,
+          "correct_token_id": 1588,
+          "correct_token_text": " name",
+          "rank_with_memory": 1,
+          "rank_no_memory": 1,
+          "logprob_with_memory": -0.10250014066696167,
+          "logprob_no_memory": -0.013502108864486217,
+          "pred_with_memory_id": 1588,
+          "pred_with_memory_text": " name",
+          "pred_no_memory_id": 1588,
+          "pred_no_memory_text": " name",
+          "copy_correct_logit": 0.0,
+          "semantic_correct_logit": -2.0992822647094727,
+          "token_branch_correct_logit": -2.099282741546631,
+          "workspace_correct_logit": -5.666798114776611,
+          "start_gate": 2.256383413445917e-10,
+          "continue_gate": 0.00018035875109490007,
+          "top_tokens_with_memory": [
+            {
+              "token_id": 1588,
+              "token_text": " name",
+              "logit": 6.228560924530029
+            },
+            {
+              "token_id": 13752,
+              "token_text": " signature",
+              "logit": 3.170543909072876
+            },
+            {
+              "token_id": 2222,
+              "token_text": " dog",
+              "logit": 2.01004958152771
+            },
+            {
+              "token_id": 41706,
+              "token_text": " LinkedIn",
+              "logit": 0.8386809825897217
+            },
+            {
+              "token_id": 746,
+              "token_text": " first",
+              "logit": -0.15215446054935455
+            }
+          ],
+          "top_tokens_no_memory": [
+            {
+              "token_id": 1588,
+              "token_text": " name",
+              "logit": 13.505685806274414
+            },
+            {
+              "token_id": 10300,
+              "token_text": " Name",
+              "logit": 6.721805572509766
+            },
+            {
+              "token_id": 1770,
+              "token_text": " given",
+              "logit": 6.638052940368652
+            },
+            {
+              "token_id": 44,
+              "token_text": ",",
+              "logit": 6.290404796600342
+            },
+            {
+              "token_id": 1446,
+              "token_text": " last",
+              "logit": 6.27550745010376
+            }
+          ],
+          "top_copy_tokens": [
+            {
+              "token_id": 11158,
+              "token_text": " Tar",
+              "logit": 0.00216430495493114
+            },
+            {
+              "token_id": 309,
+              "token_text": " is",
+              "logit": 2.7076600961351005e-09
+            },
+            {
+              "token_id": 0,
+              "token_text": "\u0000",
+              "logit": 0.0
+            },
+            {
+              "token_id": 1,
+              "token_text": "\u0001",
+              "logit": 0.0
+            },
+            {
+              "token_id": 2,
+              "token_text": "\u0002",
+              "logit": 0.0
+            }
+          ],
+          "top_semantic_tokens": [
+            {
+              "token_id": 9097,
+              "token_text": " Max",
+              "logit": 10.056554794311523
+            },
+            {
+              "token_id": 48495,
+              "token_text": " Luna",
+              "logit": 8.225948333740234
+            },
+            {
+              "token_id": 428,
+              "token_text": " F",
+              "logit": 8.216598510742188
+            },
+            {
+              "token_id": 10450,
+              "token_text": " Jack",
+              "logit": 8.023003578186035
+            },
+            {
+              "token_id": 12797,
+              "token_text": " Bob",
+              "logit": 7.9867448806762695
+            }
+          ]
+        },
+        {
+          "example_index": 3,
+          "position": 4,
+          "correct_token_id": 309,
+          "correct_token_text": " is",
+          "rank_with_memory": 1,
+          "rank_no_memory": 1,
+          "logprob_with_memory": -0.25241419672966003,
+          "logprob_no_memory": -0.6502372622489929,
+          "pred_with_memory_id": 309,
+          "pred_with_memory_text": " is",
+          "pred_no_memory_id": 309,
+          "pred_no_memory_text": " is",
+          "copy_correct_logit": 2.3824306243092064e-12,
+          "semantic_correct_logit": 0.7203052043914795,
+          "token_branch_correct_logit": 0.7203054428100586,
+          "workspace_correct_logit": -2.729276180267334,
+          "start_gate": 1.9853588987660958e-13,
+          "continue_gate": 1.2041500951909256e-07,
+          "top_tokens_with_memory": [
+            {
+              "token_id": 309,
+              "token_text": " is",
+              "logit": 5.677515983581543
+            },
+            {
+              "token_id": 348,
+              "token_text": " you",
+              "logit": 4.22818660736084
+            },
+            {
+              "token_id": 421,
+              "token_text": " was",
+              "logit": 1.5585829019546509
+            },
+            {
+              "token_id": 414,
+              "token_text": " from",
+              "logit": 0.42239242792129517
+            },
+            {
+              "token_id": 3378,
+              "token_text": " remains",
+              "logit": 0.10518095642328262
+            }
+          ],
+          "top_tokens_no_memory": [
+            {
+              "token_id": 309,
+              "token_text": " is",
+              "logit": 12.559661865234375
+            },
+            {
+              "token_id": 46,
+              "token_text": ".",
+              "logit": 10.875182151794434
+            },
+            {
+              "token_id": 44,
+              "token_text": ",",
+              "logit": 10.529868125915527
+            },
+            {
+              "token_id": 616,
+              "token_text": " may",
+              "logit": 9.802361488342285
+            },
+            {
+              "token_id": 400,
+              "token_text": " can",
+              "logit": 9.762614250183105
+            }
+          ],
+          "top_copy_tokens": [
+            {
+              "token_id": 11158,
+              "token_text": " Tar",
+              "logit": 1.4449801710725296e-06
+            },
+            {
+              "token_id": 309,
+              "token_text": " is",
+              "logit": 2.3824306243092064e-12
+            },
+            {
+              "token_id": 0,
+              "token_text": "\u0000",
+              "logit": 0.0
+            },
+            {
+              "token_id": 1,
+              "token_text": "\u0001",
+              "logit": 0.0
+            },
+            {
+              "token_id": 2,
+              "token_text": "\u0002",
+              "logit": 0.0
+            }
+          ],
+          "top_semantic_tokens": [
+            {
+              "token_id": 9097,
+              "token_text": " Max",
+              "logit": 10.056554794311523
+            },
+            {
+              "token_id": 48495,
+              "token_text": " Luna",
+              "logit": 8.225948333740234
+            },
+            {
+              "token_id": 428,
+              "token_text": " F",
+              "logit": 8.216598510742188
+            },
+            {
+              "token_id": 10450,
+              "token_text": " Jack",
+              "logit": 8.023003578186035
+            },
+            {
+              "token_id": 12797,
+              "token_text": " Bob",
+              "logit": 7.9867448806762695
+            }
+          ]
+        },
+        {
+          "example_index": 3,
+          "position": 5,
+          "correct_token_id": 11158,
+          "correct_token_text": " Tar",
+          "rank_with_memory": 1,
+          "rank_no_memory": 334,
+          "logprob_with_memory": -0.2933034598827362,
+          "logprob_no_memory": -7.826237678527832,
+          "pred_with_memory_id": 11158,
+          "pred_with_memory_text": " Tar",
+          "pred_no_memory_id": 9097,
+          "pred_no_memory_text": " Max",
+          "copy_correct_logit": 9.960515022277832,
+          "semantic_correct_logit": 2.654087543487549,
+          "token_branch_correct_logit": 2.6540887355804443,
+          "workspace_correct_logit": -5.645594596862793,
+          "start_gate": 6.822007403428643e-09,
+          "continue_gate": 0.9999946355819702,
+          "top_tokens_with_memory": [
+            {
+              "token_id": 11158,
+              "token_text": " Tar",
+              "logit": 10.858175277709961
+            },
+            {
+              "token_id": 11240,
+              "token_text": " Rose",
+              "logit": 6.834062576293945
+            },
+            {
+              "token_id": 15605,
+              "token_text": " Silver",
+              "logit": 6.142269611358643
+            },
+            {
+              "token_id": 56988,
+              "token_text": " Bella",
+              "logit": 6.1176300048828125
+            },
+            {
+              "token_id": 489,
+              "token_text": " O",
+              "logit": 5.9994611740112305
+            }
+          ],
+          "top_tokens_no_memory": [
+            {
+              "token_id": 9097,
+              "token_text": " Max",
+              "logit": 10.719527244567871
+            },
+            {
+              "token_id": 48495,
+              "token_text": " Luna",
+              "logit": 10.296741485595703
+            },
+            {
+              "token_id": 678,
+              "token_text": " \"",
+              "logit": 9.623523712158203
+            },
+            {
+              "token_id": 629,
+              "token_text": " K",
+              "logit": 9.610685348510742
+            },
+            {
+              "token_id": 11813,
+              "token_text": " Ak",
+              "logit": 9.276248931884766
+            }
+          ],
+          "top_copy_tokens": [
+            {
+              "token_id": 11158,
+              "token_text": " Tar",
+              "logit": 9.960515022277832
+            },
+            {
+              "token_id": 309,
+              "token_text": " is",
+              "logit": 8.186408706478687e-08
+            },
+            {
+              "token_id": 0,
+              "token_text": "\u0000",
+              "logit": 0.0
+            },
+            {
+              "token_id": 1,
+              "token_text": "\u0001",
+              "logit": 0.0
+            },
+            {
+              "token_id": 2,
+              "token_text": "\u0002",
+              "logit": 0.0
+            }
+          ],
+          "top_semantic_tokens": [
+            {
+              "token_id": 9097,
+              "token_text": " Max",
+              "logit": 10.056554794311523
+            },
+            {
+              "token_id": 48495,
+              "token_text": " Luna",
+              "logit": 8.225948333740234
+            },
+            {
+              "token_id": 428,
+              "token_text": " F",
+              "logit": 8.216598510742188
+            },
+            {
+              "token_id": 10450,
+              "token_text": " Jack",
+              "logit": 8.023003578186035
+            },
+            {
+              "token_id": 12797,
+              "token_text": " Bob",
+              "logit": 7.9867448806762695
+            }
+          ]
+        },
+        {
+          "example_index": 3,
+          "position": 6,
+          "correct_token_id": 111,
+          "correct_token_text": "o",
+          "rank_with_memory": 14,
+          "rank_no_memory": 2,
+          "logprob_with_memory": -5.255064487457275,
+          "logprob_no_memory": -1.8061262369155884,
+          "pred_with_memory_id": 105,
+          "pred_with_memory_text": "i",
+          "pred_no_memory_id": 32451,
+          "pred_no_memory_text": "zan",
+          "copy_correct_logit": 0.0,
+          "semantic_correct_logit": -2.280583620071411,
+          "token_branch_correct_logit": -2.2805850505828857,
+          "workspace_correct_logit": -9.892316818237305,
+          "start_gate": 3.3896776496789016e-09,
+          "continue_gate": 6.070217245524034e-11,
+          "top_tokens_with_memory": [
+            {
+              "token_id": 105,
+              "token_text": "i",
+              "logit": 1.492335557937622
+            },
+            {
+              "token_id": 8471,
+              "token_text": "una",
+              "logit": -0.46081244945526123
+            },
+            {
+              "token_id": 46,
+              "token_text": ".",
+              "logit": -0.8015278577804565
+            },
+            {
+              "token_id": 2652,
+              "token_text": "ns",
+              "logit": -2.0580923557281494
+            },
+            {
+              "token_id": 716,
+              "token_text": "ient",
+              "logit": -2.2351760864257812
+            }
+          ],
+          "top_tokens_no_memory": [
+            {
+              "token_id": 32451,
+              "token_text": "zan",
+              "logit": 7.469605445861816
+            },
+            {
+              "token_id": 111,
+              "token_text": "o",
+              "logit": 7.323174953460693
+            },
+            {
+              "token_id": 1518,
+              "token_text": "ik",
+              "logit": 6.96957540512085
+            },
+            {
+              "token_id": 440,
+              "token_text": "ri",
+              "logit": 6.412547588348389
+            },
+            {
+              "token_id": 19928,
+              "token_text": "quin",
+              "logit": 6.256552219390869
+            }
+          ],
+          "top_copy_tokens": [
+            {
+              "token_id": 309,
+              "token_text": " is",
+              "logit": 4.06761309079684e-08
+            },
+            {
+              "token_id": 11158,
+              "token_text": " Tar",
+              "logit": 7.284260972184597e-10
+            },
+            {
+              "token_id": 0,
+              "token_text": "\u0000",
+              "logit": 0.0
+            },
+            {
+              "token_id": 1,
+              "token_text": "\u0001",
+              "logit": 0.0
+            },
+            {
+              "token_id": 2,
+              "token_text": "\u0002",
+              "logit": 0.0
+            }
+          ],
+          "top_semantic_tokens": [
+            {
+              "token_id": 9097,
+              "token_text": " Max",
+              "logit": 10.056554794311523
+            },
+            {
+              "token_id": 48495,
+              "token_text": " Luna",
+              "logit": 8.225948333740234
+            },
+            {
+              "token_id": 428,
+              "token_text": " F",
+              "logit": 8.216598510742188
+            },
+            {
+              "token_id": 10450,
+              "token_text": " Jack",
+              "logit": 8.023003578186035
+            },
+            {
+              "token_id": 12797,
+              "token_text": " Bob",
+              "logit": 7.9867448806762695
+            }
+          ]
+        },
+        {
+          "example_index": 3,
+          "position": 7,
+          "correct_token_id": 11942,
+          "correct_token_text": "-O",
+          "rank_with_memory": 1321,
+          "rank_no_memory": 6397,
+          "logprob_with_memory": -15.635107040405273,
+          "logprob_no_memory": -15.093951225280762,
+          "pred_with_memory_id": 46,
+          "pred_with_memory_text": ".",
+          "pred_no_memory_id": 44,
+          "pred_no_memory_text": ",",
+          "copy_correct_logit": 0.0,
+          "semantic_correct_logit": -3.726041793823242,
+          "token_branch_correct_logit": -3.7260422706604004,
+          "workspace_correct_logit": -5.021630764007568,
+          "start_gate": 1.782051312071431e-10,
+          "continue_gate": 4.791256280611833e-09,
+          "top_tokens_with_memory": [
+            {
+              "token_id": 46,
+              "token_text": ".",
+              "logit": 6.632960319519043
+            },
+            {
+              "token_id": 44,
+              "token_text": ",",
+              "logit": 2.7543301582336426
+            },
+            {
+              "token_id": 3875,
+              "token_text": " worked",
+              "logit": 0.7351277470588684
+            },
+            {
+              "token_id": 3431,
+              "token_text": " told",
+              "logit": 0.7324305772781372
+            },
+            {
+              "token_id": 348,
+              "token_text": " you",
+              "logit": 0.5153895020484924
+            }
+          ],
+          "top_tokens_no_memory": [
+            {
+              "token_id": 44,
+              "token_text": ",",
+              "logit": 11.057881355285645
+            },
+            {
+              "token_id": 46,
+              "token_text": ".",
+              "logit": 10.622004508972168
+            },
+            {
+              "token_id": 414,
+              "token_text": " from",
+              "logit": 9.235833168029785
+            },
+            {
+              "token_id": 261,
+              "token_text": " the",
+              "logit": 9.054288864135742
+            },
+            {
+              "token_id": 346,
+              "token_text": "el",
+              "logit": 8.471390724182129
+            }
+          ],
+          "top_copy_tokens": [
+            {
+              "token_id": 11158,
+              "token_text": " Tar",
+              "logit": 5.7495075367342e-08
+            },
+            {
+              "token_id": 309,
+              "token_text": " is",
+              "logit": 2.1384616299968684e-09
+            },
+            {
+              "token_id": 0,
+              "token_text": "\u0000",
+              "logit": 0.0
+            },
+            {
+              "token_id": 1,
+              "token_text": "\u0001",
+              "logit": 0.0
+            },
+            {
+              "token_id": 2,
+              "token_text": "\u0002",
+              "logit": 0.0
+            }
+          ],
+          "top_semantic_tokens": [
+            {
+              "token_id": 9097,
+              "token_text": " Max",
+              "logit": 10.056554794311523
+            },
+            {
+              "token_id": 48495,
+              "token_text": " Luna",
+              "logit": 8.225948333740234
+            },
+            {
+              "token_id": 428,
+              "token_text": " F",
+              "logit": 8.216598510742188
+            },
+            {
+              "token_id": 10450,
+              "token_text": " Jack",
+              "logit": 8.023003578186035
+            },
+            {
+              "token_id": 12797,
+              "token_text": " Bob",
+              "logit": 7.9867448806762695
+            }
+          ]
+        },
+        {
+          "example_index": 3,
+          "position": 8,
+          "correct_token_id": 116,
+          "correct_token_text": "t",
+          "rank_with_memory": 157,
+          "rank_no_memory": 35,
+          "logprob_with_memory": -7.9612555503845215,
+          "logprob_no_memory": -5.505289077758789,
+          "pred_with_memory_id": 120,
+          "pred_with_memory_text": "x",
+          "pred_no_memory_id": 1530,
+          "pred_no_memory_text": "tt",
+          "copy_correct_logit": 0.0,
+          "semantic_correct_logit": -3.180504083633423,
+          "token_branch_correct_logit": -3.1805055141448975,
+          "workspace_correct_logit": -5.247255325317383,
+          "start_gate": 3.2377243108783205e-09,
+          "continue_gate": 1.4751112831223878e-10,
+          "top_tokens_with_memory": [
+            {
+              "token_id": 120,
+              "token_text": "x",
+              "logit": -0.25064215064048767
+            },
+            {
+              "token_id": 46,
+              "token_text": ".",
+              "logit": -0.7175658941268921
+            },
+            {
+              "token_id": 118,
+              "token_text": "v",
+              "logit": -1.0738097429275513
+            },
+            {
+              "token_id": 2287,
+              "token_text": "You",
+              "logit": -1.080959439277649
+            },
+            {
+              "token_id": 105,
+              "token_text": "i",
+              "logit": -1.7531867027282715
+            }
+          ],
+          "top_tokens_no_memory": [
+            {
+              "token_id": 1530,
+              "token_text": "tt",
+              "logit": 8.626486778259277
+            },
+            {
+              "token_id": 108,
+              "token_text": "l",
+              "logit": 8.488442420959473
+            },
+            {
+              "token_id": 52625,
+              "token_text": "'Connor",
+              "logit": 8.241301536560059
+            },
+            {
+              "token_id": 107,
+              "token_text": "k",
+              "logit": 7.939668655395508
+            },
+            {
+              "token_id": 36725,
+              "token_text": "pel",
+              "logit": 7.937466621398926
+            }
+          ],
+          "top_copy_tokens": [
+            {
+              "token_id": 309,
+              "token_text": " is",
+              "logit": 3.8852689954183006e-08
+            },
+            {
+              "token_id": 11158,
+              "token_text": " Tar",
+              "logit": 1.7701335952580166e-09
+            },
+            {
+              "token_id": 0,
+              "token_text": "\u0000",
+              "logit": 0.0
+            },
+            {
+              "token_id": 1,
+              "token_text": "\u0001",
+              "logit": 0.0
+            },
+            {
+              "token_id": 2,
+              "token_text": "\u0002",
+              "logit": 0.0
+            }
+          ],
+          "top_semantic_tokens": [
+            {
+              "token_id": 9097,
+              "token_text": " Max",
+              "logit": 10.056554794311523
+            },
+            {
+              "token_id": 48495,
+              "token_text": " Luna",
+              "logit": 8.225948333740234
+            },
+            {
+              "token_id": 428,
+              "token_text": " F",
+              "logit": 8.216598510742188
+            },
+            {
+              "token_id": 10450,
+              "token_text": " Jack",
+              "logit": 8.023003578186035
+            },
+            {
+              "token_id": 12797,
+              "token_text": " Bob",
+              "logit": 7.9867448806762695
+            }
+          ]
+        },
+        {
+          "example_index": 3,
+          "position": 9,
+          "correct_token_id": 360,
+          "correct_token_text": "ter",
+          "rank_with_memory": 989,
+          "rank_no_memory": 384,
+          "logprob_with_memory": -9.983659744262695,
+          "logprob_no_memory": -10.189208030700684,
+          "pred_with_memory_id": 46,
+          "pred_with_memory_text": ".",
+          "pred_no_memory_id": 1057,
+          "pred_no_memory_text": "io",
+          "copy_correct_logit": 0.0,
+          "semantic_correct_logit": -6.189243316650391,
+          "token_branch_correct_logit": -6.189243793487549,
+          "workspace_correct_logit": -11.058194160461426,
+          "start_gate": 1.458206888571567e-10,
+          "continue_gate": 6.959094189795678e-09,
+          "top_tokens_with_memory": [
+            {
+              "token_id": 46,
+              "token_text": ".",
+              "logit": -1.0954067707061768
+            },
+            {
+              "token_id": 8471,
+              "token_text": "una",
+              "logit": -1.541649580001831
+            },
+            {
+              "token_id": 466,
+              "token_text": "ine",
+              "logit": -2.0409061908721924
+            },
+            {
+              "token_id": 5237,
+              "token_text": "-D",
+              "logit": -2.3911871910095215
+            },
+            {
+              "token_id": 3431,
+              "token_text": " told",
+              "logit": -2.8286826610565186
+            }
+          ],
+          "top_tokens_no_memory": [
+            {
+              "token_id": 1057,
+              "token_text": "io",
+              "logit": 8.584382057189941
+            },
+            {
+              "token_id": 470,
+              "token_text": "ide",
+              "logit": 5.964372158050537
+            },
+            {
+              "token_id": 405,
+              "token_text": "iv",
+              "logit": 5.614451885223389
+            },
+            {
+              "token_id": 44,
+              "token_text": ",",
+              "logit": 5.417484283447266
+            },
+            {
+              "token_id": 1152,
+              "token_text": "ier",
+              "logit": 5.292660713195801
+            }
+          ],
+          "top_copy_tokens": [
+            {
+              "token_id": 11158,
+              "token_text": " Tar",
+              "logit": 8.35091285011913e-08
+            },
+            {
+              "token_id": 309,
+              "token_text": " is",
+              "logit": 1.749848155263578e-09
+            },
+            {
+              "token_id": 0,
+              "token_text": "\u0000",
+              "logit": 0.0
+            },
+            {
+              "token_id": 1,
+              "token_text": "\u0001",
+              "logit": 0.0
+            },
+            {
+              "token_id": 2,
+              "token_text": "\u0002",
+              "logit": 0.0
+            }
+          ],
+          "top_semantic_tokens": [
+            {
+              "token_id": 9097,
+              "token_text": " Max",
+              "logit": 10.056554794311523
+            },
+            {
+              "token_id": 48495,
+              "token_text": " Luna",
+              "logit": 8.225948333740234
+            },
+            {
+              "token_id": 428,
+              "token_text": " F",
+              "logit": 8.216598510742188
+            },
+            {
+              "token_id": 10450,
+              "token_text": " Jack",
+              "logit": 8.023003578186035
+            },
+            {
+              "token_id": 12797,
+              "token_text": " Bob",
+              "logit": 7.9867448806762695
+            }
+          ]
+        },
+        {
+          "example_index": 3,
+          "position": 10,
+          "correct_token_id": 46,
+          "correct_token_text": ".",
+          "rank_with_memory": 1,
+          "rank_no_memory": 5,
+          "logprob_with_memory": -0.10364022105932236,
+          "logprob_no_memory": -2.3586995601654053,
+          "pred_with_memory_id": 46,
+          "pred_with_memory_text": ".",
+          "pred_no_memory_id": 44,
+          "pred_no_memory_text": ",",
+          "copy_correct_logit": 0.0,
+          "semantic_correct_logit": 4.554166793823242,
+          "token_branch_correct_logit": 4.554166793823242,
+          "workspace_correct_logit": -9.084670066833496,
+          "start_gate": 1.9675386320194832e-10,
+          "continue_gate": 2.8144542252306337e-09,
+          "top_tokens_with_memory": [
+            {
+              "token_id": 46,
+              "token_text": ".",
+              "logit": 3.342057943344116
+            },
+            {
+              "token_id": 105,
+              "token_text": "i",
+              "logit": 0.44312772154808044
+            },
+            {
+              "token_id": 288,
+              "token_text": " and",
+              "logit": -0.6080589890480042
+            },
+            {
+              "token_id": 65531,
+              "token_text": "<|assistant_end|>",
+              "logit": -1.7051986455917358
+            },
+            {
+              "token_id": 4980,
+              "token_text": " specifically",
+              "logit": -3.830911874771118
+            }
+          ],
+          "top_tokens_no_memory": [
+            {
+              "token_id": 44,
+              "token_text": ",",
+              "logit": 8.770606994628906
+            },
+            {
+              "token_id": 111,
+              "token_text": "o",
+              "logit": 8.289863586425781
+            },
+            {
+              "token_id": 1057,
+              "token_text": "io",
+              "logit": 8.172210693359375
+            },
+            {
+              "token_id": 105,
+              "token_text": "i",
+              "logit": 8.078154563903809
+            },
+            {
+              "token_id": 46,
+              "token_text": ".",
+              "logit": 8.038745880126953
+            }
+          ],
+          "top_copy_tokens": [
+            {
+              "token_id": 11158,
+              "token_text": " Tar",
+              "logit": 3.3773449814589185e-08
+            },
+            {
+              "token_id": 309,
+              "token_text": " is",
+              "logit": 2.3610464694456823e-09
+            },
+            {
+              "token_id": 0,
+              "token_text": "\u0000",
+              "logit": 0.0
+            },
+            {
+              "token_id": 1,
+              "token_text": "\u0001",
+              "logit": 0.0
+            },
+            {
+              "token_id": 2,
+              "token_text": "\u0002",
+              "logit": 0.0
+            }
+          ],
+          "top_semantic_tokens": [
+            {
+              "token_id": 9097,
+              "token_text": " Max",
+              "logit": 10.056554794311523
+            },
+            {
+              "token_id": 48495,
+              "token_text": " Luna",
+              "logit": 8.225948333740234
+            },
+            {
+              "token_id": 428,
+              "token_text": " F",
+              "logit": 8.216598510742188
+            },
+            {
+              "token_id": 10450,
+              "token_text": " Jack",
+              "logit": 8.023003578186035
+            },
+            {
+              "token_id": 12797,
+              "token_text": " Bob",
+              "logit": 7.9867448806762695
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "example_index": 4,
+      "recall_user": "What's my dog's name?",
+      "expected_answer": "Your dog's name is Nova-Grove.",
+      "positions": [
+        {
+          "example_index": 4,
+          "position": 0,
+          "correct_token_id": 6207,
+          "correct_token_text": "Your",
+          "rank_with_memory": 3,
+          "rank_no_memory": 1,
+          "logprob_with_memory": -2.8849313259124756,
+          "logprob_no_memory": -0.7876185774803162,
+          "pred_with_memory_id": 449,
+          "pred_with_memory_text": "The",
+          "pred_no_memory_id": 6207,
+          "pred_no_memory_text": "Your",
+          "copy_correct_logit": 0.0,
+          "semantic_correct_logit": -6.392129898071289,
+          "token_branch_correct_logit": -6.392129898071289,
+          "workspace_correct_logit": -3.3238730430603027,
+          "start_gate": 1.1552830914141055e-09,
+          "continue_gate": 2.2924083964426245e-08,
+          "top_tokens_with_memory": [
+            {
+              "token_id": 449,
+              "token_text": "The",
+              "logit": 4.226504325866699
+            },
+            {
+              "token_id": 2287,
+              "token_text": "You",
+              "logit": 3.404492139816284
+            },
+            {
+              "token_id": 6207,
+              "token_text": "Your",
+              "logit": 2.5433237552642822
+            },
+            {
+              "token_id": 1138,
+              "token_text": "This",
+              "logit": 2.0107645988464355
+            },
+            {
+              "token_id": 73,
+              "token_text": "I",
+              "logit": 1.9983974695205688
+            }
+          ],
+          "top_tokens_no_memory": [
+            {
+              "token_id": 6207,
+              "token_text": "Your",
+              "logit": 12.158283233642578
+            },
+            {
+              "token_id": 5873,
+              "token_text": "My",
+              "logit": 11.566692352294922
+            },
+            {
+              "token_id": 65,
+              "token_text": "A",
+              "logit": 10.04525089263916
+            },
+            {
+              "token_id": 449,
+              "token_text": "The",
+              "logit": 9.566367149353027
+            },
+            {
+              "token_id": 1344,
+              "token_text": "It",
+              "logit": 8.636441230773926
+            }
+          ],
+          "top_copy_tokens": [
+            {
+              "token_id": 21061,
+              "token_text": " Nova",
+              "logit": 2.7508900757311494e-07
+            },
+            {
+              "token_id": 309,
+              "token_text": " is",
+              "logit": 1.3863397541058475e-08
+            },
+            {
+              "token_id": 0,
+              "token_text": "\u0000",
+              "logit": 0.0
+            },
+            {
+              "token_id": 1,
+              "token_text": "\u0001",
+              "logit": 0.0
+            },
+            {
+              "token_id": 2,
+              "token_text": "\u0002",
+              "logit": 0.0
+            }
+          ],
+          "top_semantic_tokens": [
+            {
+              "token_id": 9097,
+              "token_text": " Max",
+              "logit": 10.056554794311523
+            },
+            {
+              "token_id": 48495,
+              "token_text": " Luna",
+              "logit": 8.225948333740234
+            },
+            {
+              "token_id": 428,
+              "token_text": " F",
+              "logit": 8.216598510742188
+            },
+            {
+              "token_id": 10450,
+              "token_text": " Jack",
+              "logit": 8.023003578186035
+            },
+            {
+              "token_id": 12797,
+              "token_text": " Bob",
+              "logit": 7.9867448806762695
+            }
+          ]
+        },
+        {
+          "example_index": 4,
+          "position": 1,
+          "correct_token_id": 2222,
+          "correct_token_text": " dog",
+          "rank_with_memory": 1,
+          "rank_no_memory": 1,
+          "logprob_with_memory": -0.26168322563171387,
+          "logprob_no_memory": -0.07835662364959717,
+          "pred_with_memory_id": 2222,
+          "pred_with_memory_text": " dog",
+          "pred_no_memory_id": 2222,
+          "pred_no_memory_text": " dog",
+          "copy_correct_logit": 0.0,
+          "semantic_correct_logit": 1.9471536874771118,
+          "token_branch_correct_logit": 1.9471536874771118,
+          "workspace_correct_logit": -1.3486472368240356,
+          "start_gate": 5.436683880866156e-10,
+          "continue_gate": 1.7642746286128386e-07,
+          "top_tokens_with_memory": [
+            {
+              "token_id": 2222,
+              "token_text": " dog",
+              "logit": 3.8485662937164307
+            },
+            {
+              "token_id": 1783,
+              "token_text": " specific",
+              "logit": 2.045839309692383
+            },
+            {
+              "token_id": 5484,
+              "token_text": " horse",
+              "logit": -0.4875890612602234
+            },
+            {
+              "token_id": 1391,
+              "token_text": " pass",
+              "logit": -0.7252160906791687
+            },
+            {
+              "token_id": 2309,
+              "token_text": " cat",
+              "logit": -0.8066496849060059
+            }
+          ],
+          "top_tokens_no_memory": [
+            {
+              "token_id": 2222,
+              "token_text": " dog",
+              "logit": 12.381830215454102
+            },
+            {
+              "token_id": 33694,
+              "token_text": " furry",
+              "logit": 8.626092910766602
+            },
+            {
+              "token_id": 3487,
+              "token_text": " pet",
+              "logit": 7.920379161834717
+            },
+            {
+              "token_id": 26323,
+              "token_text": " Labrador",
+              "logit": 6.989901065826416
+            },
+            {
+              "token_id": 20242,
+              "token_text": " canine",
+              "logit": 6.314761161804199
+            }
+          ],
+          "top_copy_tokens": [
+            {
+              "token_id": 21061,
+              "token_text": " Nova",
+              "logit": 2.1171294974919874e-06
+            },
+            {
+              "token_id": 309,
+              "token_text": " is",
+              "logit": 6.524020434994782e-09
+            },
+            {
+              "token_id": 0,
+              "token_text": "\u0000",
+              "logit": 0.0
+            },
+            {
+              "token_id": 1,
+              "token_text": "\u0001",
+              "logit": 0.0
+            },
+            {
+              "token_id": 2,
+              "token_text": "\u0002",
+              "logit": 0.0
+            }
+          ],
+          "top_semantic_tokens": [
+            {
+              "token_id": 9097,
+              "token_text": " Max",
+              "logit": 10.056554794311523
+            },
+            {
+              "token_id": 48495,
+              "token_text": " Luna",
+              "logit": 8.225948333740234
+            },
+            {
+              "token_id": 428,
+              "token_text": " F",
+              "logit": 8.216598510742188
+            },
+            {
+              "token_id": 10450,
+              "token_text": " Jack",
+              "logit": 8.023003578186035
+            },
+            {
+              "token_id": 12797,
+              "token_text": " Bob",
+              "logit": 7.9867448806762695
+            }
+          ]
+        },
+        {
+          "example_index": 4,
+          "position": 2,
+          "correct_token_id": 566,
+          "correct_token_text": "'s",
+          "rank_with_memory": 2,
+          "rank_no_memory": 1,
+          "logprob_with_memory": -0.8299936056137085,
+          "logprob_no_memory": -0.44743603467941284,
+          "pred_with_memory_id": 1588,
+          "pred_with_memory_text": " name",
+          "pred_no_memory_id": 566,
+          "pred_no_memory_text": "'s",
+          "copy_correct_logit": 0.0,
+          "semantic_correct_logit": 0.5322200059890747,
+          "token_branch_correct_logit": 0.5322200059890747,
+          "workspace_correct_logit": -4.473402976989746,
+          "start_gate": 1.078631108042405e-12,
+          "continue_gate": 2.9594369266305875e-07,
+          "top_tokens_with_memory": [
+            {
+              "token_id": 1588,
+              "token_text": " name",
+              "logit": 2.4395411014556885
+            },
+            {
+              "token_id": 566,
+              "token_text": "'s",
+              "logit": 2.4233598709106445
+            },
+            {
+              "token_id": 348,
+              "token_text": " you",
+              "logit": 0.5524755716323853
+            },
+            {
+              "token_id": 46,
+              "token_text": ".",
+              "logit": -0.9467271566390991
+            },
+            {
+              "token_id": 468,
+              "token_text": " your",
+              "logit": -2.1665871143341064
+            }
+          ],
+          "top_tokens_no_memory": [
+            {
+              "token_id": 566,
+              "token_text": "'s",
+              "logit": 12.64670181274414
+            },
+            {
+              "token_id": 309,
+              "token_text": " is",
+              "logit": 11.747274398803711
+            },
+            {
+              "token_id": 44,
+              "token_text": ",",
+              "logit": 10.0799560546875
+            },
+            {
+              "token_id": 616,
+              "token_text": " may",
+              "logit": 8.68883228302002
+            },
+            {
+              "token_id": 1693,
+              "token_text": " likely",
+              "logit": 7.854162216186523
+            }
+          ],
+          "top_copy_tokens": [
+            {
+              "token_id": 21061,
+              "token_text": " Nova",
+              "logit": 3.5513244256435428e-06
+            },
+            {
+              "token_id": 309,
+              "token_text": " is",
+              "logit": 1.2943573296508859e-11
+            },
+            {
+              "token_id": 0,
+              "token_text": "\u0000",
+              "logit": 0.0
+            },
+            {
+              "token_id": 1,
+              "token_text": "\u0001",
+              "logit": 0.0
+            },
+            {
+              "token_id": 2,
+              "token_text": "\u0002",
+              "logit": 0.0
+            }
+          ],
+          "top_semantic_tokens": [
+            {
+              "token_id": 9097,
+              "token_text": " Max",
+              "logit": 10.056554794311523
+            },
+            {
+              "token_id": 48495,
+              "token_text": " Luna",
+              "logit": 8.225948333740234
+            },
+            {
+              "token_id": 428,
+              "token_text": " F",
+              "logit": 8.216598510742188
+            },
+            {
+              "token_id": 10450,
+              "token_text": " Jack",
+              "logit": 8.023003578186035
+            },
+            {
+              "token_id": 12797,
+              "token_text": " Bob",
+              "logit": 7.9867448806762695
+            }
+          ]
+        },
+        {
+          "example_index": 4,
+          "position": 3,
+          "correct_token_id": 1588,
+          "correct_token_text": " name",
+          "rank_with_memory": 1,
+          "rank_no_memory": 1,
+          "logprob_with_memory": -0.0777231752872467,
+          "logprob_no_memory": -0.014354892075061798,
+          "pred_with_memory_id": 1588,
+          "pred_with_memory_text": " name",
+          "pred_no_memory_id": 1588,
+          "pred_no_memory_text": " name",
+          "copy_correct_logit": 0.0,
+          "semantic_correct_logit": -2.0992822647094727,
+          "token_branch_correct_logit": -2.099282741546631,
+          "workspace_correct_logit": -5.66409969329834,
+          "start_gate": 1.3033391033090425e-10,
+          "continue_gate": 1.2862287803727668e-05,
+          "top_tokens_with_memory": [
+            {
+              "token_id": 1588,
+              "token_text": " name",
+              "logit": 6.368194580078125
+            },
+            {
+              "token_id": 13752,
+              "token_text": " signature",
+              "logit": 2.86643123626709
+            },
+            {
+              "token_id": 2222,
+              "token_text": " dog",
+              "logit": 2.554403066635132
+            },
+            {
+              "token_id": 746,
+              "token_text": " first",
+              "logit": 0.3082904815673828
+            },
+            {
+              "token_id": 41706,
+              "token_text": " LinkedIn",
+              "logit": -0.351957768201828
+            }
+          ],
+          "top_tokens_no_memory": [
+            {
+              "token_id": 1588,
+              "token_text": " name",
+              "logit": 12.383764266967773
+            },
+            {
+              "token_id": 1923,
+              "token_text": " full",
+              "logit": 5.91741943359375
+            },
+            {
+              "token_id": 3297,
+              "token_text": " got",
+              "logit": 5.363407611846924
+            },
+            {
+              "token_id": 1470,
+              "token_text": " real",
+              "logit": 4.907926082611084
+            },
+            {
+              "token_id": 8053,
+              "token_text": " personality",
+              "logit": 4.877634525299072
+            }
+          ],
+          "top_copy_tokens": [
+            {
+              "token_id": 21061,
+              "token_text": " Nova",
+              "logit": 0.0001543474500067532
+            },
+            {
+              "token_id": 309,
+              "token_text": " is",
+              "logit": 1.564006923970851e-09
+            },
+            {
+              "token_id": 0,
+              "token_text": "\u0000",
+              "logit": 0.0
+            },
+            {
+              "token_id": 1,
+              "token_text": "\u0001",
+              "logit": 0.0
+            },
+            {
+              "token_id": 2,
+              "token_text": "\u0002",
+              "logit": 0.0
+            }
+          ],
+          "top_semantic_tokens": [
+            {
+              "token_id": 9097,
+              "token_text": " Max",
+              "logit": 10.056554794311523
+            },
+            {
+              "token_id": 48495,
+              "token_text": " Luna",
+              "logit": 8.225948333740234
+            },
+            {
+              "token_id": 428,
+              "token_text": " F",
+              "logit": 8.216598510742188
+            },
+            {
+              "token_id": 10450,
+              "token_text": " Jack",
+              "logit": 8.023003578186035
+            },
+            {
+              "token_id": 12797,
+              "token_text": " Bob",
+              "logit": 7.9867448806762695
+            }
+          ]
+        },
+        {
+          "example_index": 4,
+          "position": 4,
+          "correct_token_id": 309,
+          "correct_token_text": " is",
+          "rank_with_memory": 1,
+          "rank_no_memory": 1,
+          "logprob_with_memory": -0.13217994570732117,
+          "logprob_no_memory": -0.460094690322876,
+          "pred_with_memory_id": 309,
+          "pred_with_memory_text": " is",
+          "pred_no_memory_id": 309,
+          "pred_no_memory_text": " is",
+          "copy_correct_logit": 7.477628542404413e-13,
+          "semantic_correct_logit": 0.7203052043914795,
+          "token_branch_correct_logit": 0.7203054428100586,
+          "workspace_correct_logit": -2.7265565395355225,
+          "start_gate": 6.231357118670344e-14,
+          "continue_gate": 3.999022624157078e-07,
+          "top_tokens_with_memory": [
+            {
+              "token_id": 309,
+              "token_text": " is",
+              "logit": 5.842519760131836
+            },
+            {
+              "token_id": 348,
+              "token_text": " you",
+              "logit": 3.5487544536590576
+            },
+            {
+              "token_id": 421,
+              "token_text": " was",
+              "logit": 2.0467395782470703
+            },
+            {
+              "token_id": 566,
+              "token_text": "'s",
+              "logit": 0.5039737224578857
+            },
+            {
+              "token_id": 468,
+              "token_text": " your",
+              "logit": -0.24166524410247803
+            }
+          ],
+          "top_tokens_no_memory": [
+            {
+              "token_id": 309,
+              "token_text": " is",
+              "logit": 12.641590118408203
+            },
+            {
+              "token_id": 400,
+              "token_text": " can",
+              "logit": 10.669124603271484
+            },
+            {
+              "token_id": 616,
+              "token_text": " may",
+              "logit": 10.300951957702637
+            },
+            {
+              "token_id": 1273,
+              "token_text": " might",
+              "logit": 9.958283424377441
+            },
+            {
+              "token_id": 44,
+              "token_text": ",",
+              "logit": 9.79088306427002
+            }
+          ],
+          "top_copy_tokens": [
+            {
+              "token_id": 21061,
+              "token_text": " Nova",
+              "logit": 4.798826921614818e-06
+            },
+            {
+              "token_id": 309,
+              "token_text": " is",
+              "logit": 7.477628542404413e-13
+            },
+            {
+              "token_id": 0,
+              "token_text": "\u0000",
+              "logit": 0.0
+            },
+            {
+              "token_id": 1,
+              "token_text": "\u0001",
+              "logit": 0.0
+            },
+            {
+              "token_id": 2,
+              "token_text": "\u0002",
+              "logit": 0.0
+            }
+          ],
+          "top_semantic_tokens": [
+            {
+              "token_id": 9097,
+              "token_text": " Max",
+              "logit": 10.056554794311523
+            },
+            {
+              "token_id": 48495,
+              "token_text": " Luna",
+              "logit": 8.225948333740234
+            },
+            {
+              "token_id": 428,
+              "token_text": " F",
+              "logit": 8.216598510742188
+            },
+            {
+              "token_id": 10450,
+              "token_text": " Jack",
+              "logit": 8.023003578186035
+            },
+            {
+              "token_id": 12797,
+              "token_text": " Bob",
+              "logit": 7.9867448806762695
+            }
+          ]
+        },
+        {
+          "example_index": 4,
+          "position": 5,
+          "correct_token_id": 21061,
+          "correct_token_text": " Nova",
+          "rank_with_memory": 1,
+          "rank_no_memory": 12,
+          "logprob_with_memory": -0.06028416007757187,
+          "logprob_no_memory": -4.570459365844727,
+          "pred_with_memory_id": 21061,
+          "pred_with_memory_text": " Nova",
+          "pred_no_memory_id": 48495,
+          "pred_no_memory_text": " Luna",
+          "copy_correct_logit": 9.960433959960938,
+          "semantic_correct_logit": 3.9510498046875,
+          "token_branch_correct_logit": 3.951050281524658,
+          "workspace_correct_logit": -6.958893299102783,
+          "start_gate": 1.8583468097688183e-09,
+          "continue_gate": 0.999982476234436,
+          "top_tokens_with_memory": [
+            {
+              "token_id": 21061,
+              "token_text": " Nova",
+              "logit": 11.591756820678711
+            },
+            {
+              "token_id": 11240,
+              "token_text": " Rose",
+              "logit": 6.289970874786377
+            },
+            {
+              "token_id": 44616,
+              "token_text": " Willow",
+              "logit": 5.851341247558594
+            },
+            {
+              "token_id": 13984,
+              "token_text": " Oak",
+              "logit": 5.4622416496276855
+            },
+            {
+              "token_id": 56988,
+              "token_text": " Bella",
+              "logit": 5.244995594024658
+            }
+          ],
+          "top_tokens_no_memory": [
+            {
+              "token_id": 48495,
+              "token_text": " Luna",
+              "logit": 10.871735572814941
+            },
+            {
+              "token_id": 9097,
+              "token_text": " Max",
+              "logit": 10.420463562011719
+            },
+            {
+              "token_id": 36563,
+              "token_text": " Rex",
+              "logit": 9.087535858154297
+            },
+            {
+              "token_id": 257,
+              "token_text": " a",
+              "logit": 9.020051956176758
+            },
+            {
+              "token_id": 11813,
+              "token_text": " Ak",
+              "logit": 8.593754768371582
+            }
+          ],
+          "top_copy_tokens": [
+            {
+              "token_id": 21061,
+              "token_text": " Nova",
+              "logit": 9.960433959960938
+            },
+            {
+              "token_id": 309,
+              "token_text": " is",
+              "logit": 2.230016171722582e-08
+            },
+            {
+              "token_id": 0,
+              "token_text": "\u0000",
+              "logit": 0.0
+            },
+            {
+              "token_id": 1,
+              "token_text": "\u0001",
+              "logit": 0.0
+            },
+            {
+              "token_id": 2,
+              "token_text": "\u0002",
+              "logit": 0.0
+            }
+          ],
+          "top_semantic_tokens": [
+            {
+              "token_id": 9097,
+              "token_text": " Max",
+              "logit": 10.056554794311523
+            },
+            {
+              "token_id": 48495,
+              "token_text": " Luna",
+              "logit": 8.225948333740234
+            },
+            {
+              "token_id": 428,
+              "token_text": " F",
+              "logit": 8.216598510742188
+            },
+            {
+              "token_id": 10450,
+              "token_text": " Jack",
+              "logit": 8.023003578186035
+            },
+            {
+              "token_id": 12797,
+              "token_text": " Bob",
+              "logit": 7.9867448806762695
+            }
+          ]
+        },
+        {
+          "example_index": 4,
+          "position": 6,
+          "correct_token_id": 7636,
+          "correct_token_text": "-G",
+          "rank_with_memory": 32,
+          "rank_no_memory": 4678,
+          "logprob_with_memory": -7.975395679473877,
+          "logprob_no_memory": -13.699467658996582,
+          "pred_with_memory_id": 46,
+          "pred_with_memory_text": ".",
+          "pred_no_memory_id": 46,
+          "pred_no_memory_text": ".",
+          "copy_correct_logit": 0.0,
+          "semantic_correct_logit": -4.298976898193359,
+          "token_branch_correct_logit": -4.298975944519043,
+          "workspace_correct_logit": -8.861604690551758,
+          "start_gate": 1.8737678075808617e-10,
+          "continue_gate": 1.0955399254442e-08,
+          "top_tokens_with_memory": [
+            {
+              "token_id": 46,
+              "token_text": ".",
+              "logit": 4.07144832611084
+            },
+            {
+              "token_id": 3431,
+              "token_text": " told",
+              "logit": -0.42057138681411743
+            },
+            {
+              "token_id": 3875,
+              "token_text": " worked",
+              "logit": -0.7299791574478149
+            },
+            {
+              "token_id": 6207,
+              "token_text": "Your",
+              "logit": -0.8492914438247681
+            },
+            {
+              "token_id": 421,
+              "token_text": " was",
+              "logit": -1.0499597787857056
+            }
+          ],
+          "top_tokens_no_memory": [
+            {
+              "token_id": 46,
+              "token_text": ".",
+              "logit": 10.620138168334961
+            },
+            {
+              "token_id": 44,
+              "token_text": ",",
+              "logit": 10.442015647888184
+            },
+            {
+              "token_id": 261,
+              "token_text": " the",
+              "logit": 8.835367202758789
+            },
+            {
+              "token_id": 25711,
+              "token_text": " Haven",
+              "logit": 7.531098365783691
+            },
+            {
+              "token_id": 772,
+              "token_text": " \u2013",
+              "logit": 7.421493053436279
+            }
+          ],
+          "top_copy_tokens": [
+            {
+              "token_id": 21061,
+              "token_text": " Nova",
+              "logit": 1.3146478750059032e-07
+            },
+            {
+              "token_id": 309,
+              "token_text": " is",
+              "logit": 2.248521369097034e-09
+            },
+            {
+              "token_id": 0,
+              "token_text": "\u0000",
+              "logit": 0.0
+            },
+            {
+              "token_id": 1,
+              "token_text": "\u0001",
+              "logit": 0.0
+            },
+            {
+              "token_id": 2,
+              "token_text": "\u0002",
+              "logit": 0.0
+            }
+          ],
+          "top_semantic_tokens": [
+            {
+              "token_id": 9097,
+              "token_text": " Max",
+              "logit": 10.056554794311523
+            },
+            {
+              "token_id": 48495,
+              "token_text": " Luna",
+              "logit": 8.225948333740234
+            },
+            {
+              "token_id": 428,
+              "token_text": " F",
+              "logit": 8.216598510742188
+            },
+            {
+              "token_id": 10450,
+              "token_text": " Jack",
+              "logit": 8.023003578186035
+            },
+            {
+              "token_id": 12797,
+              "token_text": " Bob",
+              "logit": 7.9867448806762695
+            }
+          ]
+        },
+        {
+          "example_index": 4,
+          "position": 7,
+          "correct_token_id": 14219,
+          "correct_token_text": "rove",
+          "rank_with_memory": 5583,
+          "rank_no_memory": 1996,
+          "logprob_with_memory": -12.336675643920898,
+          "logprob_no_memory": -10.602020263671875,
+          "pred_with_memory_id": 2923,
+          "pred_with_memory_text": "ender",
+          "pred_no_memory_id": 108,
+          "pred_no_memory_text": "l",
+          "copy_correct_logit": 0.0,
+          "semantic_correct_logit": -8.747087478637695,
+          "token_branch_correct_logit": -8.747088432312012,
+          "workspace_correct_logit": -5.75823974609375,
+          "start_gate": 3.2245953129894644e-10,
+          "continue_gate": 4.0674769108406394e-11,
+          "top_tokens_with_memory": [
+            {
+              "token_id": 2923,
+              "token_text": "ender",
+              "logit": 0.7127615213394165
+            },
+            {
+              "token_id": 105,
+              "token_text": "i",
+              "logit": -0.13738477230072021
+            },
+            {
+              "token_id": 21240,
+              "token_text": "uer",
+              "logit": -0.3590250611305237
+            },
+            {
+              "token_id": 528,
+              "token_text": "able",
+              "logit": -0.5195518136024475
+            },
+            {
+              "token_id": 46,
+              "token_text": ".",
+              "logit": -0.6068218350410461
+            }
+          ],
+          "top_tokens_no_memory": [
+            {
+              "token_id": 108,
+              "token_text": "l",
+              "logit": 6.5533647537231445
+            },
+            {
+              "token_id": 2657,
+              "token_text": "ene",
+              "logit": 6.209005832672119
+            },
+            {
+              "token_id": 307,
+              "token_text": ".\n",
+              "logit": 5.998344898223877
+            },
+            {
+              "token_id": 268,
+              "token_text": "en",
+              "logit": 5.931867599487305
+            },
+            {
+              "token_id": 325,
+              "token_text": "ra",
+              "logit": 5.593338966369629
+            }
+          ],
+          "top_copy_tokens": [
+            {
+              "token_id": 309,
+              "token_text": " is",
+              "logit": 3.86951448660966e-09
+            },
+            {
+              "token_id": 21061,
+              "token_text": " Nova",
+              "logit": 4.880972293008767e-10
+            },
+            {
+              "token_id": 0,
+              "token_text": "\u0000",
+              "logit": 0.0
+            },
+            {
+              "token_id": 1,
+              "token_text": "\u0001",
+              "logit": 0.0
+            },
+            {
+              "token_id": 2,
+              "token_text": "\u0002",
+              "logit": 0.0
+            }
+          ],
+          "top_semantic_tokens": [
+            {
+              "token_id": 9097,
+              "token_text": " Max",
+              "logit": 10.056554794311523
+            },
+            {
+              "token_id": 48495,
+              "token_text": " Luna",
+              "logit": 8.225948333740234
+            },
+            {
+              "token_id": 428,
+              "token_text": " F",
+              "logit": 8.216598510742188
+            },
+            {
+              "token_id": 10450,
+              "token_text": " Jack",
+              "logit": 8.023003578186035
+            },
+            {
+              "token_id": 12797,
+              "token_text": " Bob",
+              "logit": 7.9867448806762695
+            }
+          ]
+        },
+        {
+          "example_index": 4,
+          "position": 8,
+          "correct_token_id": 46,
+          "correct_token_text": ".",
+          "rank_with_memory": 1,
+          "rank_no_memory": 2,
+          "logprob_with_memory": -0.30464938282966614,
+          "logprob_no_memory": -1.2918169498443604,
+          "pred_with_memory_id": 46,
+          "pred_with_memory_text": ".",
+          "pred_no_memory_id": 44,
+          "pred_no_memory_text": ",",
+          "copy_correct_logit": 0.0,
+          "semantic_correct_logit": 4.554166793823242,
+          "token_branch_correct_logit": 4.554166793823242,
+          "workspace_correct_logit": -9.08358097076416,
+          "start_gate": 5.323892368624961e-12,
+          "continue_gate": 3.215820276736281e-09,
+          "top_tokens_with_memory": [
+            {
+              "token_id": 46,
+              "token_text": ".",
+              "logit": 2.0613489151000977
+            },
+            {
+              "token_id": 120,
+              "token_text": "x",
+              "logit": -0.5216758251190186
+            },
+            {
+              "token_id": 105,
+              "token_text": "i",
+              "logit": -0.8825259208679199
+            },
+            {
+              "token_id": 348,
+              "token_text": " you",
+              "logit": -1.421718955039978
+            },
+            {
+              "token_id": 355,
+              "token_text": " or",
+              "logit": -1.650141954421997
+            }
+          ],
+          "top_tokens_no_memory": [
+            {
+              "token_id": 44,
+              "token_text": ",",
+              "logit": 11.34487533569336
+            },
+            {
+              "token_id": 46,
+              "token_text": ".",
+              "logit": 11.042425155639648
+            },
+            {
+              "token_id": 288,
+              "token_text": " and",
+              "logit": 8.677456855773926
+            },
+            {
+              "token_id": 120,
+              "token_text": "x",
+              "logit": 8.66407585144043
+            },
+            {
+              "token_id": 116,
+              "token_text": "t",
+              "logit": 8.530592918395996
+            }
+          ],
+          "top_copy_tokens": [
+            {
+              "token_id": 21061,
+              "token_text": " Nova",
+              "logit": 3.858984243265695e-08
+            },
+            {
+              "token_id": 309,
+              "token_text": " is",
+              "logit": 6.388670842349953e-11
+            },
+            {
+              "token_id": 0,
+              "token_text": "\u0000",
+              "logit": 0.0
+            },
+            {
+              "token_id": 1,
+              "token_text": "\u0001",
+              "logit": 0.0
+            },
+            {
+              "token_id": 2,
+              "token_text": "\u0002",
+              "logit": 0.0
+            }
+          ],
+          "top_semantic_tokens": [
+            {
+              "token_id": 9097,
+              "token_text": " Max",
+              "logit": 10.056554794311523
+            },
+            {
+              "token_id": 48495,
+              "token_text": " Luna",
+              "logit": 8.225948333740234
+            },
+            {
+              "token_id": 428,
+              "token_text": " F",
+              "logit": 8.216598510742188
+            },
+            {
+              "token_id": 10450,
+              "token_text": " Jack",
+              "logit": 8.023003578186035
+            },
+            {
+              "token_id": 12797,
+              "token_text": " Bob",
+              "logit": 7.9867448806762695
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

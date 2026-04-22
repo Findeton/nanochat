@@ -1,0 +1,1507 @@
+{
+  "model_tag": "d12-episodic-proposal-a-r18-long1000",
+  "step": 1000,
+  "datasets": [
+    {
+      "dataset": "memory_dogname_focus_eval.jsonl",
+      "modes": {
+        "full": {
+          "exact_accuracy": 0.0,
+          "core_accuracy": 0.0,
+          "teacher_forced": {
+            "mean_correct_rank": 5891.375,
+            "mean_correct_logprob": -14.84899722536405,
+            "positions_top1_correct": 0.0,
+            "by_position": {
+              "0": {
+                "mean_correct_rank": 6442.0,
+                "mean_correct_logprob": -19.013547134399413,
+                "positions_top1_correct": 0.0,
+                "mean_episodic_correct_logit": -2.0295193910598757,
+                "mean_episodic_token_correct_logit": -2.0295193672180174,
+                "mean_workspace_correct_logit": -2.0295186281204223
+              },
+              "1": {
+                "mean_correct_rank": 650.4,
+                "mean_correct_logprob": -13.17074089050293,
+                "positions_top1_correct": 0.0,
+                "mean_episodic_correct_logit": 2.533954691886902,
+                "mean_episodic_token_correct_logit": 2.5339545726776125,
+                "mean_workspace_correct_logit": 2.533955717086792
+              },
+              "2": {
+                "mean_correct_rank": 725.0,
+                "mean_correct_logprob": -14.18419189453125,
+                "positions_top1_correct": 0.0,
+                "mean_episodic_correct_logit": 1.7423785120248794,
+                "mean_episodic_token_correct_logit": 1.7423785746097564,
+                "mean_workspace_correct_logit": 1.7423778504133225
+              },
+              "3": {
+                "mean_correct_rank": 307.0,
+                "mean_correct_logprob": -11.173137664794922,
+                "positions_top1_correct": 0.0,
+                "mean_episodic_correct_logit": 3.4561198711395265,
+                "mean_episodic_token_correct_logit": 3.4561200618743895,
+                "mean_workspace_correct_logit": 3.4561203479766847
+              },
+              "4": {
+                "mean_correct_rank": 27.0,
+                "mean_correct_logprob": -6.87742280960083,
+                "positions_top1_correct": 0.0,
+                "mean_episodic_correct_logit": 6.432268810272217,
+                "mean_episodic_token_correct_logit": 6.432268810272217,
+                "mean_workspace_correct_logit": 6.4322686195373535
+              },
+              "5": {
+                "mean_correct_rank": 1528.4,
+                "mean_correct_logprob": -12.292586517333984,
+                "positions_top1_correct": 0.0,
+                "mean_episodic_correct_logit": 6.667979107797146,
+                "mean_episodic_token_correct_logit": 6.667979107797146,
+                "mean_workspace_correct_logit": 6.6679780155420305
+              },
+              "6": {
+                "mean_correct_rank": 13853.6,
+                "mean_correct_logprob": -20.624143600463867,
+                "positions_top1_correct": 0.0,
+                "mean_episodic_correct_logit": -3.5756282567977906,
+                "mean_episodic_token_correct_logit": -3.575628066062927,
+                "mean_workspace_correct_logit": -3.5756285429000854
+              },
+              "7": {
+                "mean_correct_rank": 12812.4,
+                "mean_correct_logprob": -18.933033561706544,
+                "positions_top1_correct": 0.0,
+                "mean_episodic_correct_logit": -3.2126909673213957,
+                "mean_episodic_token_correct_logit": -3.2126905858516692,
+                "mean_workspace_correct_logit": -3.2126904129981995
+              },
+              "8": {
+                "mean_correct_rank": 8524.5,
+                "mean_correct_logprob": -16.218043565750122,
+                "positions_top1_correct": 0.0,
+                "mean_episodic_correct_logit": 0.05035233497619629,
+                "mean_episodic_token_correct_logit": 0.05035209655761719,
+                "mean_workspace_correct_logit": 0.050352007150650024
+              },
+              "9": {
+                "mean_correct_rank": 33369.5,
+                "mean_correct_logprob": -23.32504177093506,
+                "positions_top1_correct": 0.0,
+                "mean_episodic_correct_logit": -5.789645433425903,
+                "mean_episodic_token_correct_logit": -5.789644479751587,
+                "mean_workspace_correct_logit": -5.789645195007324
+              },
+              "10": {
+                "mean_correct_rank": 110.0,
+                "mean_correct_logprob": -9.94279432296753,
+                "positions_top1_correct": 0.0,
+                "mean_episodic_correct_logit": 5.927260875701904,
+                "mean_episodic_token_correct_logit": 5.927261114120483,
+                "mean_workspace_correct_logit": 5.927262306213379
+              }
+            }
+          },
+          "first_step_layer_summary": [
+            {
+              "layer": 0,
+              "slot_count": 33.6,
+              "episodic_gate": 1.0,
+              "workspace_gate": 1.0,
+              "attn_norm": 238.23779296875,
+              "mem_norm": 516.1290649414062,
+              "workspace_norm": 516.1290649414062,
+              "mlp_norm": 349.5429260253906,
+              "mem_entropy": 1.4506288437132753e-07,
+              "workspace_entropy": 1.450628701604728e-07
+            },
+            {
+              "layer": 1,
+              "slot_count": 33.6,
+              "episodic_gate": 1.0,
+              "workspace_gate": 1.0,
+              "attn_norm": 240.78827819824218,
+              "mem_norm": 505.68922119140626,
+              "workspace_norm": 505.04698486328124,
+              "mlp_norm": 82.18695831298828,
+              "mem_entropy": 0.012440180599753603,
+              "workspace_entropy": 1.2361689641693373e-06
+            },
+            {
+              "layer": 2,
+              "slot_count": 33.6,
+              "episodic_gate": 1.0,
+              "workspace_gate": 1.0,
+              "attn_norm": 247.92575378417968,
+              "mem_norm": 542.2639038085938,
+              "workspace_norm": 542.2639038085938,
+              "mlp_norm": 156.18311767578126,
+              "mem_entropy": 1.4506288437132753e-07,
+              "workspace_entropy": 1.450628701604728e-07
+            },
+            {
+              "layer": 3,
+              "slot_count": 33.6,
+              "episodic_gate": 1.0,
+              "workspace_gate": 1.0,
+              "attn_norm": 268.3219787597656,
+              "mem_norm": 710.3626831054687,
+              "workspace_norm": 710.3626831054687,
+              "mlp_norm": 332.3312255859375,
+              "mem_entropy": 1.4506288437132753e-07,
+              "workspace_entropy": 1.450628701604728e-07
+            },
+            {
+              "layer": 4,
+              "slot_count": 33.6,
+              "episodic_gate": 1.0,
+              "workspace_gate": 1.0,
+              "attn_norm": 288.247705078125,
+              "mem_norm": 568.8470336914063,
+              "workspace_norm": 568.8470336914063,
+              "mlp_norm": 210.17796020507814,
+              "mem_entropy": 1.4506288437132753e-07,
+              "workspace_entropy": 1.450628701604728e-07
+            },
+            {
+              "layer": 5,
+              "slot_count": 33.6,
+              "episodic_gate": 1.0,
+              "workspace_gate": 1.0,
+              "attn_norm": 281.6729736328125,
+              "mem_norm": 631.0623168945312,
+              "workspace_norm": 631.0623168945312,
+              "mlp_norm": 141.8599838256836,
+              "mem_entropy": 1.4506288437132753e-07,
+              "workspace_entropy": 1.450628701604728e-07
+            },
+            {
+              "layer": 6,
+              "slot_count": 33.6,
+              "episodic_gate": 1.0,
+              "workspace_gate": 1.0,
+              "attn_norm": 259.9175109863281,
+              "mem_norm": 575.5590942382812,
+              "workspace_norm": 575.5590942382812,
+              "mlp_norm": 142.21591491699218,
+              "mem_entropy": 1.4506288437132753e-07,
+              "workspace_entropy": 1.450628701604728e-07
+            },
+            {
+              "layer": 7,
+              "slot_count": 33.6,
+              "episodic_gate": 1.0,
+              "workspace_gate": 1.0,
+              "attn_norm": 271.81760864257814,
+              "mem_norm": 679.1116333007812,
+              "workspace_norm": 679.1116333007812,
+              "mlp_norm": 284.3500061035156,
+              "mem_entropy": 1.4506288437132753e-07,
+              "workspace_entropy": 1.450628701604728e-07
+            },
+            {
+              "layer": 8,
+              "slot_count": 33.6,
+              "episodic_gate": 1.0,
+              "workspace_gate": 1.0,
+              "attn_norm": 252.95567321777344,
+              "mem_norm": 786.815185546875,
+              "workspace_norm": 786.815185546875,
+              "mlp_norm": 240.928271484375,
+              "mem_entropy": 1.4506288437132753e-07,
+              "workspace_entropy": 1.450628701604728e-07
+            },
+            {
+              "layer": 9,
+              "slot_count": 33.6,
+              "episodic_gate": 1.0,
+              "workspace_gate": 1.0,
+              "attn_norm": 188.42027282714844,
+              "mem_norm": 999.9197509765625,
+              "workspace_norm": 999.9197509765625,
+              "mlp_norm": 158.53641052246093,
+              "mem_entropy": 1.4506288437132753e-07,
+              "workspace_entropy": 1.450628701604728e-07
+            },
+            {
+              "layer": 10,
+              "slot_count": 33.6,
+              "episodic_gate": 1.0,
+              "workspace_gate": 1.0,
+              "attn_norm": 237.47051391601562,
+              "mem_norm": 1093.1519775390625,
+              "workspace_norm": 1093.1519775390625,
+              "mlp_norm": 317.9435729980469,
+              "mem_entropy": 1.4506288437132753e-07,
+              "workspace_entropy": 1.450628701604728e-07
+            },
+            {
+              "layer": 11,
+              "slot_count": 33.6,
+              "episodic_gate": 1.0,
+              "workspace_gate": 1.0,
+              "attn_norm": 274.74896240234375,
+              "mem_norm": 1273.9488525390625,
+              "workspace_norm": 1273.9488525390625,
+              "mlp_norm": 950.4269287109375,
+              "mem_entropy": 1.4506288437132753e-07,
+              "workspace_entropy": 1.450628701604728e-07
+            }
+          ],
+          "failures": [
+            {
+              "recall_user": "Remind me of my dog's name.",
+              "expected_answer": "Your dog's name is Lumen.",
+              "response": " I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I",
+              "first_positions": [
+                {
+                  "position": 0,
+                  "correct_token_id": 6207,
+                  "correct_token_text": "Your",
+                  "predicted_token_id": 338,
+                  "predicted_token_text": " I",
+                  "correct_logit": -6.105959415435791,
+                  "correct_logprob": -19.165613174438477,
+                  "correct_rank": 6145,
+                  "episodic_correct_logit": -2.558184862136841,
+                  "episodic_token_correct_logit": -2.558184862136841,
+                  "workspace_correct_logit": -2.558182716369629,
+                  "top_tokens": [
+                    {
+                      "token_id": 338,
+                      "token_text": " I",
+                      "logit": 12.552777290344238
+                    },
+                    {
+                      "token_id": 288,
+                      "token_text": " and",
+                      "logit": 11.527593612670898
+                    },
+                    {
+                      "token_id": 384,
+                      "token_text": " we",
+                      "logit": 9.730273246765137
+                    },
+                    {
+                      "token_id": 375,
+                      "token_text": " he",
+                      "logit": 9.2454833984375
+                    },
+                    {
+                      "token_id": 8069,
+                      "token_text": " Colorado",
+                      "logit": 8.996254920959473
+                    }
+                  ]
+                },
+                {
+                  "position": 1,
+                  "correct_token_id": 2222,
+                  "correct_token_text": " dog",
+                  "predicted_token_id": 338,
+                  "predicted_token_text": " I",
+                  "correct_logit": 2.1599178314208984,
+                  "correct_logprob": -10.901912689208984,
+                  "correct_rank": 194,
+                  "episodic_correct_logit": 6.0170512199401855,
+                  "episodic_token_correct_logit": 6.0170512199401855,
+                  "workspace_correct_logit": 6.017053604125977,
+                  "top_tokens": [
+                    {
+                      "token_id": 338,
+                      "token_text": " I",
+                      "logit": 12.563681602478027
+                    },
+                    {
+                      "token_id": 288,
+                      "token_text": " and",
+                      "logit": 11.49616527557373
+                    },
+                    {
+                      "token_id": 384,
+                      "token_text": " we",
+                      "logit": 9.679972648620605
+                    },
+                    {
+                      "token_id": 375,
+                      "token_text": " he",
+                      "logit": 9.305707931518555
+                    },
+                    {
+                      "token_id": 8069,
+                      "token_text": " Colorado",
+                      "logit": 9.044410705566406
+                    }
+                  ]
+                },
+                {
+                  "position": 2,
+                  "correct_token_id": 566,
+                  "correct_token_text": "'s",
+                  "predicted_token_id": 338,
+                  "predicted_token_text": " I",
+                  "correct_logit": -0.95046466588974,
+                  "correct_logprob": -14.012669563293457,
+                  "correct_rank": 715,
+                  "episodic_correct_logit": 1.5799758434295654,
+                  "episodic_token_correct_logit": 1.5799758434295654,
+                  "workspace_correct_logit": 1.579975962638855,
+                  "top_tokens": [
+                    {
+                      "token_id": 338,
+                      "token_text": " I",
+                      "logit": 12.544882774353027
+                    },
+                    {
+                      "token_id": 288,
+                      "token_text": " and",
+                      "logit": 11.577576637268066
+                    },
+                    {
+                      "token_id": 384,
+                      "token_text": " we",
+                      "logit": 9.66737174987793
+                    },
+                    {
+                      "token_id": 375,
+                      "token_text": " he",
+                      "logit": 9.26530933380127
+                    },
+                    {
+                      "token_id": 8069,
+                      "token_text": " Colorado",
+                      "logit": 8.887947082519531
+                    }
+                  ]
+                },
+                {
+                  "position": 3,
+                  "correct_token_id": 1588,
+                  "correct_token_text": " name",
+                  "predicted_token_id": 338,
+                  "predicted_token_text": " I",
+                  "correct_logit": 3.387070655822754,
+                  "correct_logprob": -9.672576904296875,
+                  "correct_rank": 107,
+                  "episodic_correct_logit": 4.448705673217773,
+                  "episodic_token_correct_logit": 4.448705673217773,
+                  "workspace_correct_logit": 4.448708534240723,
+                  "top_tokens": [
+                    {
+                      "token_id": 338,
+                      "token_text": " I",
+                      "logit": 12.554891586303711
+                    },
+                    {
+                      "token_id": 288,
+                      "token_text": " and",
+                      "logit": 11.511104583740234
+                    },
+                    {
+                      "token_id": 384,
+                      "token_text": " we",
+                      "logit": 9.643665313720703
+                    },
+                    {
+                      "token_id": 375,
+                      "token_text": " he",
+                      "logit": 9.255727767944336
+                    },
+                    {
+                      "token_id": 8069,
+                      "token_text": " Colorado",
+                      "logit": 8.992866516113281
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "recall_user": "What's my dog's name?",
+              "expected_answer": "Your dog's name is Aster-Pine.",
+              "response": " I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I",
+              "first_positions": [
+                {
+                  "position": 0,
+                  "correct_token_id": 6207,
+                  "correct_token_text": "Your",
+                  "predicted_token_id": 338,
+                  "predicted_token_text": " I",
+                  "correct_logit": -4.206829071044922,
+                  "correct_logprob": -16.545909881591797,
+                  "correct_rank": 2179,
+                  "episodic_correct_logit": 1.4071509838104248,
+                  "episodic_token_correct_logit": 1.4071509838104248,
+                  "workspace_correct_logit": 1.407150387763977,
+                  "top_tokens": [
+                    {
+                      "token_id": 338,
+                      "token_text": " I",
+                      "logit": 11.575776100158691
+                    },
+                    {
+                      "token_id": 288,
+                      "token_text": " and",
+                      "logit": 11.317831039428711
+                    },
+                    {
+                      "token_id": 384,
+                      "token_text": " we",
+                      "logit": 9.128549575805664
+                    },
+                    {
+                      "token_id": 32,
+                      "token_text": " ",
+                      "logit": 8.641023635864258
+                    },
+                    {
+                      "token_id": 486,
+                      "token_text": " they",
+                      "logit": 7.969511985778809
+                    }
+                  ]
+                },
+                {
+                  "position": 1,
+                  "correct_token_id": 2222,
+                  "correct_token_text": " dog",
+                  "predicted_token_id": 338,
+                  "predicted_token_text": " I",
+                  "correct_logit": -0.1935109943151474,
+                  "correct_logprob": -12.528438568115234,
+                  "correct_rank": 372,
+                  "episodic_correct_logit": 1.797656774520874,
+                  "episodic_token_correct_logit": 1.797656774520874,
+                  "workspace_correct_logit": 1.7976584434509277,
+                  "top_tokens": [
+                    {
+                      "token_id": 338,
+                      "token_text": " I",
+                      "logit": 11.59456729888916
+                    },
+                    {
+                      "token_id": 288,
+                      "token_text": " and",
+                      "logit": 11.283514976501465
+                    },
+                    {
+                      "token_id": 384,
+                      "token_text": " we",
+                      "logit": 9.075538635253906
+                    },
+                    {
+                      "token_id": 32,
+                      "token_text": " ",
+                      "logit": 8.686688423156738
+                    },
+                    {
+                      "token_id": 375,
+                      "token_text": " he",
+                      "logit": 7.941892147064209
+                    }
+                  ]
+                },
+                {
+                  "position": 2,
+                  "correct_token_id": 566,
+                  "correct_token_text": "'s",
+                  "predicted_token_id": 338,
+                  "predicted_token_text": " I",
+                  "correct_logit": -0.7484402060508728,
+                  "correct_logprob": -13.100569725036621,
+                  "correct_rank": 464,
+                  "episodic_correct_logit": 2.0794599056243896,
+                  "episodic_token_correct_logit": 2.0794599056243896,
+                  "workspace_correct_logit": 2.0794570446014404,
+                  "top_tokens": [
+                    {
+                      "token_id": 338,
+                      "token_text": " I",
+                      "logit": 11.571982383728027
+                    },
+                    {
+                      "token_id": 288,
+                      "token_text": " and",
+                      "logit": 11.362649917602539
+                    },
+                    {
+                      "token_id": 384,
+                      "token_text": " we",
+                      "logit": 9.060791969299316
+                    },
+                    {
+                      "token_id": 32,
+                      "token_text": " ",
+                      "logit": 8.600486755371094
+                    },
+                    {
+                      "token_id": 486,
+                      "token_text": " they",
+                      "logit": 7.907581329345703
+                    }
+                  ]
+                },
+                {
+                  "position": 3,
+                  "correct_token_id": 1588,
+                  "correct_token_text": " name",
+                  "predicted_token_id": 338,
+                  "predicted_token_text": " I",
+                  "correct_logit": 1.824498176574707,
+                  "correct_logprob": -10.51713752746582,
+                  "correct_rank": 161,
+                  "episodic_correct_logit": 6.144806861877441,
+                  "episodic_token_correct_logit": 6.144806861877441,
+                  "workspace_correct_logit": 6.144808292388916,
+                  "top_tokens": [
+                    {
+                      "token_id": 338,
+                      "token_text": " I",
+                      "logit": 11.59004020690918
+                    },
+                    {
+                      "token_id": 288,
+                      "token_text": " and",
+                      "logit": 11.295491218566895
+                    },
+                    {
+                      "token_id": 384,
+                      "token_text": " we",
+                      "logit": 9.04146957397461
+                    },
+                    {
+                      "token_id": 32,
+                      "token_text": " ",
+                      "logit": 8.691727638244629
+                    },
+                    {
+                      "token_id": 486,
+                      "token_text": " they",
+                      "logit": 7.926181793212891
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "recall_user": "Can you tell me my dog's name?",
+              "expected_answer": "Your dog's name is Pebble-Cloud.",
+              "response": " I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I I",
+              "first_positions": [
+                {
+                  "position": 0,
+                  "correct_token_id": 6207,
+                  "correct_token_text": "Your",
+                  "predicted_token_id": 338,
+                  "predicted_token_text": " I",
+                  "correct_logit": -5.813347816467285,
+                  "correct_logprob": -18.787200927734375,
+                  "correct_rank": 4321,
+                  "episodic_correct_logit": -1.6712285280227661,
+                  "episodic_token_correct_logit": -1.6712284088134766,
+                  "workspace_correct_logit": -1.6712310314178467,
+                  "top_tokens": [
+                    {
+                      "token_id": 338,
+                      "token_text": " I",
+                      "logit": 12.401115417480469
+                    },
+                    {
+                      "token_id": 288,
+                      "token_text": " and",
+                      "logit": 11.677552223205566
+                    },
+                    {
+                      "token_id": 1045,
+                      "token_text": " my",
+                      "logit": 9.554234504699707
+                    },
+                    {
+                      "token_id": 32,
+                      "token_text": " ",
+                      "logit": 9.00601863861084
+                    },
+                    {
+                      "token_id": 384,
+                      "token_text": " we",
+                      "logit": 8.96146297454834
+                    }
+                  ]
+                },
+                {
+                  "position": 1,
+                  "correct_token_id": 2222,
+                  "correct_token_text": " dog",
+                  "predicted_token_id": 338,
+                  "predicted_token_text": " I",
+                  "correct_logit": -0.8193432092666626,
+                  "correct_logprob": -13.789762496948242,
+                  "correct_rank": 526,
+                  "episodic_correct_logit": 1.6004263162612915,
+                  "episodic_token_correct_logit": 1.6004257202148438,
+                  "workspace_correct_logit": 1.6004254817962646,
+                  "top_tokens": [
+                    {
+                      "token_id": 338,
+                      "token_text": " I",
+                      "logit": 12.409412384033203
+                    },
+                    {
+                      "token_id": 288,
+                      "token_text": " and",
+                      "logit": 11.645706176757812
+                    },
+                    {
+                      "token_id": 1045,
+                      "token_text": " my",
+                      "logit": 9.534034729003906
+                    },
+                    {
+                      "token_id": 32,
+                      "token_text": " ",
+                      "logit": 9.056751251220703
+                    },
+                    {
+                      "token_id": 384,
+                      "token_text": " we",
+                      "logit": 8.911526679992676
+                    }
+                  ]
+                },
+                {
+                  "position": 2,
+                  "correct_token_id": 566,
+                  "correct_token_text": "'s",
+                  "predicted_token_id": 338,
+                  "predicted_token_text": " I",
+                  "correct_logit": -1.7389037609100342,
+                  "correct_logprob": -14.71688175201416,
+                  "correct_rank": 734,
+                  "episodic_correct_logit": 0.15083034336566925,
+                  "episodic_token_correct_logit": 0.15083065629005432,
+                  "workspace_correct_logit": 0.15083085000514984,
+                  "top_tokens": [
+                    {
+                      "token_id": 338,
+                      "token_text": " I",
+                      "logit": 12.384222030639648
+                    },
+                    {
+                      "token_id": 288,
+                      "token_text": " and",
+                      "logit": 11.71727466583252
+                    },
+                    {
+                      "token_id": 1045,
+                      "token_text": " my",
+                      "logit": 9.597891807556152
+                    },
+                    {
+                      "token_id": 32,
+                      "token_text": " ",
+                      "logit": 8.97823429107666
+                    },
+                    {
+                      "token_id": 384,
+                      "token_text": " we",
+                      "logit": 8.892454147338867
+                    }
+                  ]
+                },
+                {
+                  "position": 3,
+                  "correct_token_id": 1588,
+                  "correct_token_text": " name",
+                  "predicted_token_id": 338,
+                  "predicted_token_text": " I",
+                  "correct_logit": 1.6009330749511719,
+                  "correct_logprob": -11.375093460083008,
+                  "correct_rank": 193,
+                  "episodic_correct_logit": 3.19317364692688,
+                  "episodic_token_correct_logit": 3.19317364692688,
+                  "workspace_correct_logit": 3.193174123764038,
+                  "top_tokens": [
+                    {
+                      "token_id": 338,
+                      "token_text": " I",
+                      "logit": 12.397799491882324
+                    },
+                    {
+                      "token_id": 288,
+                      "token_text": " and",
+                      "logit": 11.658761978149414
+                    },
+                    {
+                      "token_id": 1045,
+                      "token_text": " my",
+                      "logit": 9.62293529510498
+                    },
+                    {
+                      "token_id": 32,
+                      "token_text": " ",
+                      "logit": 9.071687698364258
+                    },
+                    {
+                      "token_id": 384,
+                      "token_text": " we",
+                      "logit": 8.876188278198242
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "no_memory_state": {
+          "exact_accuracy": 0.0,
+          "core_accuracy": 0.0,
+          "teacher_forced": {
+            "mean_correct_rank": 1116.75,
+            "mean_correct_logprob": -3.6522229927844214,
+            "positions_top1_correct": 0.5,
+            "by_position": {
+              "0": {
+                "mean_correct_rank": 3.0,
+                "mean_correct_logprob": -1.5812057375907898,
+                "positions_top1_correct": 0.6,
+                "mean_episodic_correct_logit": 0.0,
+                "mean_episodic_token_correct_logit": 0.0,
+                "mean_workspace_correct_logit": 0.0
+              },
+              "1": {
+                "mean_correct_rank": 1.0,
+                "mean_correct_logprob": -0.09395302832126617,
+                "positions_top1_correct": 1.0,
+                "mean_episodic_correct_logit": 0.0,
+                "mean_episodic_token_correct_logit": 0.0,
+                "mean_workspace_correct_logit": 0.0
+              },
+              "2": {
+                "mean_correct_rank": 1.0,
+                "mean_correct_logprob": -0.23681629896163942,
+                "positions_top1_correct": 1.0,
+                "mean_episodic_correct_logit": 0.0,
+                "mean_episodic_token_correct_logit": 0.0,
+                "mean_workspace_correct_logit": 0.0
+              },
+              "3": {
+                "mean_correct_rank": 1.0,
+                "mean_correct_logprob": -0.011777605954557657,
+                "positions_top1_correct": 1.0,
+                "mean_episodic_correct_logit": 0.0,
+                "mean_episodic_token_correct_logit": 0.0,
+                "mean_workspace_correct_logit": 0.0
+              },
+              "4": {
+                "mean_correct_rank": 1.0,
+                "mean_correct_logprob": -0.618550968170166,
+                "positions_top1_correct": 1.0,
+                "mean_episodic_correct_logit": 0.0,
+                "mean_episodic_token_correct_logit": 0.0,
+                "mean_workspace_correct_logit": 0.0
+              },
+              "5": {
+                "mean_correct_rank": 1939.2,
+                "mean_correct_logprob": -7.115483093261719,
+                "positions_top1_correct": 0.0,
+                "mean_episodic_correct_logit": 0.0,
+                "mean_episodic_token_correct_logit": 0.0,
+                "mean_workspace_correct_logit": 0.0
+              },
+              "6": {
+                "mean_correct_rank": 4897.6,
+                "mean_correct_logprob": -9.905515003204346,
+                "positions_top1_correct": 0.0,
+                "mean_episodic_correct_logit": 0.0,
+                "mean_episodic_token_correct_logit": 0.0,
+                "mean_workspace_correct_logit": 0.0
+              },
+              "7": {
+                "mean_correct_rank": 1701.4,
+                "mean_correct_logprob": -6.815657603740692,
+                "positions_top1_correct": 0.2,
+                "mean_episodic_correct_logit": 0.0,
+                "mean_episodic_token_correct_logit": 0.0,
+                "mean_workspace_correct_logit": 0.0
+              },
+              "8": {
+                "mean_correct_rank": 2620.0,
+                "mean_correct_logprob": -5.945740193128586,
+                "positions_top1_correct": 0.0,
+                "mean_episodic_correct_logit": 0.0,
+                "mean_episodic_token_correct_logit": 0.0,
+                "mean_workspace_correct_logit": 0.0
+              },
+              "9": {
+                "mean_correct_rank": 195.5,
+                "mean_correct_logprob": -7.9622979164123535,
+                "positions_top1_correct": 0.0,
+                "mean_episodic_correct_logit": 0.0,
+                "mean_episodic_token_correct_logit": 0.0,
+                "mean_workspace_correct_logit": 0.0
+              },
+              "10": {
+                "mean_correct_rank": 3.5,
+                "mean_correct_logprob": -1.8521751761436462,
+                "positions_top1_correct": 0.0,
+                "mean_episodic_correct_logit": 0.0,
+                "mean_episodic_token_correct_logit": 0.0,
+                "mean_workspace_correct_logit": 0.0
+              }
+            }
+          },
+          "first_step_layer_summary": [
+            {
+              "layer": 0,
+              "slot_count": 0.0,
+              "episodic_gate": 1.0,
+              "workspace_gate": 1.0,
+              "attn_norm": 238.23779296875,
+              "mem_norm": 0.0,
+              "workspace_norm": 0.0,
+              "mlp_norm": 522.9067687988281,
+              "mem_entropy": 0.0,
+              "workspace_entropy": 0.0
+            },
+            {
+              "layer": 1,
+              "slot_count": 0.0,
+              "episodic_gate": 1.0,
+              "workspace_gate": 1.0,
+              "attn_norm": 292.3384704589844,
+              "mem_norm": 0.0,
+              "workspace_norm": 0.0,
+              "mlp_norm": 1328.32451171875,
+              "mem_entropy": 0.0,
+              "workspace_entropy": 0.0
+            },
+            {
+              "layer": 2,
+              "slot_count": 0.0,
+              "episodic_gate": 1.0,
+              "workspace_gate": 1.0,
+              "attn_norm": 206.4274475097656,
+              "mem_norm": 0.0,
+              "workspace_norm": 0.0,
+              "mlp_norm": 851.0516479492187,
+              "mem_entropy": 0.0,
+              "workspace_entropy": 0.0
+            },
+            {
+              "layer": 3,
+              "slot_count": 0.0,
+              "episodic_gate": 1.0,
+              "workspace_gate": 1.0,
+              "attn_norm": 304.64837036132815,
+              "mem_norm": 0.0,
+              "workspace_norm": 0.0,
+              "mlp_norm": 739.0286376953125,
+              "mem_entropy": 0.0,
+              "workspace_entropy": 0.0
+            },
+            {
+              "layer": 4,
+              "slot_count": 0.0,
+              "episodic_gate": 1.0,
+              "workspace_gate": 1.0,
+              "attn_norm": 201.24956665039062,
+              "mem_norm": 0.0,
+              "workspace_norm": 0.0,
+              "mlp_norm": 264.89478759765626,
+              "mem_entropy": 0.0,
+              "workspace_entropy": 0.0
+            },
+            {
+              "layer": 5,
+              "slot_count": 0.0,
+              "episodic_gate": 1.0,
+              "workspace_gate": 1.0,
+              "attn_norm": 224.91280822753907,
+              "mem_norm": 0.0,
+              "workspace_norm": 0.0,
+              "mlp_norm": 670.9074951171875,
+              "mem_entropy": 0.0,
+              "workspace_entropy": 0.0
+            },
+            {
+              "layer": 6,
+              "slot_count": 0.0,
+              "episodic_gate": 1.0,
+              "workspace_gate": 1.0,
+              "attn_norm": 193.54601135253907,
+              "mem_norm": 0.0,
+              "workspace_norm": 0.0,
+              "mlp_norm": 159.77631225585938,
+              "mem_entropy": 0.0,
+              "workspace_entropy": 0.0
+            },
+            {
+              "layer": 7,
+              "slot_count": 0.0,
+              "episodic_gate": 1.0,
+              "workspace_gate": 1.0,
+              "attn_norm": 141.61606140136718,
+              "mem_norm": 0.0,
+              "workspace_norm": 0.0,
+              "mlp_norm": 190.67084045410155,
+              "mem_entropy": 0.0,
+              "workspace_entropy": 0.0
+            },
+            {
+              "layer": 8,
+              "slot_count": 0.0,
+              "episodic_gate": 1.0,
+              "workspace_gate": 1.0,
+              "attn_norm": 217.97132873535156,
+              "mem_norm": 0.0,
+              "workspace_norm": 0.0,
+              "mlp_norm": 186.12952575683593,
+              "mem_entropy": 0.0,
+              "workspace_entropy": 0.0
+            },
+            {
+              "layer": 9,
+              "slot_count": 0.0,
+              "episodic_gate": 1.0,
+              "workspace_gate": 1.0,
+              "attn_norm": 150.54302368164062,
+              "mem_norm": 0.0,
+              "workspace_norm": 0.0,
+              "mlp_norm": 158.40068969726562,
+              "mem_entropy": 0.0,
+              "workspace_entropy": 0.0
+            },
+            {
+              "layer": 10,
+              "slot_count": 0.0,
+              "episodic_gate": 1.0,
+              "workspace_gate": 1.0,
+              "attn_norm": 166.53514404296874,
+              "mem_norm": 0.0,
+              "workspace_norm": 0.0,
+              "mlp_norm": 253.51678466796875,
+              "mem_entropy": 0.0,
+              "workspace_entropy": 0.0
+            },
+            {
+              "layer": 11,
+              "slot_count": 0.0,
+              "episodic_gate": 1.0,
+              "workspace_gate": 1.0,
+              "attn_norm": 215.00973510742188,
+              "mem_norm": 0.0,
+              "workspace_norm": 0.0,
+              "mlp_norm": 665.4159301757812,
+              "mem_entropy": 0.0,
+              "workspace_entropy": 0.0
+            }
+          ],
+          "failures": [
+            {
+              "recall_user": "Remind me of my dog's name.",
+              "expected_answer": "Your dog's name is Lumen.",
+              "response": "I'd be happy to help you find a new dog. What's your dog's name?",
+              "first_positions": [
+                {
+                  "position": 0,
+                  "correct_token_id": 6207,
+                  "correct_token_text": "Your",
+                  "predicted_token_id": 73,
+                  "predicted_token_text": "I",
+                  "correct_logit": 10.573549270629883,
+                  "correct_logprob": -2.9369254112243652,
+                  "correct_rank": 6,
+                  "episodic_correct_logit": 0.0,
+                  "episodic_token_correct_logit": 0.0,
+                  "workspace_correct_logit": 0.0,
+                  "top_tokens": [
+                    {
+                      "token_id": 73,
+                      "token_text": "I",
+                      "logit": 11.77738094329834
+                    },
+                    {
+                      "token_id": 449,
+                      "token_text": "The",
+                      "logit": 11.52126693725586
+                    },
+                    {
+                      "token_id": 9220,
+                      "token_text": "Rem",
+                      "logit": 11.08707332611084
+                    },
+                    {
+                      "token_id": 5873,
+                      "token_text": "My",
+                      "logit": 10.916885375976562
+                    },
+                    {
+                      "token_id": 65,
+                      "token_text": "A",
+                      "logit": 10.733994483947754
+                    }
+                  ]
+                },
+                {
+                  "position": 1,
+                  "correct_token_id": 2222,
+                  "correct_token_text": " dog",
+                  "predicted_token_id": 2222,
+                  "predicted_token_text": " dog",
+                  "correct_logit": 12.717084884643555,
+                  "correct_logprob": -0.1400768905878067,
+                  "correct_rank": 1,
+                  "episodic_correct_logit": 0.0,
+                  "episodic_token_correct_logit": 0.0,
+                  "workspace_correct_logit": 0.0,
+                  "top_tokens": [
+                    {
+                      "token_id": 2222,
+                      "token_text": " dog",
+                      "logit": 12.717084884643555
+                    },
+                    {
+                      "token_id": 3487,
+                      "token_text": " pet",
+                      "logit": 8.960055351257324
+                    },
+                    {
+                      "token_id": 1788,
+                      "token_text": " words",
+                      "logit": 7.79080867767334
+                    },
+                    {
+                      "token_id": 6006,
+                      "token_text": " sentence",
+                      "logit": 7.734865665435791
+                    },
+                    {
+                      "token_id": 20242,
+                      "token_text": " canine",
+                      "logit": 7.733866214752197
+                    }
+                  ]
+                },
+                {
+                  "position": 2,
+                  "correct_token_id": 566,
+                  "correct_token_text": "'s",
+                  "predicted_token_id": 566,
+                  "predicted_token_text": "'s",
+                  "correct_logit": 13.68426513671875,
+                  "correct_logprob": -0.0701526328921318,
+                  "correct_rank": 1,
+                  "episodic_correct_logit": 0.0,
+                  "episodic_token_correct_logit": 0.0,
+                  "workspace_correct_logit": 0.0,
+                  "top_tokens": [
+                    {
+                      "token_id": 566,
+                      "token_text": "'s",
+                      "logit": 13.68426513671875
+                    },
+                    {
+                      "token_id": 309,
+                      "token_text": " is",
+                      "logit": 10.19966983795166
+                    },
+                    {
+                      "token_id": 44,
+                      "token_text": ",",
+                      "logit": 9.032769203186035
+                    },
+                    {
+                      "token_id": 511,
+                      "token_text": " has",
+                      "logit": 8.59597396850586
+                    },
+                    {
+                      "token_id": 3268,
+                      "token_text": " seems",
+                      "logit": 7.803988933563232
+                    }
+                  ]
+                },
+                {
+                  "position": 3,
+                  "correct_token_id": 1588,
+                  "correct_token_text": " name",
+                  "predicted_token_id": 1588,
+                  "predicted_token_text": " name",
+                  "correct_logit": 13.505683898925781,
+                  "correct_logprob": -0.013502226211130619,
+                  "correct_rank": 1,
+                  "episodic_correct_logit": 0.0,
+                  "episodic_token_correct_logit": 0.0,
+                  "workspace_correct_logit": 0.0,
+                  "top_tokens": [
+                    {
+                      "token_id": 1588,
+                      "token_text": " name",
+                      "logit": 13.505683898925781
+                    },
+                    {
+                      "token_id": 10300,
+                      "token_text": " Name",
+                      "logit": 6.721807479858398
+                    },
+                    {
+                      "token_id": 1770,
+                      "token_text": " given",
+                      "logit": 6.638057231903076
+                    },
+                    {
+                      "token_id": 44,
+                      "token_text": ",",
+                      "logit": 6.290398597717285
+                    },
+                    {
+                      "token_id": 1446,
+                      "token_text": " last",
+                      "logit": 6.275515556335449
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "recall_user": "What's my dog's name?",
+              "expected_answer": "Your dog's name is Aster-Pine.",
+              "response": "Your dog's name is Luna, and it's a lovely breed. Luna is a gentle giant with a playful personality, often leaping out of the cage to play with your toys and chase after you. She's a bundle of joy, and her coat is always shiny and white, making her a lovely addition to your home",
+              "first_positions": [
+                {
+                  "position": 0,
+                  "correct_token_id": 6207,
+                  "correct_token_text": "Your",
+                  "predicted_token_id": 6207,
+                  "predicted_token_text": "Your",
+                  "correct_logit": 12.158278465270996,
+                  "correct_logprob": -0.7876224517822266,
+                  "correct_rank": 1,
+                  "episodic_correct_logit": 0.0,
+                  "episodic_token_correct_logit": 0.0,
+                  "workspace_correct_logit": 0.0,
+                  "top_tokens": [
+                    {
+                      "token_id": 6207,
+                      "token_text": "Your",
+                      "logit": 12.158278465270996
+                    },
+                    {
+                      "token_id": 5873,
+                      "token_text": "My",
+                      "logit": 11.566696166992188
+                    },
+                    {
+                      "token_id": 65,
+                      "token_text": "A",
+                      "logit": 10.045256614685059
+                    },
+                    {
+                      "token_id": 449,
+                      "token_text": "The",
+                      "logit": 9.566367149353027
+                    },
+                    {
+                      "token_id": 1344,
+                      "token_text": "It",
+                      "logit": 8.636438369750977
+                    }
+                  ]
+                },
+                {
+                  "position": 1,
+                  "correct_token_id": 2222,
+                  "correct_token_text": " dog",
+                  "predicted_token_id": 2222,
+                  "predicted_token_text": " dog",
+                  "correct_logit": 12.381831169128418,
+                  "correct_logprob": -0.07835662364959717,
+                  "correct_rank": 1,
+                  "episodic_correct_logit": 0.0,
+                  "episodic_token_correct_logit": 0.0,
+                  "workspace_correct_logit": 0.0,
+                  "top_tokens": [
+                    {
+                      "token_id": 2222,
+                      "token_text": " dog",
+                      "logit": 12.381831169128418
+                    },
+                    {
+                      "token_id": 33694,
+                      "token_text": " furry",
+                      "logit": 8.62609577178955
+                    },
+                    {
+                      "token_id": 3487,
+                      "token_text": " pet",
+                      "logit": 7.920380115509033
+                    },
+                    {
+                      "token_id": 26323,
+                      "token_text": " Labrador",
+                      "logit": 6.989899158477783
+                    },
+                    {
+                      "token_id": 20242,
+                      "token_text": " canine",
+                      "logit": 6.31476354598999
+                    }
+                  ]
+                },
+                {
+                  "position": 2,
+                  "correct_token_id": 566,
+                  "correct_token_text": "'s",
+                  "predicted_token_id": 566,
+                  "predicted_token_text": "'s",
+                  "correct_logit": 12.646700859069824,
+                  "correct_logprob": -0.4474353492259979,
+                  "correct_rank": 1,
+                  "episodic_correct_logit": 0.0,
+                  "episodic_token_correct_logit": 0.0,
+                  "workspace_correct_logit": 0.0,
+                  "top_tokens": [
+                    {
+                      "token_id": 566,
+                      "token_text": "'s",
+                      "logit": 12.646700859069824
+                    },
+                    {
+                      "token_id": 309,
+                      "token_text": " is",
+                      "logit": 11.747271537780762
+                    },
+                    {
+                      "token_id": 44,
+                      "token_text": ",",
+                      "logit": 10.0799560546875
+                    },
+                    {
+                      "token_id": 616,
+                      "token_text": " may",
+                      "logit": 8.688823699951172
+                    },
+                    {
+                      "token_id": 1693,
+                      "token_text": " likely",
+                      "logit": 7.854160785675049
+                    }
+                  ]
+                },
+                {
+                  "position": 3,
+                  "correct_token_id": 1588,
+                  "correct_token_text": " name",
+                  "predicted_token_id": 1588,
+                  "predicted_token_text": " name",
+                  "correct_logit": 12.38376235961914,
+                  "correct_logprob": -0.014354892075061798,
+                  "correct_rank": 1,
+                  "episodic_correct_logit": 0.0,
+                  "episodic_token_correct_logit": 0.0,
+                  "workspace_correct_logit": 0.0,
+                  "top_tokens": [
+                    {
+                      "token_id": 1588,
+                      "token_text": " name",
+                      "logit": 12.38376235961914
+                    },
+                    {
+                      "token_id": 1923,
+                      "token_text": " full",
+                      "logit": 5.917417049407959
+                    },
+                    {
+                      "token_id": 3297,
+                      "token_text": " got",
+                      "logit": 5.3634138107299805
+                    },
+                    {
+                      "token_id": 1470,
+                      "token_text": " real",
+                      "logit": 4.907928466796875
+                    },
+                    {
+                      "token_id": 8053,
+                      "token_text": " personality",
+                      "logit": 4.8776397705078125
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "recall_user": "Can you tell me my dog's name?",
+              "expected_answer": "Your dog's name is Pebble-Cloud.",
+              "response": "Your dog's name is Luna, and it's a lovely name. Luna is a playful name that references the idea of exploring the moon and the stars, which is fitting for a pet that loves to chase after balls of light. She's a gentle giant with a mischievous grin and a mischievous glint, and her",
+              "first_positions": [
+                {
+                  "position": 0,
+                  "correct_token_id": 6207,
+                  "correct_token_text": "Your",
+                  "predicted_token_id": 6207,
+                  "predicted_token_text": "Your",
+                  "correct_logit": 13.028742790222168,
+                  "correct_logprob": -0.4569329619407654,
+                  "correct_rank": 1,
+                  "episodic_correct_logit": 0.0,
+                  "episodic_token_correct_logit": 0.0,
+                  "workspace_correct_logit": 0.0,
+                  "top_tokens": [
+                    {
+                      "token_id": 6207,
+                      "token_text": "Your",
+                      "logit": 13.028742790222168
+                    },
+                    {
+                      "token_id": 5873,
+                      "token_text": "My",
+                      "logit": 11.458719253540039
+                    },
+                    {
+                      "token_id": 65,
+                      "token_text": "A",
+                      "logit": 10.093323707580566
+                    },
+                    {
+                      "token_id": 1344,
+                      "token_text": "It",
+                      "logit": 9.67715835571289
+                    },
+                    {
+                      "token_id": 468,
+                      "token_text": " your",
+                      "logit": 9.544042587280273
+                    }
+                  ]
+                },
+                {
+                  "position": 1,
+                  "correct_token_id": 2222,
+                  "correct_token_text": " dog",
+                  "predicted_token_id": 2222,
+                  "predicted_token_text": " dog",
+                  "correct_logit": 12.945649147033691,
+                  "correct_logprob": -0.03289811313152313,
+                  "correct_rank": 1,
+                  "episodic_correct_logit": 0.0,
+                  "episodic_token_correct_logit": 0.0,
+                  "workspace_correct_logit": 0.0,
+                  "top_tokens": [
+                    {
+                      "token_id": 2222,
+                      "token_text": " dog",
+                      "logit": 12.945649147033691
+                    },
+                    {
+                      "token_id": 3487,
+                      "token_text": " pet",
+                      "logit": 8.213739395141602
+                    },
+                    {
+                      "token_id": 33694,
+                      "token_text": " furry",
+                      "logit": 7.9091997146606445
+                    },
+                    {
+                      "token_id": 20242,
+                      "token_text": " canine",
+                      "logit": 6.760141372680664
+                    },
+                    {
+                      "token_id": 26323,
+                      "token_text": " Labrador",
+                      "logit": 6.373941898345947
+                    }
+                  ]
+                },
+                {
+                  "position": 2,
+                  "correct_token_id": 566,
+                  "correct_token_text": "'s",
+                  "predicted_token_id": 566,
+                  "predicted_token_text": "'s",
+                  "correct_logit": 13.698058128356934,
+                  "correct_logprob": -0.14890553057193756,
+                  "correct_rank": 1,
+                  "episodic_correct_logit": 0.0,
+                  "episodic_token_correct_logit": 0.0,
+                  "workspace_correct_logit": 0.0,
+                  "top_tokens": [
+                    {
+                      "token_id": 566,
+                      "token_text": "'s",
+                      "logit": 13.698058128356934
+                    },
+                    {
+                      "token_id": 309,
+                      "token_text": " is",
+                      "logit": 11.477669715881348
+                    },
+                    {
+                      "token_id": 44,
+                      "token_text": ",",
+                      "logit": 9.220455169677734
+                    },
+                    {
+                      "token_id": 616,
+                      "token_text": " may",
+                      "logit": 9.045807838439941
+                    },
+                    {
+                      "token_id": 400,
+                      "token_text": " can",
+                      "logit": 8.910045623779297
+                    }
+                  ]
+                },
+                {
+                  "position": 3,
+                  "correct_token_id": 1588,
+                  "correct_token_text": " name",
+                  "predicted_token_id": 1588,
+                  "predicted_token_text": " name",
+                  "correct_logit": 13.133342742919922,
+                  "correct_logprob": -0.003173793200403452,
+                  "correct_rank": 1,
+                  "episodic_correct_logit": 0.0,
+                  "episodic_token_correct_logit": 0.0,
+                  "workspace_correct_logit": 0.0,
+                  "top_tokens": [
+                    {
+                      "token_id": 1588,
+                      "token_text": " name",
+                      "logit": 13.133342742919922
+                    },
+                    {
+                      "token_id": 1923,
+                      "token_text": " full",
+                      "logit": 5.389712333679199
+                    },
+                    {
+                      "token_id": 1770,
+                      "token_text": " given",
+                      "logit": 4.786893367767334
+                    },
+                    {
+                      "token_id": 44,
+                      "token_text": ",",
+                      "logit": 4.40615177154541
+                    },
+                    {
+                      "token_id": 1470,
+                      "token_text": " real",
+                      "logit": 4.047513961791992
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+[
+  {
+    "recall_user": "Remind me of my dog's name.",
+    "expected": "Your dog's name is Lumen.",
+    "with_memory": "I'd be happy to help you find a new dog. What's your dog's name?",
+    "with_memory_core": false,
+    "no_memory": "I'd be happy to help you find a new dog. What's your dog's name?",
+    "no_memory_core": false
+  },
+  {
+    "recall_user": "What's my dog's name?",
+    "expected": "Your dog's name is Aster-Pine.",
+    "with_memory": "Your dog's name is Luna, and it's a lovely breed. Luna is a gentle giant with a playful personality, often leaping out of the cage to play with your toys and chase after you. She's a bundle of joy, and her coat is always shiny and white, making her a lovely addition to your home",
+    "with_memory_core": false,
+    "no_memory": "Your dog's name is Luna, and it's a lovely breed. Luna is a gentle giant with a playful personality, often leaping out of the cage to play with your toys and chase after you. She's a bundle of joy, and her coat is always shiny and white, making her a lovely addition to your home",
+    "no_memory_core": false
+  },
+  {
+    "recall_user": "Can you tell me my dog's name?",
+    "expected": "Your dog's name is Pebble-Cloud.",
+    "with_memory": "Your dog's name is Luna, and it's a lovely name. Luna is a playful name that references the idea of exploring the moon and the stars, which is fitting for a pet that loves to chase after balls of light. She's a gentle giant with a mischievous grin and a mischievous glint, and her",
+    "with_memory_core": false,
+    "no_memory": "Your dog's name is Luna, and it's a lovely name. Luna is a playful name that references the idea of exploring the moon and the stars, which is fitting for a pet that loves to chase after balls of light. She's a gentle giant with a mischievous grin and a mischievous glint, and her",
+    "no_memory_core": false
+  },
+  {
+    "recall_user": "Remind me of my dog's name.",
+    "expected": "Your dog's name is Taro-Otter.",
+    "with_memory": "I'd be happy to help you find a new dog. What's your dog's name?",
+    "with_memory_core": false,
+    "no_memory": "I'd be happy to help you find a new dog. What's your dog's name?",
+    "no_memory_core": false
+  },
+  {
+    "recall_user": "What's my dog's name?",
+    "expected": "Your dog's name is Nova-Grove.",
+    "with_memory": "Your dog's name is Luna, and it's a lovely breed. Luna is a gentle giant with a playful personality, often leaping out of the cage to play with your toys and chase after you. She's a bundle of joy, and her coat is always shiny and white, making her a lovely addition to your home",
+    "with_memory_core": false,
+    "no_memory": "Your dog's name is Luna, and it's a lovely breed. Luna is a gentle giant with a playful personality, often leaping out of the cage to play with your toys and chase after you. She's a bundle of joy, and her coat is always shiny and white, making her a lovely addition to your home",
+    "no_memory_core": false
+  }
+]

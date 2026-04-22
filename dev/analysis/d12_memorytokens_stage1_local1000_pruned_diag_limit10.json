@@ -1,0 +1,3037 @@
+{
+  "model_tag": "d12-memorytokens-stage1-local1000-pruned",
+  "step": 1000,
+  "dataset": "memory_dogname_focus_eval.jsonl",
+  "limit": 10,
+  "deterministic_generation": {
+    "with_memory": {
+      "exact_accuracy": 0.0,
+      "core_accuracy": 0.0,
+      "failures": [
+        {
+          "recall_user": "Remind me of my dog's name.",
+          "expected": "Your dog's name is Lumen.",
+          "got": "I'd be happy to help you find a new dog. What's your dog's name?"
+        },
+        {
+          "recall_user": "What's my dog's name?",
+          "expected": "Your dog's name is Aster-Pine.",
+          "got": "Your dog's name is Luna, and it's a lovely breed. Luna is a gentle giant with a playful personality, often leaping out of the cage to play with your toys and chase after you. She's a bundle of joy, and her coat is always shiny and white, making her a lovely addition to your home"
+        },
+        {
+          "recall_user": "Can you tell me my dog's name?",
+          "expected": "Your dog's name is Pebble-Cloud.",
+          "got": "Your dog's name is Luna, and it's a lovely name. Luna is a playful name that references the idea of exploring the moon and the stars, which is fitting for a pet that loves to chase after balls of light. She's a gentle giant with a mischievous grin and a mischievous glint, and her"
+        },
+        {
+          "recall_user": "Remind me of my dog's name.",
+          "expected": "Your dog's name is Taro-Otter.",
+          "got": "I'd be happy to help you find a new dog. What's your dog's name?"
+        },
+        {
+          "recall_user": "What's my dog's name?",
+          "expected": "Your dog's name is Nova-Grove.",
+          "got": "Your dog's name is Luna, and it's a lovely breed. Luna is a gentle giant with a playful personality, often leaping out of the cage to play with your toys and chase after you. She's a bundle of joy, and her coat is always shiny and white, making her a lovely addition to your home"
+        }
+      ]
+    },
+    "no_memory": {
+      "exact_accuracy": 0.0,
+      "core_accuracy": 0.0,
+      "failures": [
+        {
+          "recall_user": "Remind me of my dog's name.",
+          "expected": "Your dog's name is Lumen.",
+          "got": "I'd be happy to help you find a new dog. What's your dog's name?"
+        },
+        {
+          "recall_user": "What's my dog's name?",
+          "expected": "Your dog's name is Aster-Pine.",
+          "got": "Your dog's name is Luna, and it's a lovely breed. Luna is a gentle giant with a playful personality, often leaping out of the cage to play with your toys and chase after you. She's a bundle of joy, and her coat is always shiny and white, making her a lovely addition to your home"
+        },
+        {
+          "recall_user": "Can you tell me my dog's name?",
+          "expected": "Your dog's name is Pebble-Cloud.",
+          "got": "Your dog's name is Luna, and it's a lovely name. Luna is a playful name that references the idea of exploring the moon and the stars, which is fitting for a pet that loves to chase after balls of light. She's a gentle giant with a mischievous grin and a mischievous glint, and her"
+        },
+        {
+          "recall_user": "Remind me of my dog's name.",
+          "expected": "Your dog's name is Taro-Otter.",
+          "got": "I'd be happy to help you find a new dog. What's your dog's name?"
+        },
+        {
+          "recall_user": "What's my dog's name?",
+          "expected": "Your dog's name is Nova-Grove.",
+          "got": "Your dog's name is Luna, and it's a lovely breed. Luna is a gentle giant with a playful personality, often leaping out of the cage to play with your toys and chase after you. She's a bundle of joy, and her coat is always shiny and white, making her a lovely addition to your home"
+        }
+      ]
+    }
+  },
+  "teacher_forced_compare": {
+    "overall": {
+      "mean_rank_mem": 1027.6526315789474,
+      "mean_rank_nomem": 1027.6526315789474,
+      "mean_logprob_mem": -3.701439645582516,
+      "mean_logprob_nomem": -3.701439645582516,
+      "mean_dlogp": 0.0,
+      "mean_max_abs_logit_diff": 0.0,
+      "mean_mean_abs_logit_diff": 0.0,
+      "top1_mem": 0.5263157894736842,
+      "top1_nomem": 0.5263157894736842
+    },
+    "by_position": {
+      "0": {
+        "mean_rank_mem": 3.0,
+        "mean_rank_nomem": 3.0,
+        "mean_logprob_mem": -1.5480897784233094,
+        "mean_logprob_nomem": -1.5480897784233094,
+        "mean_dlogp": 0.0,
+        "mean_max_abs_logit_diff": 0.0,
+        "top1_mem": 0.6,
+        "top1_nomem": 0.6
+      },
+      "1": {
+        "mean_rank_mem": 1.0,
+        "mean_rank_nomem": 1.0,
+        "mean_logprob_mem": -0.08933931402862072,
+        "mean_logprob_nomem": -0.08933931402862072,
+        "mean_dlogp": 0.0,
+        "mean_max_abs_logit_diff": 0.0,
+        "top1_mem": 1.0,
+        "top1_nomem": 1.0
+      },
+      "2": {
+        "mean_rank_mem": 1.0,
+        "mean_rank_nomem": 1.0,
+        "mean_logprob_mem": -0.20690367072820665,
+        "mean_logprob_nomem": -0.20690367072820665,
+        "mean_dlogp": 0.0,
+        "mean_max_abs_logit_diff": 0.0,
+        "top1_mem": 1.0,
+        "top1_nomem": 1.0
+      },
+      "3": {
+        "mean_rank_mem": 1.0,
+        "mean_rank_nomem": 1.0,
+        "mean_logprob_mem": -0.010616551805287599,
+        "mean_logprob_nomem": -0.010616551805287599,
+        "mean_dlogp": 0.0,
+        "mean_max_abs_logit_diff": 0.0,
+        "top1_mem": 1.0,
+        "top1_nomem": 1.0
+      },
+      "4": {
+        "mean_rank_mem": 1.0,
+        "mean_rank_nomem": 1.0,
+        "mean_logprob_mem": -0.6596836268901825,
+        "mean_logprob_nomem": -0.6596836268901825,
+        "mean_dlogp": 0.0,
+        "mean_max_abs_logit_diff": 0.0,
+        "top1_mem": 1.0,
+        "top1_nomem": 1.0
+      },
+      "5": {
+        "mean_rank_mem": 4578.5,
+        "mean_rank_nomem": 4578.5,
+        "mean_logprob_mem": -9.324194741249084,
+        "mean_logprob_nomem": -9.324194741249084,
+        "mean_dlogp": 0.0,
+        "mean_max_abs_logit_diff": 0.0,
+        "top1_mem": 0.0,
+        "top1_nomem": 0.0
+      },
+      "6": {
+        "mean_rank_mem": 2902.0,
+        "mean_rank_nomem": 2902.0,
+        "mean_logprob_mem": -9.620579695701599,
+        "mean_logprob_nomem": -9.620579695701599,
+        "mean_dlogp": 0.0,
+        "mean_max_abs_logit_diff": 0.0,
+        "top1_mem": 0.0,
+        "top1_nomem": 0.0
+      },
+      "7": {
+        "mean_rank_mem": 1133.6,
+        "mean_rank_nomem": 1133.6,
+        "mean_logprob_mem": -6.206543731689453,
+        "mean_logprob_nomem": -6.206543731689453,
+        "mean_dlogp": 0.0,
+        "mean_max_abs_logit_diff": 0.0,
+        "top1_mem": 0.2,
+        "top1_nomem": 0.2
+      },
+      "8": {
+        "mean_rank_mem": 1376.75,
+        "mean_rank_nomem": 1376.75,
+        "mean_logprob_mem": -6.442320138216019,
+        "mean_logprob_nomem": -6.442320138216019,
+        "mean_dlogp": 0.0,
+        "mean_max_abs_logit_diff": 0.0,
+        "top1_mem": 0.0,
+        "top1_nomem": 0.0
+      },
+      "9": {
+        "mean_rank_mem": 79.0,
+        "mean_rank_nomem": 79.0,
+        "mean_logprob_mem": -3.9468873262405397,
+        "mean_logprob_nomem": -3.9468873262405397,
+        "mean_dlogp": 0.0,
+        "mean_max_abs_logit_diff": 0.0,
+        "top1_mem": 0.4,
+        "top1_nomem": 0.4
+      },
+      "10": {
+        "mean_rank_mem": 3.5,
+        "mean_rank_nomem": 3.5,
+        "mean_logprob_mem": -1.8521287441253662,
+        "mean_logprob_nomem": -1.8521287441253662,
+        "mean_dlogp": 0.0,
+        "mean_max_abs_logit_diff": 0.0,
+        "top1_mem": 0.0,
+        "top1_nomem": 0.0
+      }
+    }
+  },
+  "example_rows_head": [
+    {
+      "position": 0,
+      "correct_token_id": 6207,
+      "correct_token_text": "Your",
+      "predicted_token_mem": "I",
+      "predicted_token_nomem": "I",
+      "correct_rank_mem": 6,
+      "correct_rank_nomem": 6,
+      "correct_logprob_mem": -2.936868906021118,
+      "correct_logprob_nomem": -2.936868906021118,
+      "dlogp": 0.0,
+      "max_abs_logit_diff": 0.0,
+      "mean_abs_logit_diff": 0.0,
+      "episodic_correct_logit_mem": 0.0,
+      "episodic_top_tokens_mem": [
+        {
+          "token_id": 2,
+          "token_text": "\u0002",
+          "logit": 0.0
+        },
+        {
+          "token_id": 4,
+          "token_text": "\u0004",
+          "logit": 0.0
+        },
+        {
+          "token_id": 0,
+          "token_text": "\u0000",
+          "logit": 0.0
+        },
+        {
+          "token_id": 1,
+          "token_text": "\u0001",
+          "logit": 0.0
+        },
+        {
+          "token_id": 3,
+          "token_text": "\u0003",
+          "logit": 0.0
+        }
+      ],
+      "final_top_tokens_mem": [
+        {
+          "token_id": 73,
+          "token_text": "I",
+          "logit": 11.777379989624023
+        },
+        {
+          "token_id": 449,
+          "token_text": "The",
+          "logit": 11.521268844604492
+        },
+        {
+          "token_id": 9220,
+          "token_text": "Rem",
+          "logit": 11.08707332611084
+        },
+        {
+          "token_id": 5873,
+          "token_text": "My",
+          "logit": 10.916882514953613
+        },
+        {
+          "token_id": 65,
+          "token_text": "A",
+          "logit": 10.733993530273438
+        }
+      ],
+      "final_top_tokens_nomem": [
+        {
+          "token_id": 73,
+          "token_text": "I",
+          "logit": 11.777379989624023
+        },
+        {
+          "token_id": 449,
+          "token_text": "The",
+          "logit": 11.521268844604492
+        },
+        {
+          "token_id": 9220,
+          "token_text": "Rem",
+          "logit": 11.08707332611084
+        },
+        {
+          "token_id": 5873,
+          "token_text": "My",
+          "logit": 10.916882514953613
+        },
+        {
+          "token_id": 65,
+          "token_text": "A",
+          "logit": 10.733993530273438
+        }
+      ],
+      "example_index": 0,
+      "recall_user": "Remind me of my dog's name."
+    },
+    {
+      "position": 1,
+      "correct_token_id": 2222,
+      "correct_token_text": " dog",
+      "predicted_token_mem": " dog",
+      "predicted_token_nomem": " dog",
+      "correct_rank_mem": 1,
+      "correct_rank_nomem": 1,
+      "correct_logprob_mem": -0.14000031352043152,
+      "correct_logprob_nomem": -0.14000031352043152,
+      "dlogp": 0.0,
+      "max_abs_logit_diff": 0.0,
+      "mean_abs_logit_diff": 0.0,
+      "episodic_correct_logit_mem": 0.0,
+      "episodic_top_tokens_mem": [
+        {
+          "token_id": 2,
+          "token_text": "\u0002",
+          "logit": 0.0
+        },
+        {
+          "token_id": 4,
+          "token_text": "\u0004",
+          "logit": 0.0
+        },
+        {
+          "token_id": 0,
+          "token_text": "\u0000",
+          "logit": 0.0
+        },
+        {
+          "token_id": 1,
+          "token_text": "\u0001",
+          "logit": 0.0
+        },
+        {
+          "token_id": 3,
+          "token_text": "\u0003",
+          "logit": 0.0
+        }
+      ],
+      "final_top_tokens_mem": [
+        {
+          "token_id": 2222,
+          "token_text": " dog",
+          "logit": 12.71709156036377
+        },
+        {
+          "token_id": 3487,
+          "token_text": " pet",
+          "logit": 8.960063934326172
+        },
+        {
+          "token_id": 1788,
+          "token_text": " words",
+          "logit": 7.790801525115967
+        },
+        {
+          "token_id": 6006,
+          "token_text": " sentence",
+          "logit": 7.734865665435791
+        },
+        {
+          "token_id": 20242,
+          "token_text": " canine",
+          "logit": 7.73387336730957
+        }
+      ],
+      "final_top_tokens_nomem": [
+        {
+          "token_id": 2222,
+          "token_text": " dog",
+          "logit": 12.71709156036377
+        },
+        {
+          "token_id": 3487,
+          "token_text": " pet",
+          "logit": 8.960063934326172
+        },
+        {
+          "token_id": 1788,
+          "token_text": " words",
+          "logit": 7.790801525115967
+        },
+        {
+          "token_id": 6006,
+          "token_text": " sentence",
+          "logit": 7.734865665435791
+        },
+        {
+          "token_id": 20242,
+          "token_text": " canine",
+          "logit": 7.73387336730957
+        }
+      ],
+      "example_index": 0,
+      "recall_user": "Remind me of my dog's name."
+    },
+    {
+      "position": 2,
+      "correct_token_id": 566,
+      "correct_token_text": "'s",
+      "predicted_token_mem": "'s",
+      "predicted_token_nomem": "'s",
+      "correct_rank_mem": 1,
+      "correct_rank_nomem": 1,
+      "correct_logprob_mem": -0.07008983939886093,
+      "correct_logprob_nomem": -0.07008983939886093,
+      "dlogp": 0.0,
+      "max_abs_logit_diff": 0.0,
+      "mean_abs_logit_diff": 0.0,
+      "episodic_correct_logit_mem": 0.0,
+      "episodic_top_tokens_mem": [
+        {
+          "token_id": 2,
+          "token_text": "\u0002",
+          "logit": 0.0
+        },
+        {
+          "token_id": 4,
+          "token_text": "\u0004",
+          "logit": 0.0
+        },
+        {
+          "token_id": 0,
+          "token_text": "\u0000",
+          "logit": 0.0
+        },
+        {
+          "token_id": 1,
+          "token_text": "\u0001",
+          "logit": 0.0
+        },
+        {
+          "token_id": 3,
+          "token_text": "\u0003",
+          "logit": 0.0
+        }
+      ],
+      "final_top_tokens_mem": [
+        {
+          "token_id": 566,
+          "token_text": "'s",
+          "logit": 13.6842622756958
+        },
+        {
+          "token_id": 309,
+          "token_text": " is",
+          "logit": 10.199668884277344
+        },
+        {
+          "token_id": 44,
+          "token_text": ",",
+          "logit": 9.032768249511719
+        },
+        {
+          "token_id": 511,
+          "token_text": " has",
+          "logit": 8.595966339111328
+        },
+        {
+          "token_id": 3268,
+          "token_text": " seems",
+          "logit": 7.803980827331543
+        }
+      ],
+      "final_top_tokens_nomem": [
+        {
+          "token_id": 566,
+          "token_text": "'s",
+          "logit": 13.6842622756958
+        },
+        {
+          "token_id": 309,
+          "token_text": " is",
+          "logit": 10.199668884277344
+        },
+        {
+          "token_id": 44,
+          "token_text": ",",
+          "logit": 9.032768249511719
+        },
+        {
+          "token_id": 511,
+          "token_text": " has",
+          "logit": 8.595966339111328
+        },
+        {
+          "token_id": 3268,
+          "token_text": " seems",
+          "logit": 7.803980827331543
+        }
+      ],
+      "example_index": 0,
+      "recall_user": "Remind me of my dog's name."
+    },
+    {
+      "position": 3,
+      "correct_token_id": 1588,
+      "correct_token_text": " name",
+      "predicted_token_mem": " name",
+      "predicted_token_nomem": " name",
+      "correct_rank_mem": 1,
+      "correct_rank_nomem": 1,
+      "correct_logprob_mem": -0.013455298729240894,
+      "correct_logprob_nomem": -0.013455298729240894,
+      "dlogp": 0.0,
+      "max_abs_logit_diff": 0.0,
+      "mean_abs_logit_diff": 0.0,
+      "episodic_correct_logit_mem": 0.0,
+      "episodic_top_tokens_mem": [
+        {
+          "token_id": 2,
+          "token_text": "\u0002",
+          "logit": 0.0
+        },
+        {
+          "token_id": 4,
+          "token_text": "\u0004",
+          "logit": 0.0
+        },
+        {
+          "token_id": 0,
+          "token_text": "\u0000",
+          "logit": 0.0
+        },
+        {
+          "token_id": 1,
+          "token_text": "\u0001",
+          "logit": 0.0
+        },
+        {
+          "token_id": 3,
+          "token_text": "\u0003",
+          "logit": 0.0
+        }
+      ],
+      "final_top_tokens_mem": [
+        {
+          "token_id": 1588,
+          "token_text": " name",
+          "logit": 13.505684852600098
+        },
+        {
+          "token_id": 10300,
+          "token_text": " Name",
+          "logit": 6.721802234649658
+        },
+        {
+          "token_id": 1770,
+          "token_text": " given",
+          "logit": 6.6380534172058105
+        },
+        {
+          "token_id": 44,
+          "token_text": ",",
+          "logit": 6.290401458740234
+        },
+        {
+          "token_id": 1446,
+          "token_text": " last",
+          "logit": 6.275512218475342
+        }
+      ],
+      "final_top_tokens_nomem": [
+        {
+          "token_id": 1588,
+          "token_text": " name",
+          "logit": 13.505684852600098
+        },
+        {
+          "token_id": 10300,
+          "token_text": " Name",
+          "logit": 6.721802234649658
+        },
+        {
+          "token_id": 1770,
+          "token_text": " given",
+          "logit": 6.6380534172058105
+        },
+        {
+          "token_id": 44,
+          "token_text": ",",
+          "logit": 6.290401458740234
+        },
+        {
+          "token_id": 1446,
+          "token_text": " last",
+          "logit": 6.275512218475342
+        }
+      ],
+      "example_index": 0,
+      "recall_user": "Remind me of my dog's name."
+    },
+    {
+      "position": 4,
+      "correct_token_id": 309,
+      "correct_token_text": " is",
+      "predicted_token_mem": " is",
+      "predicted_token_nomem": " is",
+      "correct_rank_mem": 1,
+      "correct_rank_nomem": 1,
+      "correct_logprob_mem": -0.6501596570014954,
+      "correct_logprob_nomem": -0.6501596570014954,
+      "dlogp": 0.0,
+      "max_abs_logit_diff": 0.0,
+      "mean_abs_logit_diff": 0.0,
+      "episodic_correct_logit_mem": 0.0,
+      "episodic_top_tokens_mem": [
+        {
+          "token_id": 2,
+          "token_text": "\u0002",
+          "logit": 0.0
+        },
+        {
+          "token_id": 4,
+          "token_text": "\u0004",
+          "logit": 0.0
+        },
+        {
+          "token_id": 0,
+          "token_text": "\u0000",
+          "logit": 0.0
+        },
+        {
+          "token_id": 1,
+          "token_text": "\u0001",
+          "logit": 0.0
+        },
+        {
+          "token_id": 3,
+          "token_text": "\u0003",
+          "logit": 0.0
+        }
+      ],
+      "final_top_tokens_mem": [
+        {
+          "token_id": 309,
+          "token_text": " is",
+          "logit": 12.559663772583008
+        },
+        {
+          "token_id": 46,
+          "token_text": ".",
+          "logit": 10.875184059143066
+        },
+        {
+          "token_id": 44,
+          "token_text": ",",
+          "logit": 10.529870986938477
+        },
+        {
+          "token_id": 616,
+          "token_text": " may",
+          "logit": 9.802360534667969
+        },
+        {
+          "token_id": 400,
+          "token_text": " can",
+          "logit": 9.762603759765625
+        }
+      ],
+      "final_top_tokens_nomem": [
+        {
+          "token_id": 309,
+          "token_text": " is",
+          "logit": 12.559663772583008
+        },
+        {
+          "token_id": 46,
+          "token_text": ".",
+          "logit": 10.875184059143066
+        },
+        {
+          "token_id": 44,
+          "token_text": ",",
+          "logit": 10.529870986938477
+        },
+        {
+          "token_id": 616,
+          "token_text": " may",
+          "logit": 9.802360534667969
+        },
+        {
+          "token_id": 400,
+          "token_text": " can",
+          "logit": 9.762603759765625
+        }
+      ],
+      "example_index": 0,
+      "recall_user": "Remind me of my dog's name."
+    },
+    {
+      "position": 5,
+      "correct_token_id": 446,
+      "correct_token_text": " L",
+      "predicted_token_mem": " Max",
+      "predicted_token_nomem": " Max",
+      "correct_rank_mem": 39,
+      "correct_rank_nomem": 39,
+      "correct_logprob_mem": -5.726285934448242,
+      "correct_logprob_nomem": -5.726285934448242,
+      "dlogp": 0.0,
+      "max_abs_logit_diff": 0.0,
+      "mean_abs_logit_diff": 0.0,
+      "episodic_correct_logit_mem": 0.0,
+      "episodic_top_tokens_mem": [
+        {
+          "token_id": 2,
+          "token_text": "\u0002",
+          "logit": 0.0
+        },
+        {
+          "token_id": 4,
+          "token_text": "\u0004",
+          "logit": 0.0
+        },
+        {
+          "token_id": 0,
+          "token_text": "\u0000",
+          "logit": 0.0
+        },
+        {
+          "token_id": 1,
+          "token_text": "\u0001",
+          "logit": 0.0
+        },
+        {
+          "token_id": 3,
+          "token_text": "\u0003",
+          "logit": 0.0
+        }
+      ],
+      "final_top_tokens_mem": [
+        {
+          "token_id": 9097,
+          "token_text": " Max",
+          "logit": 10.719523429870605
+        },
+        {
+          "token_id": 48495,
+          "token_text": " Luna",
+          "logit": 10.296743392944336
+        },
+        {
+          "token_id": 678,
+          "token_text": " \"",
+          "logit": 9.623518943786621
+        },
+        {
+          "token_id": 629,
+          "token_text": " K",
+          "logit": 9.610681533813477
+        },
+        {
+          "token_id": 11813,
+          "token_text": " Ak",
+          "logit": 9.276257514953613
+        }
+      ],
+      "final_top_tokens_nomem": [
+        {
+          "token_id": 9097,
+          "token_text": " Max",
+          "logit": 10.719523429870605
+        },
+        {
+          "token_id": 48495,
+          "token_text": " Luna",
+          "logit": 10.296743392944336
+        },
+        {
+          "token_id": 678,
+          "token_text": " \"",
+          "logit": 9.623518943786621
+        },
+        {
+          "token_id": 629,
+          "token_text": " K",
+          "logit": 9.610681533813477
+        },
+        {
+          "token_id": 11813,
+          "token_text": " Ak",
+          "logit": 9.276257514953613
+        }
+      ],
+      "example_index": 0,
+      "recall_user": "Remind me of my dog's name."
+    },
+    {
+      "position": 6,
+      "correct_token_id": 16949,
+      "correct_token_text": "umen",
+      "predicted_token_mem": "ola",
+      "predicted_token_nomem": "ola",
+      "correct_rank_mem": 13,
+      "correct_rank_nomem": 13,
+      "correct_logprob_mem": -5.4577436447143555,
+      "correct_logprob_nomem": -5.4577436447143555,
+      "dlogp": 0.0,
+      "max_abs_logit_diff": 0.0,
+      "mean_abs_logit_diff": 0.0,
+      "episodic_correct_logit_mem": 0.0,
+      "episodic_top_tokens_mem": [
+        {
+          "token_id": 2,
+          "token_text": "\u0002",
+          "logit": 0.0
+        },
+        {
+          "token_id": 4,
+          "token_text": "\u0004",
+          "logit": 0.0
+        },
+        {
+          "token_id": 0,
+          "token_text": "\u0000",
+          "logit": 0.0
+        },
+        {
+          "token_id": 1,
+          "token_text": "\u0001",
+          "logit": 0.0
+        },
+        {
+          "token_id": 3,
+          "token_text": "\u0003",
+          "logit": 0.0
+        }
+      ],
+      "final_top_tokens_mem": [
+        {
+          "token_id": 6642,
+          "token_text": "ola",
+          "logit": 10.468008995056152
+        },
+        {
+          "token_id": 2314,
+          "token_text": "iam",
+          "logit": 8.243202209472656
+        },
+        {
+          "token_id": 5089,
+          "token_text": "umin",
+          "logit": 8.227458000183105
+        },
+        {
+          "token_id": 9491,
+          "token_text": "ila",
+          "logit": 8.088705062866211
+        },
+        {
+          "token_id": 65016,
+          "token_text": "assie",
+          "logit": 7.974701881408691
+        }
+      ],
+      "final_top_tokens_nomem": [
+        {
+          "token_id": 6642,
+          "token_text": "ola",
+          "logit": 10.468008995056152
+        },
+        {
+          "token_id": 2314,
+          "token_text": "iam",
+          "logit": 8.243202209472656
+        },
+        {
+          "token_id": 5089,
+          "token_text": "umin",
+          "logit": 8.227458000183105
+        },
+        {
+          "token_id": 9491,
+          "token_text": "ila",
+          "logit": 8.088705062866211
+        },
+        {
+          "token_id": 65016,
+          "token_text": "assie",
+          "logit": 7.974701881408691
+        }
+      ],
+      "example_index": 0,
+      "recall_user": "Remind me of my dog's name."
+    },
+    {
+      "position": 7,
+      "correct_token_id": 46,
+      "correct_token_text": ".",
+      "predicted_token_mem": ",",
+      "predicted_token_nomem": ",",
+      "correct_rank_mem": 2,
+      "correct_rank_nomem": 2,
+      "correct_logprob_mem": -1.0023736953735352,
+      "correct_logprob_nomem": -1.0023736953735352,
+      "dlogp": 0.0,
+      "max_abs_logit_diff": 0.0,
+      "mean_abs_logit_diff": 0.0,
+      "episodic_correct_logit_mem": 0.0,
+      "episodic_top_tokens_mem": [
+        {
+          "token_id": 2,
+          "token_text": "\u0002",
+          "logit": 0.0
+        },
+        {
+          "token_id": 4,
+          "token_text": "\u0004",
+          "logit": 0.0
+        },
+        {
+          "token_id": 0,
+          "token_text": "\u0000",
+          "logit": 0.0
+        },
+        {
+          "token_id": 1,
+          "token_text": "\u0001",
+          "logit": 0.0
+        },
+        {
+          "token_id": 3,
+          "token_text": "\u0003",
+          "logit": 0.0
+        }
+      ],
+      "final_top_tokens_mem": [
+        {
+          "token_id": 44,
+          "token_text": ",",
+          "logit": 9.57530689239502
+        },
+        {
+          "token_id": 46,
+          "token_text": ".",
+          "logit": 9.449350357055664
+        },
+        {
+          "token_id": 269,
+          "token_text": "es",
+          "logit": 7.464443206787109
+        },
+        {
+          "token_id": 1122,
+          "token_text": "ides",
+          "logit": 6.831538200378418
+        },
+        {
+          "token_id": 120,
+          "token_text": "x",
+          "logit": 5.695703506469727
+        }
+      ],
+      "final_top_tokens_nomem": [
+        {
+          "token_id": 44,
+          "token_text": ",",
+          "logit": 9.57530689239502
+        },
+        {
+          "token_id": 46,
+          "token_text": ".",
+          "logit": 9.449350357055664
+        },
+        {
+          "token_id": 269,
+          "token_text": "es",
+          "logit": 7.464443206787109
+        },
+        {
+          "token_id": 1122,
+          "token_text": "ides",
+          "logit": 6.831538200378418
+        },
+        {
+          "token_id": 120,
+          "token_text": "x",
+          "logit": 5.695703506469727
+        }
+      ],
+      "example_index": 0,
+      "recall_user": "Remind me of my dog's name."
+    },
+    {
+      "position": 0,
+      "correct_token_id": 6207,
+      "correct_token_text": "Your",
+      "predicted_token_mem": "Your",
+      "predicted_token_nomem": "Your",
+      "correct_rank_mem": 1,
+      "correct_rank_nomem": 1,
+      "correct_logprob_mem": -0.7875760197639465,
+      "correct_logprob_nomem": -0.7875760197639465,
+      "dlogp": 0.0,
+      "max_abs_logit_diff": 0.0,
+      "mean_abs_logit_diff": 0.0,
+      "episodic_correct_logit_mem": 0.0,
+      "episodic_top_tokens_mem": [
+        {
+          "token_id": 2,
+          "token_text": "\u0002",
+          "logit": 0.0
+        },
+        {
+          "token_id": 4,
+          "token_text": "\u0004",
+          "logit": 0.0
+        },
+        {
+          "token_id": 0,
+          "token_text": "\u0000",
+          "logit": 0.0
+        },
+        {
+          "token_id": 1,
+          "token_text": "\u0001",
+          "logit": 0.0
+        },
+        {
+          "token_id": 3,
+          "token_text": "\u0003",
+          "logit": 0.0
+        }
+      ],
+      "final_top_tokens_mem": [
+        {
+          "token_id": 6207,
+          "token_text": "Your",
+          "logit": 12.158280372619629
+        },
+        {
+          "token_id": 5873,
+          "token_text": "My",
+          "logit": 11.566689491271973
+        },
+        {
+          "token_id": 65,
+          "token_text": "A",
+          "logit": 10.045251846313477
+        },
+        {
+          "token_id": 449,
+          "token_text": "The",
+          "logit": 9.566367149353027
+        },
+        {
+          "token_id": 1344,
+          "token_text": "It",
+          "logit": 8.636445045471191
+        }
+      ],
+      "final_top_tokens_nomem": [
+        {
+          "token_id": 6207,
+          "token_text": "Your",
+          "logit": 12.158280372619629
+        },
+        {
+          "token_id": 5873,
+          "token_text": "My",
+          "logit": 11.566689491271973
+        },
+        {
+          "token_id": 65,
+          "token_text": "A",
+          "logit": 10.045251846313477
+        },
+        {
+          "token_id": 449,
+          "token_text": "The",
+          "logit": 9.566367149353027
+        },
+        {
+          "token_id": 1344,
+          "token_text": "It",
+          "logit": 8.636445045471191
+        }
+      ],
+      "example_index": 1,
+      "recall_user": "What's my dog's name?"
+    },
+    {
+      "position": 1,
+      "correct_token_id": 2222,
+      "correct_token_text": " dog",
+      "predicted_token_mem": " dog",
+      "predicted_token_nomem": " dog",
+      "correct_rank_mem": 1,
+      "correct_rank_nomem": 1,
+      "correct_logprob_mem": -0.07828927040100098,
+      "correct_logprob_nomem": -0.07828927040100098,
+      "dlogp": 0.0,
+      "max_abs_logit_diff": 0.0,
+      "mean_abs_logit_diff": 0.0,
+      "episodic_correct_logit_mem": 0.0,
+      "episodic_top_tokens_mem": [
+        {
+          "token_id": 2,
+          "token_text": "\u0002",
+          "logit": 0.0
+        },
+        {
+          "token_id": 4,
+          "token_text": "\u0004",
+          "logit": 0.0
+        },
+        {
+          "token_id": 0,
+          "token_text": "\u0000",
+          "logit": 0.0
+        },
+        {
+          "token_id": 1,
+          "token_text": "\u0001",
+          "logit": 0.0
+        },
+        {
+          "token_id": 3,
+          "token_text": "\u0003",
+          "logit": 0.0
+        }
+      ],
+      "final_top_tokens_mem": [
+        {
+          "token_id": 2222,
+          "token_text": " dog",
+          "logit": 12.381830215454102
+        },
+        {
+          "token_id": 33694,
+          "token_text": " furry",
+          "logit": 8.626091003417969
+        },
+        {
+          "token_id": 3487,
+          "token_text": " pet",
+          "logit": 7.920372009277344
+        },
+        {
+          "token_id": 26323,
+          "token_text": " Labrador",
+          "logit": 6.989896774291992
+        },
+        {
+          "token_id": 20242,
+          "token_text": " canine",
+          "logit": 6.314756870269775
+        }
+      ],
+      "final_top_tokens_nomem": [
+        {
+          "token_id": 2222,
+          "token_text": " dog",
+          "logit": 12.381830215454102
+        },
+        {
+          "token_id": 33694,
+          "token_text": " furry",
+          "logit": 8.626091003417969
+        },
+        {
+          "token_id": 3487,
+          "token_text": " pet",
+          "logit": 7.920372009277344
+        },
+        {
+          "token_id": 26323,
+          "token_text": " Labrador",
+          "logit": 6.989896774291992
+        },
+        {
+          "token_id": 20242,
+          "token_text": " canine",
+          "logit": 6.314756870269775
+        }
+      ],
+      "example_index": 1,
+      "recall_user": "What's my dog's name?"
+    },
+    {
+      "position": 2,
+      "correct_token_id": 566,
+      "correct_token_text": "'s",
+      "predicted_token_mem": "'s",
+      "predicted_token_nomem": "'s",
+      "correct_rank_mem": 1,
+      "correct_rank_nomem": 1,
+      "correct_logprob_mem": -0.4473761320114136,
+      "correct_logprob_nomem": -0.4473761320114136,
+      "dlogp": 0.0,
+      "max_abs_logit_diff": 0.0,
+      "mean_abs_logit_diff": 0.0,
+      "episodic_correct_logit_mem": 0.0,
+      "episodic_top_tokens_mem": [
+        {
+          "token_id": 2,
+          "token_text": "\u0002",
+          "logit": 0.0
+        },
+        {
+          "token_id": 4,
+          "token_text": "\u0004",
+          "logit": 0.0
+        },
+        {
+          "token_id": 0,
+          "token_text": "\u0000",
+          "logit": 0.0
+        },
+        {
+          "token_id": 1,
+          "token_text": "\u0001",
+          "logit": 0.0
+        },
+        {
+          "token_id": 3,
+          "token_text": "\u0003",
+          "logit": 0.0
+        }
+      ],
+      "final_top_tokens_mem": [
+        {
+          "token_id": 566,
+          "token_text": "'s",
+          "logit": 12.646699905395508
+        },
+        {
+          "token_id": 309,
+          "token_text": " is",
+          "logit": 11.747270584106445
+        },
+        {
+          "token_id": 44,
+          "token_text": ",",
+          "logit": 10.07995319366455
+        },
+        {
+          "token_id": 616,
+          "token_text": " may",
+          "logit": 8.688824653625488
+        },
+        {
+          "token_id": 1693,
+          "token_text": " likely",
+          "logit": 7.854162216186523
+        }
+      ],
+      "final_top_tokens_nomem": [
+        {
+          "token_id": 566,
+          "token_text": "'s",
+          "logit": 12.646699905395508
+        },
+        {
+          "token_id": 309,
+          "token_text": " is",
+          "logit": 11.747270584106445
+        },
+        {
+          "token_id": 44,
+          "token_text": ",",
+          "logit": 10.07995319366455
+        },
+        {
+          "token_id": 616,
+          "token_text": " may",
+          "logit": 8.688824653625488
+        },
+        {
+          "token_id": 1693,
+          "token_text": " likely",
+          "logit": 7.854162216186523
+        }
+      ],
+      "example_index": 1,
+      "recall_user": "What's my dog's name?"
+    },
+    {
+      "position": 3,
+      "correct_token_id": 1588,
+      "correct_token_text": " name",
+      "predicted_token_mem": " name",
+      "predicted_token_nomem": " name",
+      "correct_rank_mem": 1,
+      "correct_rank_nomem": 1,
+      "correct_logprob_mem": -0.01430271565914154,
+      "correct_logprob_nomem": -0.01430271565914154,
+      "dlogp": 0.0,
+      "max_abs_logit_diff": 0.0,
+      "mean_abs_logit_diff": 0.0,
+      "episodic_correct_logit_mem": 0.0,
+      "episodic_top_tokens_mem": [
+        {
+          "token_id": 2,
+          "token_text": "\u0002",
+          "logit": 0.0
+        },
+        {
+          "token_id": 4,
+          "token_text": "\u0004",
+          "logit": 0.0
+        },
+        {
+          "token_id": 0,
+          "token_text": "\u0000",
+          "logit": 0.0
+        },
+        {
+          "token_id": 1,
+          "token_text": "\u0001",
+          "logit": 0.0
+        },
+        {
+          "token_id": 3,
+          "token_text": "\u0003",
+          "logit": 0.0
+        }
+      ],
+      "final_top_tokens_mem": [
+        {
+          "token_id": 1588,
+          "token_text": " name",
+          "logit": 12.38376522064209
+        },
+        {
+          "token_id": 1923,
+          "token_text": " full",
+          "logit": 5.917413711547852
+        },
+        {
+          "token_id": 3297,
+          "token_text": " got",
+          "logit": 5.363409042358398
+        },
+        {
+          "token_id": 1470,
+          "token_text": " real",
+          "logit": 4.907911777496338
+        },
+        {
+          "token_id": 8053,
+          "token_text": " personality",
+          "logit": 4.8776469230651855
+        }
+      ],
+      "final_top_tokens_nomem": [
+        {
+          "token_id": 1588,
+          "token_text": " name",
+          "logit": 12.38376522064209
+        },
+        {
+          "token_id": 1923,
+          "token_text": " full",
+          "logit": 5.917413711547852
+        },
+        {
+          "token_id": 3297,
+          "token_text": " got",
+          "logit": 5.363409042358398
+        },
+        {
+          "token_id": 1470,
+          "token_text": " real",
+          "logit": 4.907911777496338
+        },
+        {
+          "token_id": 8053,
+          "token_text": " personality",
+          "logit": 4.8776469230651855
+        }
+      ],
+      "example_index": 1,
+      "recall_user": "What's my dog's name?"
+    },
+    {
+      "position": 4,
+      "correct_token_id": 309,
+      "correct_token_text": " is",
+      "predicted_token_mem": " is",
+      "predicted_token_nomem": " is",
+      "correct_rank_mem": 1,
+      "correct_rank_nomem": 1,
+      "correct_logprob_mem": -0.4600330591201782,
+      "correct_logprob_nomem": -0.4600330591201782,
+      "dlogp": 0.0,
+      "max_abs_logit_diff": 0.0,
+      "mean_abs_logit_diff": 0.0,
+      "episodic_correct_logit_mem": 0.0,
+      "episodic_top_tokens_mem": [
+        {
+          "token_id": 2,
+          "token_text": "\u0002",
+          "logit": 0.0
+        },
+        {
+          "token_id": 4,
+          "token_text": "\u0004",
+          "logit": 0.0
+        },
+        {
+          "token_id": 0,
+          "token_text": "\u0000",
+          "logit": 0.0
+        },
+        {
+          "token_id": 1,
+          "token_text": "\u0001",
+          "logit": 0.0
+        },
+        {
+          "token_id": 3,
+          "token_text": "\u0003",
+          "logit": 0.0
+        }
+      ],
+      "final_top_tokens_mem": [
+        {
+          "token_id": 309,
+          "token_text": " is",
+          "logit": 12.641595840454102
+        },
+        {
+          "token_id": 400,
+          "token_text": " can",
+          "logit": 10.669130325317383
+        },
+        {
+          "token_id": 616,
+          "token_text": " may",
+          "logit": 10.300949096679688
+        },
+        {
+          "token_id": 1273,
+          "token_text": " might",
+          "logit": 9.958284378051758
+        },
+        {
+          "token_id": 44,
+          "token_text": ",",
+          "logit": 9.790881156921387
+        }
+      ],
+      "final_top_tokens_nomem": [
+        {
+          "token_id": 309,
+          "token_text": " is",
+          "logit": 12.641595840454102
+        },
+        {
+          "token_id": 400,
+          "token_text": " can",
+          "logit": 10.669130325317383
+        },
+        {
+          "token_id": 616,
+          "token_text": " may",
+          "logit": 10.300949096679688
+        },
+        {
+          "token_id": 1273,
+          "token_text": " might",
+          "logit": 9.958284378051758
+        },
+        {
+          "token_id": 44,
+          "token_text": ",",
+          "logit": 9.790881156921387
+        }
+      ],
+      "example_index": 1,
+      "recall_user": "What's my dog's name?"
+    },
+    {
+      "position": 5,
+      "correct_token_id": 31038,
+      "correct_token_text": " Aster",
+      "predicted_token_mem": " Luna",
+      "predicted_token_nomem": " Luna",
+      "correct_rank_mem": 9304,
+      "correct_rank_nomem": 9304,
+      "correct_logprob_mem": -13.534825325012207,
+      "correct_logprob_nomem": -13.534825325012207,
+      "dlogp": 0.0,
+      "max_abs_logit_diff": 0.0,
+      "mean_abs_logit_diff": 0.0,
+      "episodic_correct_logit_mem": 0.0,
+      "episodic_top_tokens_mem": [
+        {
+          "token_id": 2,
+          "token_text": "\u0002",
+          "logit": 0.0
+        },
+        {
+          "token_id": 4,
+          "token_text": "\u0004",
+          "logit": 0.0
+        },
+        {
+          "token_id": 0,
+          "token_text": "\u0000",
+          "logit": 0.0
+        },
+        {
+          "token_id": 1,
+          "token_text": "\u0001",
+          "logit": 0.0
+        },
+        {
+          "token_id": 3,
+          "token_text": "\u0003",
+          "logit": 0.0
+        }
+      ],
+      "final_top_tokens_mem": [
+        {
+          "token_id": 48495,
+          "token_text": " Luna",
+          "logit": 10.871736526489258
+        },
+        {
+          "token_id": 9097,
+          "token_text": " Max",
+          "logit": 10.420462608337402
+        },
+        {
+          "token_id": 36563,
+          "token_text": " Rex",
+          "logit": 9.087542533874512
+        },
+        {
+          "token_id": 257,
+          "token_text": " a",
+          "logit": 9.020042419433594
+        },
+        {
+          "token_id": 11813,
+          "token_text": " Ak",
+          "logit": 8.593754768371582
+        }
+      ],
+      "final_top_tokens_nomem": [
+        {
+          "token_id": 48495,
+          "token_text": " Luna",
+          "logit": 10.871736526489258
+        },
+        {
+          "token_id": 9097,
+          "token_text": " Max",
+          "logit": 10.420462608337402
+        },
+        {
+          "token_id": 36563,
+          "token_text": " Rex",
+          "logit": 9.087542533874512
+        },
+        {
+          "token_id": 257,
+          "token_text": " a",
+          "logit": 9.020042419433594
+        },
+        {
+          "token_id": 11813,
+          "token_text": " Ak",
+          "logit": 8.593754768371582
+        }
+      ],
+      "example_index": 1,
+      "recall_user": "What's my dog's name?"
+    },
+    {
+      "position": 6,
+      "correct_token_id": 5941,
+      "correct_token_text": "-P",
+      "predicted_token_mem": "ion",
+      "predicted_token_nomem": "ion",
+      "correct_rank_mem": 18844,
+      "correct_rank_nomem": 18844,
+      "correct_logprob_mem": -16.674406051635742,
+      "correct_logprob_nomem": -16.674406051635742,
+      "dlogp": 0.0,
+      "max_abs_logit_diff": 0.0,
+      "mean_abs_logit_diff": 0.0,
+      "episodic_correct_logit_mem": 0.0,
+      "episodic_top_tokens_mem": [
+        {
+          "token_id": 2,
+          "token_text": "\u0002",
+          "logit": 0.0
+        },
+        {
+          "token_id": 4,
+          "token_text": "\u0004",
+          "logit": 0.0
+        },
+        {
+          "token_id": 0,
+          "token_text": "\u0000",
+          "logit": 0.0
+        },
+        {
+          "token_id": 1,
+          "token_text": "\u0001",
+          "logit": 0.0
+        },
+        {
+          "token_id": 3,
+          "token_text": "\u0003",
+          "logit": 0.0
+        }
+      ],
+      "final_top_tokens_mem": [
+        {
+          "token_id": 291,
+          "token_text": "ion",
+          "logit": 10.819093704223633
+        },
+        {
+          "token_id": 524,
+          "token_text": "ia",
+          "logit": 9.606207847595215
+        },
+        {
+          "token_id": 1057,
+          "token_text": "io",
+          "logit": 9.267960548400879
+        },
+        {
+          "token_id": 46,
+          "token_text": ".",
+          "logit": 8.756717681884766
+        },
+        {
+          "token_id": 6857,
+          "token_text": "isk",
+          "logit": 8.439431190490723
+        }
+      ],
+      "final_top_tokens_nomem": [
+        {
+          "token_id": 291,
+          "token_text": "ion",
+          "logit": 10.819093704223633
+        },
+        {
+          "token_id": 524,
+          "token_text": "ia",
+          "logit": 9.606207847595215
+        },
+        {
+          "token_id": 1057,
+          "token_text": "io",
+          "logit": 9.267960548400879
+        },
+        {
+          "token_id": 46,
+          "token_text": ".",
+          "logit": 8.756717681884766
+        },
+        {
+          "token_id": 6857,
+          "token_text": "isk",
+          "logit": 8.439431190490723
+        }
+      ],
+      "example_index": 1,
+      "recall_user": "What's my dog's name?"
+    },
+    {
+      "position": 7,
+      "correct_token_id": 466,
+      "correct_token_text": "ine",
+      "predicted_token_mem": "y",
+      "predicted_token_nomem": "y",
+      "correct_rank_mem": 111,
+      "correct_rank_nomem": 111,
+      "correct_logprob_mem": -6.938177108764648,
+      "correct_logprob_nomem": -6.938177108764648,
+      "dlogp": 0.0,
+      "max_abs_logit_diff": 0.0,
+      "mean_abs_logit_diff": 0.0,
+      "episodic_correct_logit_mem": 0.0,
+      "episodic_top_tokens_mem": [
+        {
+          "token_id": 2,
+          "token_text": "\u0002",
+          "logit": 0.0
+        },
+        {
+          "token_id": 4,
+          "token_text": "\u0004",
+          "logit": 0.0
+        },
+        {
+          "token_id": 0,
+          "token_text": "\u0000",
+          "logit": 0.0
+        },
+        {
+          "token_id": 1,
+          "token_text": "\u0001",
+          "logit": 0.0
+        },
+        {
+          "token_id": 3,
+          "token_text": "\u0003",
+          "logit": 0.0
+        }
+      ],
+      "final_top_tokens_mem": [
+        {
+          "token_id": 121,
+          "token_text": "y",
+          "logit": 6.342770576477051
+        },
+        {
+          "token_id": 3082,
+          "token_text": "erson",
+          "logit": 5.987770080566406
+        },
+        {
+          "token_id": 14074,
+          "token_text": "ige",
+          "logit": 5.93463134765625
+        },
+        {
+          "token_id": 291,
+          "token_text": "ion",
+          "logit": 4.938710689544678
+        },
+        {
+          "token_id": 328,
+          "token_text": "ig",
+          "logit": 4.871548652648926
+        }
+      ],
+      "final_top_tokens_nomem": [
+        {
+          "token_id": 121,
+          "token_text": "y",
+          "logit": 6.342770576477051
+        },
+        {
+          "token_id": 3082,
+          "token_text": "erson",
+          "logit": 5.987770080566406
+        },
+        {
+          "token_id": 14074,
+          "token_text": "ige",
+          "logit": 5.93463134765625
+        },
+        {
+          "token_id": 291,
+          "token_text": "ion",
+          "logit": 4.938710689544678
+        },
+        {
+          "token_id": 328,
+          "token_text": "ig",
+          "logit": 4.871548652648926
+        }
+      ],
+      "example_index": 1,
+      "recall_user": "What's my dog's name?"
+    },
+    {
+      "position": 8,
+      "correct_token_id": 46,
+      "correct_token_text": ".",
+      "predicted_token_mem": ",",
+      "predicted_token_nomem": ",",
+      "correct_rank_mem": 2,
+      "correct_rank_nomem": 2,
+      "correct_logprob_mem": -2.073448896408081,
+      "correct_logprob_nomem": -2.073448896408081,
+      "dlogp": 0.0,
+      "max_abs_logit_diff": 0.0,
+      "mean_abs_logit_diff": 0.0,
+      "episodic_correct_logit_mem": 0.0,
+      "episodic_top_tokens_mem": [
+        {
+          "token_id": 2,
+          "token_text": "\u0002",
+          "logit": 0.0
+        },
+        {
+          "token_id": 4,
+          "token_text": "\u0004",
+          "logit": 0.0
+        },
+        {
+          "token_id": 0,
+          "token_text": "\u0000",
+          "logit": 0.0
+        },
+        {
+          "token_id": 1,
+          "token_text": "\u0001",
+          "logit": 0.0
+        },
+        {
+          "token_id": 3,
+          "token_text": "\u0003",
+          "logit": 0.0
+        }
+      ],
+      "final_top_tokens_mem": [
+        {
+          "token_id": 44,
+          "token_text": ",",
+          "logit": 9.416298866271973
+        },
+        {
+          "token_id": 46,
+          "token_text": ".",
+          "logit": 8.303783416748047
+        },
+        {
+          "token_id": 261,
+          "token_text": " the",
+          "logit": 7.648686408996582
+        },
+        {
+          "token_id": 288,
+          "token_text": " and",
+          "logit": 7.520740509033203
+        },
+        {
+          "token_id": 1272,
+          "token_text": "ee",
+          "logit": 6.225895404815674
+        }
+      ],
+      "final_top_tokens_nomem": [
+        {
+          "token_id": 44,
+          "token_text": ",",
+          "logit": 9.416298866271973
+        },
+        {
+          "token_id": 46,
+          "token_text": ".",
+          "logit": 8.303783416748047
+        },
+        {
+          "token_id": 261,
+          "token_text": " the",
+          "logit": 7.648686408996582
+        },
+        {
+          "token_id": 288,
+          "token_text": " and",
+          "logit": 7.520740509033203
+        },
+        {
+          "token_id": 1272,
+          "token_text": "ee",
+          "logit": 6.225895404815674
+        }
+      ],
+      "example_index": 1,
+      "recall_user": "What's my dog's name?"
+    },
+    {
+      "position": 0,
+      "correct_token_id": 6207,
+      "correct_token_text": "Your",
+      "predicted_token_mem": "Your",
+      "predicted_token_nomem": "Your",
+      "correct_rank_mem": 1,
+      "correct_rank_nomem": 1,
+      "correct_logprob_mem": -0.456898033618927,
+      "correct_logprob_nomem": -0.456898033618927,
+      "dlogp": 0.0,
+      "max_abs_logit_diff": 0.0,
+      "mean_abs_logit_diff": 0.0,
+      "episodic_correct_logit_mem": 0.0,
+      "episodic_top_tokens_mem": [
+        {
+          "token_id": 2,
+          "token_text": "\u0002",
+          "logit": 0.0
+        },
+        {
+          "token_id": 4,
+          "token_text": "\u0004",
+          "logit": 0.0
+        },
+        {
+          "token_id": 0,
+          "token_text": "\u0000",
+          "logit": 0.0
+        },
+        {
+          "token_id": 1,
+          "token_text": "\u0001",
+          "logit": 0.0
+        },
+        {
+          "token_id": 3,
+          "token_text": "\u0003",
+          "logit": 0.0
+        }
+      ],
+      "final_top_tokens_mem": [
+        {
+          "token_id": 6207,
+          "token_text": "Your",
+          "logit": 13.0287446975708
+        },
+        {
+          "token_id": 5873,
+          "token_text": "My",
+          "logit": 11.45871639251709
+        },
+        {
+          "token_id": 65,
+          "token_text": "A",
+          "logit": 10.093315124511719
+        },
+        {
+          "token_id": 1344,
+          "token_text": "It",
+          "logit": 9.677170753479004
+        },
+        {
+          "token_id": 468,
+          "token_text": " your",
+          "logit": 9.544036865234375
+        }
+      ],
+      "final_top_tokens_nomem": [
+        {
+          "token_id": 6207,
+          "token_text": "Your",
+          "logit": 13.0287446975708
+        },
+        {
+          "token_id": 5873,
+          "token_text": "My",
+          "logit": 11.45871639251709
+        },
+        {
+          "token_id": 65,
+          "token_text": "A",
+          "logit": 10.093315124511719
+        },
+        {
+          "token_id": 1344,
+          "token_text": "It",
+          "logit": 9.677170753479004
+        },
+        {
+          "token_id": 468,
+          "token_text": " your",
+          "logit": 9.544036865234375
+        }
+      ],
+      "example_index": 2,
+      "recall_user": "Can you tell me my dog's name?"
+    },
+    {
+      "position": 1,
+      "correct_token_id": 2222,
+      "correct_token_text": " dog",
+      "predicted_token_mem": " dog",
+      "predicted_token_nomem": " dog",
+      "correct_rank_mem": 1,
+      "correct_rank_nomem": 1,
+      "correct_logprob_mem": -0.032841358333826065,
+      "correct_logprob_nomem": -0.032841358333826065,
+      "dlogp": 0.0,
+      "max_abs_logit_diff": 0.0,
+      "mean_abs_logit_diff": 0.0,
+      "episodic_correct_logit_mem": 0.0,
+      "episodic_top_tokens_mem": [
+        {
+          "token_id": 2,
+          "token_text": "\u0002",
+          "logit": 0.0
+        },
+        {
+          "token_id": 4,
+          "token_text": "\u0004",
+          "logit": 0.0
+        },
+        {
+          "token_id": 0,
+          "token_text": "\u0000",
+          "logit": 0.0
+        },
+        {
+          "token_id": 1,
+          "token_text": "\u0001",
+          "logit": 0.0
+        },
+        {
+          "token_id": 3,
+          "token_text": "\u0003",
+          "logit": 0.0
+        }
+      ],
+      "final_top_tokens_mem": [
+        {
+          "token_id": 2222,
+          "token_text": " dog",
+          "logit": 12.945650100708008
+        },
+        {
+          "token_id": 3487,
+          "token_text": " pet",
+          "logit": 8.213749885559082
+        },
+        {
+          "token_id": 33694,
+          "token_text": " furry",
+          "logit": 7.909205913543701
+        },
+        {
+          "token_id": 20242,
+          "token_text": " canine",
+          "logit": 6.760143280029297
+        },
+        {
+          "token_id": 26323,
+          "token_text": " Labrador",
+          "logit": 6.373943328857422
+        }
+      ],
+      "final_top_tokens_nomem": [
+        {
+          "token_id": 2222,
+          "token_text": " dog",
+          "logit": 12.945650100708008
+        },
+        {
+          "token_id": 3487,
+          "token_text": " pet",
+          "logit": 8.213749885559082
+        },
+        {
+          "token_id": 33694,
+          "token_text": " furry",
+          "logit": 7.909205913543701
+        },
+        {
+          "token_id": 20242,
+          "token_text": " canine",
+          "logit": 6.760143280029297
+        },
+        {
+          "token_id": 26323,
+          "token_text": " Labrador",
+          "logit": 6.373943328857422
+        }
+      ],
+      "example_index": 2,
+      "recall_user": "Can you tell me my dog's name?"
+    },
+    {
+      "position": 2,
+      "correct_token_id": 566,
+      "correct_token_text": "'s",
+      "predicted_token_mem": "'s",
+      "predicted_token_nomem": "'s",
+      "correct_rank_mem": 1,
+      "correct_rank_nomem": 1,
+      "correct_logprob_mem": -0.14884965121746063,
+      "correct_logprob_nomem": -0.14884965121746063,
+      "dlogp": 0.0,
+      "max_abs_logit_diff": 0.0,
+      "mean_abs_logit_diff": 0.0,
+      "episodic_correct_logit_mem": 0.0,
+      "episodic_top_tokens_mem": [
+        {
+          "token_id": 2,
+          "token_text": "\u0002",
+          "logit": 0.0
+        },
+        {
+          "token_id": 4,
+          "token_text": "\u0004",
+          "logit": 0.0
+        },
+        {
+          "token_id": 0,
+          "token_text": "\u0000",
+          "logit": 0.0
+        },
+        {
+          "token_id": 1,
+          "token_text": "\u0001",
+          "logit": 0.0
+        },
+        {
+          "token_id": 3,
+          "token_text": "\u0003",
+          "logit": 0.0
+        }
+      ],
+      "final_top_tokens_mem": [
+        {
+          "token_id": 566,
+          "token_text": "'s",
+          "logit": 13.698058128356934
+        },
+        {
+          "token_id": 309,
+          "token_text": " is",
+          "logit": 11.477669715881348
+        },
+        {
+          "token_id": 44,
+          "token_text": ",",
+          "logit": 9.220450401306152
+        },
+        {
+          "token_id": 616,
+          "token_text": " may",
+          "logit": 9.045805931091309
+        },
+        {
+          "token_id": 400,
+          "token_text": " can",
+          "logit": 8.910045623779297
+        }
+      ],
+      "final_top_tokens_nomem": [
+        {
+          "token_id": 566,
+          "token_text": "'s",
+          "logit": 13.698058128356934
+        },
+        {
+          "token_id": 309,
+          "token_text": " is",
+          "logit": 11.477669715881348
+        },
+        {
+          "token_id": 44,
+          "token_text": ",",
+          "logit": 9.220450401306152
+        },
+        {
+          "token_id": 616,
+          "token_text": " may",
+          "logit": 9.045805931091309
+        },
+        {
+          "token_id": 400,
+          "token_text": " can",
+          "logit": 8.910045623779297
+        }
+      ],
+      "example_index": 2,
+      "recall_user": "Can you tell me my dog's name?"
+    },
+    {
+      "position": 3,
+      "correct_token_id": 1588,
+      "correct_token_text": " name",
+      "predicted_token_mem": " name",
+      "predicted_token_nomem": " name",
+      "correct_rank_mem": 1,
+      "correct_rank_nomem": 1,
+      "correct_logprob_mem": -0.0031453920528292656,
+      "correct_logprob_nomem": -0.0031453920528292656,
+      "dlogp": 0.0,
+      "max_abs_logit_diff": 0.0,
+      "mean_abs_logit_diff": 0.0,
+      "episodic_correct_logit_mem": 0.0,
+      "episodic_top_tokens_mem": [
+        {
+          "token_id": 2,
+          "token_text": "\u0002",
+          "logit": 0.0
+        },
+        {
+          "token_id": 4,
+          "token_text": "\u0004",
+          "logit": 0.0
+        },
+        {
+          "token_id": 0,
+          "token_text": "\u0000",
+          "logit": 0.0
+        },
+        {
+          "token_id": 1,
+          "token_text": "\u0001",
+          "logit": 0.0
+        },
+        {
+          "token_id": 3,
+          "token_text": "\u0003",
+          "logit": 0.0
+        }
+      ],
+      "final_top_tokens_mem": [
+        {
+          "token_id": 1588,
+          "token_text": " name",
+          "logit": 13.133338928222656
+        },
+        {
+          "token_id": 1923,
+          "token_text": " full",
+          "logit": 5.38971471786499
+        },
+        {
+          "token_id": 1770,
+          "token_text": " given",
+          "logit": 4.786896705627441
+        },
+        {
+          "token_id": 44,
+          "token_text": ",",
+          "logit": 4.406156539916992
+        },
+        {
+          "token_id": 1470,
+          "token_text": " real",
+          "logit": 4.047506332397461
+        }
+      ],
+      "final_top_tokens_nomem": [
+        {
+          "token_id": 1588,
+          "token_text": " name",
+          "logit": 13.133338928222656
+        },
+        {
+          "token_id": 1923,
+          "token_text": " full",
+          "logit": 5.38971471786499
+        },
+        {
+          "token_id": 1770,
+          "token_text": " given",
+          "logit": 4.786896705627441
+        },
+        {
+          "token_id": 44,
+          "token_text": ",",
+          "logit": 4.406156539916992
+        },
+        {
+          "token_id": 1470,
+          "token_text": " real",
+          "logit": 4.047506332397461
+        }
+      ],
+      "example_index": 2,
+      "recall_user": "Can you tell me my dog's name?"
+    },
+    {
+      "position": 4,
+      "correct_token_id": 309,
+      "correct_token_text": " is",
+      "predicted_token_mem": " is",
+      "predicted_token_nomem": " is",
+      "correct_rank_mem": 1,
+      "correct_rank_nomem": 1,
+      "correct_logprob_mem": -0.8720328211784363,
+      "correct_logprob_nomem": -0.8720328211784363,
+      "dlogp": 0.0,
+      "max_abs_logit_diff": 0.0,
+      "mean_abs_logit_diff": 0.0,
+      "episodic_correct_logit_mem": 0.0,
+      "episodic_top_tokens_mem": [
+        {
+          "token_id": 2,
+          "token_text": "\u0002",
+          "logit": 0.0
+        },
+        {
+          "token_id": 4,
+          "token_text": "\u0004",
+          "logit": 0.0
+        },
+        {
+          "token_id": 0,
+          "token_text": "\u0000",
+          "logit": 0.0
+        },
+        {
+          "token_id": 1,
+          "token_text": "\u0001",
+          "logit": 0.0
+        },
+        {
+          "token_id": 3,
+          "token_text": "\u0003",
+          "logit": 0.0
+        }
+      ],
+      "final_top_tokens_mem": [
+        {
+          "token_id": 309,
+          "token_text": " is",
+          "logit": 12.396180152893066
+        },
+        {
+          "token_id": 400,
+          "token_text": " can",
+          "logit": 12.035602569580078
+        },
+        {
+          "token_id": 616,
+          "token_text": " may",
+          "logit": 10.8411865234375
+        },
+        {
+          "token_id": 1273,
+          "token_text": " might",
+          "logit": 10.420265197753906
+        },
+        {
+          "token_id": 836,
+          "token_text": " could",
+          "logit": 10.042472839355469
+        }
+      ],
+      "final_top_tokens_nomem": [
+        {
+          "token_id": 309,
+          "token_text": " is",
+          "logit": 12.396180152893066
+        },
+        {
+          "token_id": 400,
+          "token_text": " can",
+          "logit": 12.035602569580078
+        },
+        {
+          "token_id": 616,
+          "token_text": " may",
+          "logit": 10.8411865234375
+        },
+        {
+          "token_id": 1273,
+          "token_text": " might",
+          "logit": 10.420265197753906
+        },
+        {
+          "token_id": 836,
+          "token_text": " could",
+          "logit": 10.042472839355469
+        }
+      ],
+      "example_index": 2,
+      "recall_user": "Can you tell me my dog's name?"
+    },
+    {
+      "position": 5,
+      "correct_token_id": 377,
+      "correct_token_text": " P",
+      "predicted_token_mem": " Luna",
+      "predicted_token_nomem": " Luna",
+      "correct_rank_mem": 7,
+      "correct_rank_nomem": 7,
+      "correct_logprob_mem": -3.9195330142974854,
+      "correct_logprob_nomem": -3.9195330142974854,
+      "dlogp": 0.0,
+      "max_abs_logit_diff": 0.0,
+      "mean_abs_logit_diff": 0.0,
+      "episodic_correct_logit_mem": 0.0,
+      "episodic_top_tokens_mem": [
+        {
+          "token_id": 2,
+          "token_text": "\u0002",
+          "logit": 0.0
+        },
+        {
+          "token_id": 4,
+          "token_text": "\u0004",
+          "logit": 0.0
+        },
+        {
+          "token_id": 0,
+          "token_text": "\u0000",
+          "logit": 0.0
+        },
+        {
+          "token_id": 1,
+          "token_text": "\u0001",
+          "logit": 0.0
+        },
+        {
+          "token_id": 3,
+          "token_text": "\u0003",
+          "logit": 0.0
+        }
+      ],
+      "final_top_tokens_mem": [
+        {
+          "token_id": 48495,
+          "token_text": " Luna",
+          "logit": 10.488483428955078
+        },
+        {
+          "token_id": 9097,
+          "token_text": " Max",
+          "logit": 9.908866882324219
+        },
+        {
+          "token_id": 36563,
+          "token_text": " Rex",
+          "logit": 9.360379219055176
+        },
+        {
+          "token_id": 678,
+          "token_text": " \"",
+          "logit": 8.91805362701416
+        },
+        {
+          "token_id": 11813,
+          "token_text": " Ak",
+          "logit": 8.796579360961914
+        }
+      ],
+      "final_top_tokens_nomem": [
+        {
+          "token_id": 48495,
+          "token_text": " Luna",
+          "logit": 10.488483428955078
+        },
+        {
+          "token_id": 9097,
+          "token_text": " Max",
+          "logit": 9.908866882324219
+        },
+        {
+          "token_id": 36563,
+          "token_text": " Rex",
+          "logit": 9.360379219055176
+        },
+        {
+          "token_id": 678,
+          "token_text": " \"",
+          "logit": 8.91805362701416
+        },
+        {
+          "token_id": 11813,
+          "token_text": " Ak",
+          "logit": 8.796579360961914
+        }
+      ],
+      "example_index": 2,
+      "recall_user": "Can you tell me my dog's name?"
+    },
+    {
+      "position": 6,
+      "correct_token_id": 2552,
+      "correct_token_text": "eb",
+      "predicted_token_mem": "oodle",
+      "predicted_token_nomem": "oodle",
+      "correct_rank_mem": 951,
+      "correct_rank_nomem": 951,
+      "correct_logprob_mem": -11.889646530151367,
+      "correct_logprob_nomem": -11.889646530151367,
+      "dlogp": 0.0,
+      "max_abs_logit_diff": 0.0,
+      "mean_abs_logit_diff": 0.0,
+      "episodic_correct_logit_mem": 0.0,
+      "episodic_top_tokens_mem": [
+        {
+          "token_id": 2,
+          "token_text": "\u0002",
+          "logit": 0.0
+        },
+        {
+          "token_id": 4,
+          "token_text": "\u0004",
+          "logit": 0.0
+        },
+        {
+          "token_id": 0,
+          "token_text": "\u0000",
+          "logit": 0.0
+        },
+        {
+          "token_id": 1,
+          "token_text": "\u0001",
+          "logit": 0.0
+        },
+        {
+          "token_id": 3,
+          "token_text": "\u0003",
+          "logit": 0.0
+        }
+      ],
+      "final_top_tokens_mem": [
+        {
+          "token_id": 21373,
+          "token_text": "oodle",
+          "logit": 7.853489875793457
+        },
+        {
+          "token_id": 14074,
+          "token_text": "ige",
+          "logit": 4.752394199371338
+        },
+        {
+          "token_id": 3163,
+          "token_text": "iers",
+          "logit": 4.553483486175537
+        },
+        {
+          "token_id": 1369,
+          "token_text": "oun",
+          "logit": 4.425356864929199
+        },
+        {
+          "token_id": 27687,
+          "token_text": "iao",
+          "logit": 4.371257305145264
+        }
+      ],
+      "final_top_tokens_nomem": [
+        {
+          "token_id": 21373,
+          "token_text": "oodle",
+          "logit": 7.853489875793457
+        },
+        {
+          "token_id": 14074,
+          "token_text": "ige",
+          "logit": 4.752394199371338
+        },
+        {
+          "token_id": 3163,
+          "token_text": "iers",
+          "logit": 4.553483486175537
+        },
+        {
+          "token_id": 1369,
+          "token_text": "oun",
+          "logit": 4.425356864929199
+        },
+        {
+          "token_id": 27687,
+          "token_text": "iao",
+          "logit": 4.371257305145264
+        }
+      ],
+      "example_index": 2,
+      "recall_user": "Can you tell me my dog's name?"
+    }
+  ],
+  "layer_diag_with_memory": [
+    {
+      "layer": 0,
+      "slot_count": 0.0,
+      "kv_gate": 0.00027478431002236903,
+      "attn_norm": 238.16361083984376,
+      "mem_norm": 0.0,
+      "mlp_norm": 516.3029174804688,
+      "mem_entropy": 2.079441475868225
+    },
+    {
+      "layer": 1,
+      "slot_count": 0.0,
+      "kv_gate": 0.00029268977232277393,
+      "attn_norm": 295.3974670410156,
+      "mem_norm": 0.0,
+      "mlp_norm": 1314.9847290039063,
+      "mem_entropy": 2.079441475868225
+    },
+    {
+      "layer": 2,
+      "slot_count": 0.0,
+      "kv_gate": 0.0002753316075541079,
+      "attn_norm": 205.3900161743164,
+      "mem_norm": 0.0,
+      "mlp_norm": 838.8545349121093,
+      "mem_entropy": 2.079441475868225
+    },
+    {
+      "layer": 3,
+      "slot_count": 0.0,
+      "kv_gate": 0.00032574188662692904,
+      "attn_norm": 306.11231384277346,
+      "mem_norm": 0.0,
+      "mlp_norm": 736.7857177734375,
+      "mem_entropy": 2.079441475868225
+    },
+    {
+      "layer": 4,
+      "slot_count": 0.0,
+      "kv_gate": 0.00027599497116170824,
+      "attn_norm": 201.0102767944336,
+      "mem_norm": 0.0,
+      "mlp_norm": 265.81634826660155,
+      "mem_entropy": 2.079441475868225
+    },
+    {
+      "layer": 5,
+      "slot_count": 0.0,
+      "kv_gate": 0.0003627309633884579,
+      "attn_norm": 223.5960250854492,
+      "mem_norm": 0.0,
+      "mlp_norm": 665.3728332519531,
+      "mem_entropy": 2.079441475868225
+    },
+    {
+      "layer": 6,
+      "slot_count": 0.0,
+      "kv_gate": 0.0002816038904711604,
+      "attn_norm": 194.41107635498048,
+      "mem_norm": 0.0,
+      "mlp_norm": 161.53977661132814,
+      "mem_entropy": 2.079441475868225
+    },
+    {
+      "layer": 7,
+      "slot_count": 0.0,
+      "kv_gate": 0.0004014764563180506,
+      "attn_norm": 144.42993927001953,
+      "mem_norm": 0.0,
+      "mlp_norm": 192.22829895019532,
+      "mem_entropy": 2.079441475868225
+    },
+    {
+      "layer": 8,
+      "slot_count": 0.0,
+      "kv_gate": 0.00040147893014363945,
+      "attn_norm": 217.56754608154296,
+      "mem_norm": 0.0,
+      "mlp_norm": 185.7642364501953,
+      "mem_entropy": 2.079441475868225
+    },
+    {
+      "layer": 9,
+      "slot_count": 0.0,
+      "kv_gate": 0.0004015238955616951,
+      "attn_norm": 151.60861358642578,
+      "mem_norm": 0.0,
+      "mlp_norm": 159.32358093261718,
+      "mem_entropy": 2.079441475868225
+    },
+    {
+      "layer": 10,
+      "slot_count": 0.0,
+      "kv_gate": 0.0002800774236675352,
+      "attn_norm": 167.1748840332031,
+      "mem_norm": 0.0,
+      "mlp_norm": 254.33482208251954,
+      "mem_entropy": 2.079441475868225
+    },
+    {
+      "layer": 11,
+      "slot_count": 0.0,
+      "kv_gate": 0.0004014486912637949,
+      "attn_norm": 214.90665130615236,
+      "mem_norm": 0.0,
+      "mlp_norm": 663.6756469726563,
+      "mem_entropy": 2.079441475868225
+    }
+  ],
+  "layer_diag_no_memory": [
+    {
+      "layer": 0,
+      "slot_count": 0.0,
+      "kv_gate": 0.00027478431002236903,
+      "attn_norm": 238.16361083984376,
+      "mem_norm": 0.0,
+      "mlp_norm": 516.3029174804688,
+      "mem_entropy": 2.079441475868225
+    },
+    {
+      "layer": 1,
+      "slot_count": 0.0,
+      "kv_gate": 0.00029268977232277393,
+      "attn_norm": 295.3974670410156,
+      "mem_norm": 0.0,
+      "mlp_norm": 1314.9847290039063,
+      "mem_entropy": 2.079441475868225
+    },
+    {
+      "layer": 2,
+      "slot_count": 0.0,
+      "kv_gate": 0.0002753316075541079,
+      "attn_norm": 205.3900161743164,
+      "mem_norm": 0.0,
+      "mlp_norm": 838.8545349121093,
+      "mem_entropy": 2.079441475868225
+    },
+    {
+      "layer": 3,
+      "slot_count": 0.0,
+      "kv_gate": 0.00032574188662692904,
+      "attn_norm": 306.11231384277346,
+      "mem_norm": 0.0,
+      "mlp_norm": 736.7857177734375,
+      "mem_entropy": 2.079441475868225
+    },
+    {
+      "layer": 4,
+      "slot_count": 0.0,
+      "kv_gate": 0.00027599497116170824,
+      "attn_norm": 201.0102767944336,
+      "mem_norm": 0.0,
+      "mlp_norm": 265.81634826660155,
+      "mem_entropy": 2.079441475868225
+    },
+    {
+      "layer": 5,
+      "slot_count": 0.0,
+      "kv_gate": 0.0003627309633884579,
+      "attn_norm": 223.5960250854492,
+      "mem_norm": 0.0,
+      "mlp_norm": 665.3728332519531,
+      "mem_entropy": 2.079441475868225
+    },
+    {
+      "layer": 6,
+      "slot_count": 0.0,
+      "kv_gate": 0.0002816038904711604,
+      "attn_norm": 194.41107635498048,
+      "mem_norm": 0.0,
+      "mlp_norm": 161.53977661132814,
+      "mem_entropy": 2.079441475868225
+    },
+    {
+      "layer": 7,
+      "slot_count": 0.0,
+      "kv_gate": 0.0004014764563180506,
+      "attn_norm": 144.42993927001953,
+      "mem_norm": 0.0,
+      "mlp_norm": 192.22829895019532,
+      "mem_entropy": 2.079441475868225
+    },
+    {
+      "layer": 8,
+      "slot_count": 0.0,
+      "kv_gate": 0.00040147893014363945,
+      "attn_norm": 217.56754608154296,
+      "mem_norm": 0.0,
+      "mlp_norm": 185.7642364501953,
+      "mem_entropy": 2.079441475868225
+    },
+    {
+      "layer": 9,
+      "slot_count": 0.0,
+      "kv_gate": 0.0004015238955616951,
+      "attn_norm": 151.60861358642578,
+      "mem_norm": 0.0,
+      "mlp_norm": 159.32358093261718,
+      "mem_entropy": 2.079441475868225
+    },
+    {
+      "layer": 10,
+      "slot_count": 0.0,
+      "kv_gate": 0.0002800774236675352,
+      "attn_norm": 167.1748840332031,
+      "mem_norm": 0.0,
+      "mlp_norm": 254.33482208251954,
+      "mem_entropy": 2.079441475868225
+    },
+    {
+      "layer": 11,
+      "slot_count": 0.0,
+      "kv_gate": 0.0004014486912637949,
+      "attn_norm": 214.90665130615236,
+      "mem_norm": 0.0,
+      "mlp_norm": 663.6756469726563,
+      "mem_entropy": 2.079441475868225
+    }
+  ],
+  "bank_layer_summary": [
+    {
+      "layer": 0,
+      "active_slots_mean": 0.0,
+      "mean_strength_mean": 0.0,
+      "token_mean_offdiag_mean": 0.0,
+      "token_frac_gt_095_mean": 0.0,
+      "token_approx_unique_mean": 0.0,
+      "token_effective_rank_mean": 0.0,
+      "key_mean_offdiag_mean": 0.0,
+      "key_frac_gt_095_mean": 0.0,
+      "key_approx_unique_mean": 0.0,
+      "key_effective_rank_mean": 0.0,
+      "summary_slots_mean": 0.0,
+      "anchor_slots_mean": 0.0
+    },
+    {
+      "layer": 1,
+      "active_slots_mean": 0.0,
+      "mean_strength_mean": 0.0,
+      "token_mean_offdiag_mean": 0.0,
+      "token_frac_gt_095_mean": 0.0,
+      "token_approx_unique_mean": 0.0,
+      "token_effective_rank_mean": 0.0,
+      "key_mean_offdiag_mean": 0.0,
+      "key_frac_gt_095_mean": 0.0,
+      "key_approx_unique_mean": 0.0,
+      "key_effective_rank_mean": 0.0,
+      "summary_slots_mean": 0.0,
+      "anchor_slots_mean": 0.0
+    },
+    {
+      "layer": 2,
+      "active_slots_mean": 0.0,
+      "mean_strength_mean": 0.0,
+      "token_mean_offdiag_mean": 0.0,
+      "token_frac_gt_095_mean": 0.0,
+      "token_approx_unique_mean": 0.0,
+      "token_effective_rank_mean": 0.0,
+      "key_mean_offdiag_mean": 0.0,
+      "key_frac_gt_095_mean": 0.0,
+      "key_approx_unique_mean": 0.0,
+      "key_effective_rank_mean": 0.0,
+      "summary_slots_mean": 0.0,
+      "anchor_slots_mean": 0.0
+    },
+    {
+      "layer": 3,
+      "active_slots_mean": 0.0,
+      "mean_strength_mean": 0.0,
+      "token_mean_offdiag_mean": 0.0,
+      "token_frac_gt_095_mean": 0.0,
+      "token_approx_unique_mean": 0.0,
+      "token_effective_rank_mean": 0.0,
+      "key_mean_offdiag_mean": 0.0,
+      "key_frac_gt_095_mean": 0.0,
+      "key_approx_unique_mean": 0.0,
+      "key_effective_rank_mean": 0.0,
+      "summary_slots_mean": 0.0,
+      "anchor_slots_mean": 0.0
+    },
+    {
+      "layer": 4,
+      "active_slots_mean": 0.0,
+      "mean_strength_mean": 0.0,
+      "token_mean_offdiag_mean": 0.0,
+      "token_frac_gt_095_mean": 0.0,
+      "token_approx_unique_mean": 0.0,
+      "token_effective_rank_mean": 0.0,
+      "key_mean_offdiag_mean": 0.0,
+      "key_frac_gt_095_mean": 0.0,
+      "key_approx_unique_mean": 0.0,
+      "key_effective_rank_mean": 0.0,
+      "summary_slots_mean": 0.0,
+      "anchor_slots_mean": 0.0
+    },
+    {
+      "layer": 5,
+      "active_slots_mean": 0.0,
+      "mean_strength_mean": 0.0,
+      "token_mean_offdiag_mean": 0.0,
+      "token_frac_gt_095_mean": 0.0,
+      "token_approx_unique_mean": 0.0,
+      "token_effective_rank_mean": 0.0,
+      "key_mean_offdiag_mean": 0.0,
+      "key_frac_gt_095_mean": 0.0,
+      "key_approx_unique_mean": 0.0,
+      "key_effective_rank_mean": 0.0,
+      "summary_slots_mean": 0.0,
+      "anchor_slots_mean": 0.0
+    },
+    {
+      "layer": 6,
+      "active_slots_mean": 0.0,
+      "mean_strength_mean": 0.0,
+      "token_mean_offdiag_mean": 0.0,
+      "token_frac_gt_095_mean": 0.0,
+      "token_approx_unique_mean": 0.0,
+      "token_effective_rank_mean": 0.0,
+      "key_mean_offdiag_mean": 0.0,
+      "key_frac_gt_095_mean": 0.0,
+      "key_approx_unique_mean": 0.0,
+      "key_effective_rank_mean": 0.0,
+      "summary_slots_mean": 0.0,
+      "anchor_slots_mean": 0.0
+    },
+    {
+      "layer": 7,
+      "active_slots_mean": 0.0,
+      "mean_strength_mean": 0.0,
+      "token_mean_offdiag_mean": 0.0,
+      "token_frac_gt_095_mean": 0.0,
+      "token_approx_unique_mean": 0.0,
+      "token_effective_rank_mean": 0.0,
+      "key_mean_offdiag_mean": 0.0,
+      "key_frac_gt_095_mean": 0.0,
+      "key_approx_unique_mean": 0.0,
+      "key_effective_rank_mean": 0.0,
+      "summary_slots_mean": 0.0,
+      "anchor_slots_mean": 0.0
+    },
+    {
+      "layer": 8,
+      "active_slots_mean": 0.0,
+      "mean_strength_mean": 0.0,
+      "token_mean_offdiag_mean": 0.0,
+      "token_frac_gt_095_mean": 0.0,
+      "token_approx_unique_mean": 0.0,
+      "token_effective_rank_mean": 0.0,
+      "key_mean_offdiag_mean": 0.0,
+      "key_frac_gt_095_mean": 0.0,
+      "key_approx_unique_mean": 0.0,
+      "key_effective_rank_mean": 0.0,
+      "summary_slots_mean": 0.0,
+      "anchor_slots_mean": 0.0
+    },
+    {
+      "layer": 9,
+      "active_slots_mean": 0.0,
+      "mean_strength_mean": 0.0,
+      "token_mean_offdiag_mean": 0.0,
+      "token_frac_gt_095_mean": 0.0,
+      "token_approx_unique_mean": 0.0,
+      "token_effective_rank_mean": 0.0,
+      "key_mean_offdiag_mean": 0.0,
+      "key_frac_gt_095_mean": 0.0,
+      "key_approx_unique_mean": 0.0,
+      "key_effective_rank_mean": 0.0,
+      "summary_slots_mean": 0.0,
+      "anchor_slots_mean": 0.0
+    },
+    {
+      "layer": 10,
+      "active_slots_mean": 0.0,
+      "mean_strength_mean": 0.0,
+      "token_mean_offdiag_mean": 0.0,
+      "token_frac_gt_095_mean": 0.0,
+      "token_approx_unique_mean": 0.0,
+      "token_effective_rank_mean": 0.0,
+      "key_mean_offdiag_mean": 0.0,
+      "key_frac_gt_095_mean": 0.0,
+      "key_approx_unique_mean": 0.0,
+      "key_effective_rank_mean": 0.0,
+      "summary_slots_mean": 0.0,
+      "anchor_slots_mean": 0.0
+    },
+    {
+      "layer": 11,
+      "active_slots_mean": 0.0,
+      "mean_strength_mean": 0.0,
+      "token_mean_offdiag_mean": 0.0,
+      "token_frac_gt_095_mean": 0.0,
+      "token_approx_unique_mean": 0.0,
+      "token_effective_rank_mean": 0.0,
+      "key_mean_offdiag_mean": 0.0,
+      "key_frac_gt_095_mean": 0.0,
+      "key_approx_unique_mean": 0.0,
+      "key_effective_rank_mean": 0.0,
+      "summary_slots_mean": 0.0,
+      "anchor_slots_mean": 0.0
+    }
+  ],
+  "forced_open_example": {
+    "recall_user": "Remind me of my dog's name.",
+    "expected_answer": "Your dog's name is Lumen.",
+    "rows": [
+      {
+        "position": 0,
+        "correct_token_text": "Your",
+        "max_abs_logit_diff": 0.0,
+        "mean_abs_logit_diff": 0.0,
+        "correct_rank_open": 4,
+        "correct_rank_nomem": 4,
+        "pred_open": "Rem",
+        "pred_nomem": "Rem"
+      },
+      {
+        "position": 1,
+        "correct_token_text": " dog",
+        "max_abs_logit_diff": 0.0,
+        "mean_abs_logit_diff": 0.0,
+        "correct_rank_open": 1,
+        "correct_rank_nomem": 1,
+        "pred_open": " dog",
+        "pred_nomem": " dog"
+      },
+      {
+        "position": 2,
+        "correct_token_text": "'s",
+        "max_abs_logit_diff": 0.0,
+        "mean_abs_logit_diff": 0.0,
+        "correct_rank_open": 1,
+        "correct_rank_nomem": 1,
+        "pred_open": "'s",
+        "pred_nomem": "'s"
+      },
+      {
+        "position": 3,
+        "correct_token_text": " name",
+        "max_abs_logit_diff": 0.0,
+        "mean_abs_logit_diff": 0.0,
+        "correct_rank_open": 1,
+        "correct_rank_nomem": 1,
+        "pred_open": " name",
+        "pred_nomem": " name"
+      },
+      {
+        "position": 4,
+        "correct_token_text": " is",
+        "max_abs_logit_diff": 0.0,
+        "mean_abs_logit_diff": 0.0,
+        "correct_rank_open": 1,
+        "correct_rank_nomem": 1,
+        "pred_open": " is",
+        "pred_nomem": " is"
+      },
+      {
+        "position": 5,
+        "correct_token_text": " L",
+        "max_abs_logit_diff": 0.0,
+        "mean_abs_logit_diff": 0.0,
+        "correct_rank_open": 61,
+        "correct_rank_nomem": 61,
+        "pred_open": " Max",
+        "pred_nomem": " Max"
+      },
+      {
+        "position": 6,
+        "correct_token_text": "umen",
+        "max_abs_logit_diff": 0.0,
+        "mean_abs_logit_diff": 0.0,
+        "correct_rank_open": 11,
+        "correct_rank_nomem": 11,
+        "pred_open": "ola",
+        "pred_nomem": "ola"
+      },
+      {
+        "position": 7,
+        "correct_token_text": ".",
+        "max_abs_logit_diff": 0.0,
+        "mean_abs_logit_diff": 0.0,
+        "correct_rank_open": 2,
+        "correct_rank_nomem": 2,
+        "pred_open": ",",
+        "pred_nomem": ","
+      }
+    ]
+  }
+}

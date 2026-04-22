@@ -1,0 +1,65 @@
+{
+  "model_tag": "d12-memorytokens48-phasedutility-local1000",
+  "step": 500,
+  "limit_per_dataset": 10,
+  "sampled_temperature": 0.6,
+  "sampled_top_k": 50,
+  "sampled_seeds": [
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "overall_det_accuracy": 0.0,
+  "overall_det_core_accuracy": 0.0,
+  "overall_sampled_accuracy": 0.0,
+  "overall_sampled_core_accuracy": 0.0,
+  "results": [
+    {
+      "dataset": "memory_dogname_focus_eval.jsonl",
+      "num_examples": 10,
+      "det_accuracy": 0.0,
+      "det_core_accuracy": 0.0,
+      "sampled_accuracy": 0.0,
+      "sampled_core_accuracy": 0.0,
+      "sampled_total": 50,
+      "det_failures": [
+        [
+          "Remind me of my dog's name.",
+          "Your dog's name is Lumen.",
+          ". is. is. is. is. is. is. is. is. is. is. is. is. is. is. is. is. is. is. is. is. is. is. is. is. is. is. is. is. is. is. is. is. is. is. is. is. is. is. is. is. is. is. is. is. is. is. is. is"
+        ],
+        [
+          "What's my dog's name?",
+          "Your dog's name is Aster-Pine.",
+          ". is. is. is. is. is.. is. is. is. is. is. is. is. is. is. is. is. is. is. is. is. is. is. is. is. is. is. is. is. is. is. is. is. is. is. is. is. is. is. is. is. is. is. is. is. is. is. is."
+        ],
+        [
+          "Can you tell me my dog's name?",
+          "Your dog's name is Pebble-Cloud.",
+          "................................................................................................"
+        ]
+      ],
+      "det_soft_successes": [],
+      "sampled_failures": [
+        [
+          "Remind me of my dog's name.",
+          "Your dog's name is Lumen.",
+          ".'s.'s T. T T's. T is is's is T's. T's, is's is F F is is Ti is's C.... T. is. T... is.P's. T is's T.'s is is is F. P is is. T. T is is is is... T's T T is.'s... isi is. is is. L..'s"
+        ],
+        [
+          "Remind me of my dog's name.",
+          "Your dog's name is Lumen.",
+          "... E. is T.. is.'s is's is F..'s is F.. T's T is.. is T is is E is.,. is. F's T's is. T T..i is. is L. is M's F T's T's.'s T. F is.'s T.'s is's.. T's is T is's.'s L M.. is..'s."
+        ],
+        [
+          "Remind me of my dog's name.",
+          "Your dog's name is Lumen.",
+          " is's. T is L T. M.. P. F's. is.'s M's T T T's. is.'s is T T is M. T me's T is T is is.'s L T L's is's T. T's F's T T is T's. is. F's T T is's T is F is T... is T. is T's T T.. T. is. is. is"
+        ]
+      ],
+      "sampled_soft_successes": []
+    }
+  ]
+}

@@ -1,0 +1,188 @@
+{
+  "summary": {
+    "overall": {
+      "mean_rank_mem": 1027.6526315789474,
+      "mean_rank_nomem": 1027.6526315789474,
+      "mean_logprob_mem": -3.701491101198879,
+      "mean_logprob_nomem": -3.701491101198879,
+      "mean_dlogp": 0.0,
+      "mean_max_abs_logit_diff": 0.0,
+      "top1_mem": 0.5263157894736842,
+      "top1_nomem": 0.5263157894736842
+    },
+    "by_position": {
+      "0": {
+        "mean_rank_mem": 3.0,
+        "mean_rank_nomem": 3.0,
+        "mean_logprob_mem": -1.5481380641460418,
+        "mean_logprob_nomem": -1.5481380641460418,
+        "mean_dlogp": 0.0,
+        "mean_max_abs_logit_diff": 0.0,
+        "top1_mem": 0.6,
+        "top1_nomem": 0.6
+      },
+      "1": {
+        "mean_rank_mem": 1.0,
+        "mean_rank_nomem": 1.0,
+        "mean_logprob_mem": -0.08940726071596146,
+        "mean_logprob_nomem": -0.08940726071596146,
+        "mean_dlogp": 0.0,
+        "mean_max_abs_logit_diff": 0.0,
+        "top1_mem": 1.0,
+        "top1_nomem": 1.0
+      },
+      "2": {
+        "mean_rank_mem": 1.0,
+        "mean_rank_nomem": 1.0,
+        "mean_logprob_mem": -0.20696362257003784,
+        "mean_logprob_nomem": -0.20696362257003784,
+        "mean_dlogp": 0.0,
+        "mean_max_abs_logit_diff": 0.0,
+        "top1_mem": 1.0,
+        "top1_nomem": 1.0
+      },
+      "3": {
+        "mean_rank_mem": 1.0,
+        "mean_rank_nomem": 1.0,
+        "mean_logprob_mem": -0.010659449128434062,
+        "mean_logprob_nomem": -0.010659449128434062,
+        "mean_dlogp": 0.0,
+        "mean_max_abs_logit_diff": 0.0,
+        "top1_mem": 1.0,
+        "top1_nomem": 1.0
+      },
+      "4": {
+        "mean_rank_mem": 1.0,
+        "mean_rank_nomem": 1.0,
+        "mean_logprob_mem": -0.6597512185573577,
+        "mean_logprob_nomem": -0.6597512185573577,
+        "mean_dlogp": 0.0,
+        "mean_max_abs_logit_diff": 0.0,
+        "top1_mem": 1.0,
+        "top1_nomem": 1.0
+      },
+      "5": {
+        "mean_rank_mem": 4578.5,
+        "mean_rank_nomem": 4578.5,
+        "mean_logprob_mem": -9.32422640323639,
+        "mean_logprob_nomem": -9.32422640323639,
+        "mean_dlogp": 0.0,
+        "mean_max_abs_logit_diff": 0.0,
+        "top1_mem": 0.0,
+        "top1_nomem": 0.0
+      },
+      "6": {
+        "mean_rank_mem": 2902.0,
+        "mean_rank_nomem": 2902.0,
+        "mean_logprob_mem": -9.620643985271453,
+        "mean_logprob_nomem": -9.620643985271453,
+        "mean_dlogp": 0.0,
+        "mean_max_abs_logit_diff": 0.0,
+        "top1_mem": 0.0,
+        "top1_nomem": 0.0
+      },
+      "7": {
+        "mean_rank_mem": 1133.6,
+        "mean_rank_nomem": 1133.6,
+        "mean_logprob_mem": -6.206586414575577,
+        "mean_logprob_nomem": -6.206586414575577,
+        "mean_dlogp": 0.0,
+        "mean_max_abs_logit_diff": 0.0,
+        "top1_mem": 0.2,
+        "top1_nomem": 0.2
+      },
+      "8": {
+        "mean_rank_mem": 1376.75,
+        "mean_rank_nomem": 1376.75,
+        "mean_logprob_mem": -6.4423534870147705,
+        "mean_logprob_nomem": -6.4423534870147705,
+        "mean_dlogp": 0.0,
+        "mean_max_abs_logit_diff": 0.0,
+        "top1_mem": 0.0,
+        "top1_nomem": 0.0
+      },
+      "9": {
+        "mean_rank_mem": 79.0,
+        "mean_rank_nomem": 79.0,
+        "mean_logprob_mem": -3.9469440817832946,
+        "mean_logprob_nomem": -3.9469440817832946,
+        "mean_dlogp": 0.0,
+        "mean_max_abs_logit_diff": 0.0,
+        "top1_mem": 0.4,
+        "top1_nomem": 0.4
+      },
+      "10": {
+        "mean_rank_mem": 3.5,
+        "mean_rank_nomem": 3.5,
+        "mean_logprob_mem": -1.8521710634231567,
+        "mean_logprob_nomem": -1.8521710634231567,
+        "mean_dlogp": 0.0,
+        "mean_max_abs_logit_diff": 0.0,
+        "top1_mem": 0.0,
+        "top1_nomem": 0.0
+      }
+    }
+  },
+  "example_deltas": [
+    {
+      "example_index": 0,
+      "recall_user": "Remind me of my dog's name.",
+      "expected": "Your dog's name is Lumen.",
+      "max_abs_logit_diff_any_position": 0.0
+    },
+    {
+      "example_index": 1,
+      "recall_user": "What's my dog's name?",
+      "expected": "Your dog's name is Aster-Pine.",
+      "max_abs_logit_diff_any_position": 0.0
+    },
+    {
+      "example_index": 2,
+      "recall_user": "Can you tell me my dog's name?",
+      "expected": "Your dog's name is Pebble-Cloud.",
+      "max_abs_logit_diff_any_position": 0.0
+    },
+    {
+      "example_index": 3,
+      "recall_user": "Remind me of my dog's name.",
+      "expected": "Your dog's name is Taro-Otter.",
+      "max_abs_logit_diff_any_position": 0.0
+    },
+    {
+      "example_index": 4,
+      "recall_user": "What's my dog's name?",
+      "expected": "Your dog's name is Nova-Grove.",
+      "max_abs_logit_diff_any_position": 0.0
+    },
+    {
+      "example_index": 5,
+      "recall_user": "Can you tell me my dog's name?",
+      "expected": "Your dog's name is Biscuit.",
+      "max_abs_logit_diff_any_position": 0.0
+    },
+    {
+      "example_index": 6,
+      "recall_user": "Remind me of my dog's name.",
+      "expected": "Your dog's name is Clover-Bean.",
+      "max_abs_logit_diff_any_position": 0.0
+    },
+    {
+      "example_index": 7,
+      "recall_user": "What's my dog's name?",
+      "expected": "Your dog's name is Rowan-Flame.",
+      "max_abs_logit_diff_any_position": 0.0
+    },
+    {
+      "example_index": 8,
+      "recall_user": "Can you tell me my dog's name?",
+      "expected": "Your dog's name is Lyric-Dune.",
+      "max_abs_logit_diff_any_position": 0.0
+    },
+    {
+      "example_index": 9,
+      "recall_user": "Remind me of my dog's name.",
+      "expected": "Your dog's name is Drift-Quartz.",
+      "max_abs_logit_diff_any_position": 0.0
+    }
+  ]
+}

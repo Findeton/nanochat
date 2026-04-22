@@ -1,0 +1,872 @@
+{
+  "datasets": [
+    {
+      "dataset": "memory_dogname_nameonly.jsonl",
+      "num_examples": 20000,
+      "prior_user_turns": {
+        "min": 1,
+        "p50": 1,
+        "p90": 1,
+        "max": 1,
+        "mean": 1.0
+      },
+      "recall_token_lengths": {
+        "min": 7,
+        "p50": 7,
+        "p90": 9,
+        "max": 9,
+        "mean": 7.8021
+      },
+      "answer_token_lengths": {
+        "min": 1,
+        "p50": 4,
+        "p90": 5,
+        "max": 5,
+        "mean": 3.96665
+      },
+      "answer_core_token_lengths": {
+        "min": 1,
+        "p50": 1,
+        "p90": 1,
+        "max": 1,
+        "mean": 1.0
+      },
+      "top_first_answer_tokens": [
+        [
+          "M",
+          2001
+        ],
+        [
+          "P",
+          2000
+        ],
+        [
+          "N",
+          2000
+        ],
+        [
+          "C",
+          1334
+        ],
+        [
+          "K",
+          1334
+        ],
+        [
+          "T",
+          1333
+        ],
+        [
+          "Jun",
+          667
+        ],
+        [
+          "Or",
+          667
+        ],
+        [
+          "S",
+          667
+        ],
+        [
+          "Wh",
+          667
+        ]
+      ],
+      "top_first_core_tokens": [
+        [
+          "tuna",
+          667
+        ],
+        [
+          "maple-pebble",
+          667
+        ],
+        [
+          "comet-willow",
+          667
+        ],
+        [
+          "juniper-pulse",
+          667
+        ],
+        [
+          "pixel-spark",
+          667
+        ],
+        [
+          "mochi",
+          667
+        ],
+        [
+          "cedar-drake",
+          667
+        ],
+        [
+          "orbit-snow",
+          667
+        ],
+        [
+          "poppy-feather",
+          667
+        ],
+        [
+          "nimbus-rocket",
+          667
+        ]
+      ],
+      "top_answer_prefixes": [
+        [
+          "Tuna",
+          667
+        ],
+        [
+          "Maple-Peb",
+          667
+        ],
+        [
+          "Comet-Will",
+          667
+        ],
+        [
+          "Juniper-Pulse",
+          667
+        ],
+        [
+          "Pixel-Spark",
+          667
+        ],
+        [
+          "Mochi",
+          667
+        ],
+        [
+          "Cedar-Drake",
+          667
+        ],
+        [
+          "Orbit-Snow",
+          667
+        ],
+        [
+          "Poppy-Fe",
+          667
+        ],
+        [
+          "Nimbus-R",
+          667
+        ]
+      ],
+      "unique_answers": 30,
+      "unique_core_tokens": 30
+    },
+    {
+      "dataset": "memory_train_binding.jsonl",
+      "num_examples": 24000,
+      "prior_user_turns": {
+        "min": 1,
+        "p50": 2,
+        "p90": 2,
+        "max": 2,
+        "mean": 1.7015
+      },
+      "recall_token_lengths": {
+        "min": 7,
+        "p50": 10,
+        "p90": 12,
+        "max": 12,
+        "mean": 10.009166666666667
+      },
+      "answer_token_lengths": {
+        "min": 7,
+        "p50": 12,
+        "p90": 26,
+        "max": 29,
+        "mean": 13.630041666666667
+      },
+      "answer_core_token_lengths": {
+        "min": 1,
+        "p50": 1,
+        "p90": 3,
+        "max": 3,
+        "mean": 1.6050416666666667
+      },
+      "top_first_answer_tokens": [
+        [
+          "Your",
+          14357
+        ],
+        [
+          "I",
+          4863
+        ],
+        [
+          "The",
+          4780
+        ]
+      ],
+      "top_first_core_tokens": [
+        [
+          "tuna",
+          800
+        ],
+        [
+          "poppy",
+          800
+        ],
+        [
+          "umber-panda",
+          800
+        ],
+        [
+          "nori",
+          800
+        ],
+        [
+          "pebble",
+          800
+        ],
+        [
+          "juniper",
+          800
+        ],
+        [
+          "comet",
+          800
+        ],
+        [
+          "fig",
+          800
+        ],
+        [
+          "maple",
+          800
+        ],
+        [
+          "kiwi",
+          800
+        ]
+      ],
+      "top_answer_prefixes": [
+        [
+          "Your dog's name",
+          14357
+        ],
+        [
+          "I was supposed to",
+          4863
+        ],
+        [
+          "The dog name I",
+          4780
+        ]
+      ],
+      "unique_answers": 2792,
+      "unique_core_tokens": 50
+    },
+    {
+      "dataset": "memory_train_hq.jsonl",
+      "num_examples": 24000,
+      "prior_user_turns": {
+        "min": 2,
+        "p50": 2,
+        "p90": 2,
+        "max": 2,
+        "mean": 2.0
+      },
+      "recall_token_lengths": {
+        "min": 15,
+        "p50": 19,
+        "p90": 22,
+        "max": 26,
+        "mean": 19.445833333333333
+      },
+      "answer_token_lengths": {
+        "min": 17,
+        "p50": 25,
+        "p90": 37,
+        "max": 46,
+        "mean": 27.116125
+      },
+      "answer_core_token_lengths": {
+        "min": 3,
+        "p50": 8,
+        "p90": 15,
+        "max": 16,
+        "mean": 8.180958333333333
+      },
+      "top_first_answer_tokens": [
+        [
+          "We",
+          6545
+        ],
+        [
+          "The",
+          4564
+        ],
+        [
+          "You",
+          4364
+        ],
+        [
+          "Your",
+          2182
+        ],
+        [
+          "For",
+          2182
+        ],
+        [
+          "El",
+          214
+        ],
+        [
+          "No",
+          209
+        ],
+        [
+          "U",
+          207
+        ],
+        [
+          "Ol",
+          200
+        ],
+        [
+          "Will",
+          198
+        ]
+      ],
+      "top_first_core_tokens": [
+        [
+          "https",
+          2182
+        ],
+        [
+          "review",
+          2182
+        ],
+        [
+          "launch",
+          2182
+        ],
+        [
+          "fish",
+          1500
+        ],
+        [
+          "bash",
+          1435
+        ],
+        [
+          "zsh",
+          1429
+        ],
+        [
+          "gitops-deployer",
+          571
+        ],
+        [
+          "auth-service",
+          562
+        ],
+        [
+          "analytics-sync",
+          561
+        ],
+        [
+          "client-router",
+          550
+        ]
+      ],
+      "top_answer_prefixes": [
+        [
+          "We should use the",
+          4363
+        ],
+        [
+          "Your pet's name",
+          2182
+        ],
+        [
+          "We should use https",
+          2182
+        ],
+        [
+          "The review is on",
+          2182
+        ],
+        [
+          "The launch uses cod",
+          2182
+        ],
+        [
+          "You use zsh",
+          1429
+        ],
+        [
+          "You use fish and",
+          756
+        ],
+        [
+          "You use fish,",
+          744
+        ],
+        [
+          "You use bash,",
+          743
+        ],
+        [
+          "You use bash and",
+          692
+        ]
+      ],
+      "unique_answers": 15403,
+      "unique_core_tokens": 4478
+    },
+    {
+      "dataset": "memory_dogname_focus_eval.jsonl",
+      "num_examples": 512,
+      "prior_user_turns": {
+        "min": 1,
+        "p50": 1,
+        "p90": 1,
+        "max": 1,
+        "mean": 1.0
+      },
+      "recall_token_lengths": {
+        "min": 7,
+        "p50": 9,
+        "p90": 9,
+        "max": 9,
+        "mean": 8.33203125
+      },
+      "answer_token_lengths": {
+        "min": 7,
+        "p50": 9,
+        "p90": 11,
+        "max": 11,
+        "mean": 9.4296875
+      },
+      "answer_core_token_lengths": {
+        "min": 1,
+        "p50": 1,
+        "p90": 1,
+        "max": 1,
+        "mean": 1.0
+      },
+      "top_first_answer_tokens": [
+        [
+          "Your",
+          512
+        ]
+      ],
+      "top_first_core_tokens": [
+        [
+          "lumen",
+          18
+        ],
+        [
+          "aster-pine",
+          18
+        ],
+        [
+          "pebble-cloud",
+          17
+        ],
+        [
+          "taro-otter",
+          17
+        ],
+        [
+          "nova-grove",
+          17
+        ],
+        [
+          "biscuit",
+          17
+        ],
+        [
+          "clover-bean",
+          17
+        ],
+        [
+          "rowan-flame",
+          17
+        ],
+        [
+          "lyric-dune",
+          17
+        ],
+        [
+          "drift-quartz",
+          17
+        ]
+      ],
+      "top_answer_prefixes": [
+        [
+          "Your dog's name",
+          512
+        ]
+      ],
+      "unique_answers": 30,
+      "unique_core_tokens": 30
+    },
+    {
+      "dataset": "memory_eval_binding.jsonl",
+      "num_examples": 2000,
+      "prior_user_turns": {
+        "min": 1,
+        "p50": 2,
+        "p90": 2,
+        "max": 2,
+        "mean": 1.706
+      },
+      "recall_token_lengths": {
+        "min": 7,
+        "p50": 10,
+        "p90": 12,
+        "max": 12,
+        "mean": 10.0485
+      },
+      "answer_token_lengths": {
+        "min": 7,
+        "p50": 12,
+        "p90": 26,
+        "max": 29,
+        "mean": 13.811
+      },
+      "answer_core_token_lengths": {
+        "min": 1,
+        "p50": 1,
+        "p90": 3,
+        "max": 3,
+        "mean": 1.623
+      },
+      "top_first_answer_tokens": [
+        [
+          "Your",
+          1165
+        ],
+        [
+          "I",
+          423
+        ],
+        [
+          "The",
+          412
+        ]
+      ],
+      "top_first_core_tokens": [
+        [
+          "tuna",
+          67
+        ],
+        [
+          "poppy",
+          67
+        ],
+        [
+          "umber-panda",
+          67
+        ],
+        [
+          "nori",
+          67
+        ],
+        [
+          "pebble",
+          67
+        ],
+        [
+          "juniper",
+          67
+        ],
+        [
+          "comet",
+          67
+        ],
+        [
+          "fig",
+          67
+        ],
+        [
+          "maple",
+          67
+        ],
+        [
+          "kiwi",
+          67
+        ]
+      ],
+      "top_answer_prefixes": [
+        [
+          "Your dog's name",
+          1165
+        ],
+        [
+          "I was supposed to",
+          423
+        ],
+        [
+          "The dog name I",
+          412
+        ]
+      ],
+      "unique_answers": 678,
+      "unique_core_tokens": 50
+    },
+    {
+      "dataset": "memory_eval_hq.jsonl",
+      "num_examples": 2000,
+      "prior_user_turns": {
+        "min": 2,
+        "p50": 2,
+        "p90": 2,
+        "max": 2,
+        "mean": 2.0
+      },
+      "recall_token_lengths": {
+        "min": 15,
+        "p50": 19,
+        "p90": 22,
+        "max": 26,
+        "mean": 19.453
+      },
+      "answer_token_lengths": {
+        "min": 17,
+        "p50": 25,
+        "p90": 37,
+        "max": 46,
+        "mean": 27.1025
+      },
+      "answer_core_token_lengths": {
+        "min": 3,
+        "p50": 8,
+        "p90": 15,
+        "max": 16,
+        "mean": 8.172
+      },
+      "top_first_answer_tokens": [
+        [
+          "We",
+          545
+        ],
+        [
+          "The",
+          378
+        ],
+        [
+          "You",
+          364
+        ],
+        [
+          "Your",
+          182
+        ],
+        [
+          "For",
+          182
+        ],
+        [
+          "L",
+          22
+        ],
+        [
+          "U",
+          21
+        ],
+        [
+          "K",
+          18
+        ],
+        [
+          "Will",
+          18
+        ],
+        [
+          "Jon",
+          18
+        ]
+      ],
+      "top_first_core_tokens": [
+        [
+          "https",
+          182
+        ],
+        [
+          "review",
+          182
+        ],
+        [
+          "launch",
+          182
+        ],
+        [
+          "fish",
+          128
+        ],
+        [
+          "bash",
+          120
+        ],
+        [
+          "zsh",
+          116
+        ],
+        [
+          "auth-service",
+          57
+        ],
+        [
+          "analytics-sync",
+          49
+        ],
+        [
+          "gitops-deployer",
+          47
+        ],
+        [
+          "identity-console",
+          46
+        ]
+      ],
+      "top_answer_prefixes": [
+        [
+          "We should use the",
+          363
+        ],
+        [
+          "Your pet's name",
+          182
+        ],
+        [
+          "We should use https",
+          182
+        ],
+        [
+          "The review is on",
+          182
+        ],
+        [
+          "The launch uses cod",
+          182
+        ],
+        [
+          "You use zsh",
+          116
+        ],
+        [
+          "You use fish and",
+          67
+        ],
+        [
+          "You use bash,",
+          64
+        ],
+        [
+          "You use fish,",
+          61
+        ],
+        [
+          "You use bash and",
+          56
+        ]
+      ],
+      "unique_answers": 1803,
+      "unique_core_tokens": 659
+    }
+  ],
+  "overlaps": [
+    {
+      "left": "memory_dogname_nameonly.jsonl",
+      "right": "memory_train_binding.jsonl",
+      "shared_core_tokens": 3,
+      "shared_exact_answers": 0
+    },
+    {
+      "left": "memory_dogname_nameonly.jsonl",
+      "right": "memory_train_hq.jsonl",
+      "shared_core_tokens": 4,
+      "shared_exact_answers": 0
+    },
+    {
+      "left": "memory_dogname_nameonly.jsonl",
+      "right": "memory_dogname_focus_eval.jsonl",
+      "shared_core_tokens": 30,
+      "shared_exact_answers": 0
+    },
+    {
+      "left": "memory_dogname_nameonly.jsonl",
+      "right": "memory_eval_binding.jsonl",
+      "shared_core_tokens": 3,
+      "shared_exact_answers": 0
+    },
+    {
+      "left": "memory_dogname_nameonly.jsonl",
+      "right": "memory_eval_hq.jsonl",
+      "shared_core_tokens": 4,
+      "shared_exact_answers": 0
+    },
+    {
+      "left": "memory_train_binding.jsonl",
+      "right": "memory_train_hq.jsonl",
+      "shared_core_tokens": 13,
+      "shared_exact_answers": 0
+    },
+    {
+      "left": "memory_train_binding.jsonl",
+      "right": "memory_dogname_focus_eval.jsonl",
+      "shared_core_tokens": 3,
+      "shared_exact_answers": 3
+    },
+    {
+      "left": "memory_train_binding.jsonl",
+      "right": "memory_eval_binding.jsonl",
+      "shared_core_tokens": 50,
+      "shared_exact_answers": 598
+    },
+    {
+      "left": "memory_train_binding.jsonl",
+      "right": "memory_eval_hq.jsonl",
+      "shared_core_tokens": 13,
+      "shared_exact_answers": 0
+    },
+    {
+      "left": "memory_train_hq.jsonl",
+      "right": "memory_dogname_focus_eval.jsonl",
+      "shared_core_tokens": 4,
+      "shared_exact_answers": 0
+    },
+    {
+      "left": "memory_train_hq.jsonl",
+      "right": "memory_eval_binding.jsonl",
+      "shared_core_tokens": 13,
+      "shared_exact_answers": 0
+    },
+    {
+      "left": "memory_train_hq.jsonl",
+      "right": "memory_eval_hq.jsonl",
+      "shared_core_tokens": 505,
+      "shared_exact_answers": 751
+    },
+    {
+      "left": "memory_dogname_focus_eval.jsonl",
+      "right": "memory_eval_binding.jsonl",
+      "shared_core_tokens": 3,
+      "shared_exact_answers": 3
+    },
+    {
+      "left": "memory_dogname_focus_eval.jsonl",
+      "right": "memory_eval_hq.jsonl",
+      "shared_core_tokens": 4,
+      "shared_exact_answers": 0
+    },
+    {
+      "left": "memory_eval_binding.jsonl",
+      "right": "memory_eval_hq.jsonl",
+      "shared_core_tokens": 13,
+      "shared_exact_answers": 0
+    }
+  ]
+}
