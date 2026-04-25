@@ -5,9 +5,8 @@ This script is for diagnosis, not training. It tries to answer:
 
 1. Does the checkpoint actually use persistent memory on recall tasks?
 2. Which path matters more on the current checkpoint?
-   - top-logit memory
-   - episodic residual read
-   - latent workspace residual read
+   - live persistent memory state
+   - attention read from that memory state
 3. At which answer positions does memory help or hurt?
 4. Are the memory paths active but weak, or largely ignored?
 """
@@ -82,7 +81,8 @@ def load_conversations(path, limit=None):
             line = line.strip()
             if not line:
                 continue
-            rows.append(json.loads(line))
+            item = json.loads(line)
+            rows.append(item.get("messages", item) if isinstance(item, dict) else item)
             if limit is not None and len(rows) >= limit:
                 break
     return rows
@@ -150,11 +150,14 @@ def build_empty_memory_override(model):
     empty = []
     for _ in model.transformer.h:
         empty.append({
-            "keys": torch.zeros(0, model.config.episodic_dim, device=device, dtype=model.transformer.wte.weight.dtype),
-            "values": torch.zeros(0, model.config.n_embd, device=device, dtype=model.transformer.wte.weight.dtype),
-            "weights": torch.zeros(0, device=device, dtype=model.transformer.wte.weight.dtype),
-            "source_positions": torch.full((0,), -1, device=device, dtype=torch.long),
-            "token_ids": torch.full((0,), -1, device=device, dtype=torch.long),
+            "tokens": torch.zeros(1, 0, model.config.n_embd, device=device, dtype=model.transformer.wte.weight.dtype),
+            "keys": torch.zeros(1, 0, model.config.episodic_dim, device=device, dtype=model.transformer.wte.weight.dtype),
+            "values": torch.zeros(1, 0, model.config.n_embd, device=device, dtype=model.transformer.wte.weight.dtype),
+            "strengths": torch.zeros(1, 0, device=device, dtype=model.transformer.wte.weight.dtype),
+            "weights": torch.zeros(1, 0, device=device, dtype=model.transformer.wte.weight.dtype),
+            "kind_ids": torch.zeros(1, 0, device=device, dtype=torch.long),
+            "source_positions": torch.full((1, 0), -1, device=device, dtype=torch.long),
+            "token_ids": torch.full((1, 0), -1, device=device, dtype=torch.long),
         })
     return empty
 
@@ -171,19 +174,9 @@ def ablate_model(model, mode):
         param.copy_(value)
 
     with torch.no_grad():
-        if mode == "no_top_logits":
-            pass
-        elif mode == "no_workspace":
+        if mode == "no_memory_read":
             for block in model.transformer.h:
-                save_param(block.episodic_plan_score_gate, torch.full_like(block.episodic_plan_score_gate, -30.0))
-                save_param(block.episodic_plan_value_gate, torch.full_like(block.episodic_plan_value_gate, -30.0))
-        elif mode == "no_residual_memory":
-            for block in model.transformer.h:
-                save_param(block.episodic_payload_score_gate, torch.full_like(block.episodic_payload_score_gate, -30.0))
-                save_param(block.episodic_payload_value_gate, torch.full_like(block.episodic_payload_value_gate, -30.0))
-                save_param(block.episodic_lexical_gate, torch.full_like(block.episodic_lexical_gate, -30.0))
-        elif mode == "no_token_logits":
-            pass
+                save_param(block.episodic_memory_score_bias, torch.full_like(block.episodic_memory_score_bias, -30.0))
         else:
             raise ValueError(f"Unknown ablation mode: {mode}")
     try:
@@ -204,7 +197,11 @@ def run_prompt(engine, tokenizer, user_text, max_tokens, temperature, top_k, see
     prefix = build_turn_prefix(tokenizer, user_text)
     assistant_end = tokenizer.encode_special("<|assistant_end|>")
     out = []
-    for token_column, _ in engine.generate(
+    # Persistent-memory checkpoints can still route memory tokens through the
+    # trunk even when a diagnostic ablation clears the live memory state. Force
+    # the safe non-KV path so ablations do not hit unsupported KV-cache memory
+    # decoding.
+    for token_column, _ in engine._generate_without_kv_cache(
         prefix,
         num_samples=1,
         max_tokens=max_tokens,
@@ -249,6 +246,37 @@ def teacher_forced_positions(model, tokenizer, recall_user, expected_answer, mem
     return rows
 
 
+def select_key_token_rows(expected_answer, rows):
+    core_tokens = extract_core_tokens(expected_answer)
+    if not core_tokens:
+        return []
+    selected = []
+    for row in rows:
+        piece = row["correct_token_text"].strip().lower()
+        piece = re.sub(r"[^a-z0-9./-]+", "", piece)
+        if len(piece) < 2:
+            continue
+        if any(piece in core or core in piece for core in core_tokens):
+            selected.append(row)
+    return selected
+
+
+def summarize_key_rows(rows):
+    if not rows:
+        return {
+            "count": 0,
+            "mean_correct_rank": math.nan,
+            "mean_correct_logprob": math.nan,
+            "positions_top1_correct": 0.0,
+        }
+    return {
+        "count": len(rows),
+        "mean_correct_rank": sum(r["correct_rank"] for r in rows) / len(rows),
+        "mean_correct_logprob": sum(r["correct_logprob"] for r in rows) / len(rows),
+        "positions_top1_correct": sum(int(r["predicted_token_id"] == r["correct_token_id"]) for r in rows) / len(rows),
+    }
+
+
 def summarize_position_rows(rows):
     if not rows:
         return {
@@ -287,13 +315,18 @@ def summarize_layer_diags(diags):
             "mem_norm": diag["mem_norm"],
             "mlp_norm": diag["mlp_norm"],
             "mem_entropy": diag["mem_entropy"],
+            "actual_mem_mass_last": diag.get("actual_mem_mass_last", 0.0),
+            "actual_mem_mass_mean": diag.get("actual_mem_mass_mean", 0.0),
+            "actual_mem_score_max_last": diag.get("actual_mem_score_max_last", 0.0),
+            "actual_ctx_score_max_last": diag.get("actual_ctx_score_max_last", 0.0),
+            "retrieved_score_max": diag.get("retrieved_score_max", 0.0),
             "slot_strength_mean": diag["slot_strength_mean"],
             "slot_strength_max": diag["slot_strength_max"],
         })
     return out
 
 
-def evaluate_dataset(model, tokenizer, dataset_path, limit, ablation_modes, deterministic_max_tokens, failures_to_keep):
+def evaluate_dataset(model, tokenizer, dataset_path, limit, ablation_modes, deterministic_max_tokens, failures_to_keep, positions_to_keep):
     dataset_name = Path(dataset_path).name
     rows = load_conversations(dataset_path, limit=limit)
     engine = Engine(model, tokenizer)
@@ -303,6 +336,7 @@ def evaluate_dataset(model, tokenizer, dataset_path, limit, ablation_modes, dete
             "core": 0,
             "num_examples": 0,
             "position_rows": [],
+            "key_rows": [],
             "first_step_layers": [],
             "failures": [],
         }
@@ -339,8 +373,7 @@ def evaluate_dataset(model, tokenizer, dataset_path, limit, ablation_modes, dete
 
                 if mode == "no_memory_state":
                     pos_rows = teacher_forced_positions(model, tokenizer, recall_user, expected_answer, memory_override=empty_override)
-                    prefix_ids = build_turn_prefix(tokenizer, recall_user)
-                    layer_diags = model.collect_memory_diagnostics(prefix_ids, memory_override=empty_override)
+                    layer_diags = []
                 else:
                     pos_rows = teacher_forced_positions(model, tokenizer, recall_user, expected_answer, memory_override=None)
                     prefix_ids = build_turn_prefix(tokenizer, recall_user)
@@ -351,13 +384,16 @@ def evaluate_dataset(model, tokenizer, dataset_path, limit, ablation_modes, dete
             agg["core"] += int(core_ok)
             agg["num_examples"] += 1
             agg["position_rows"].extend(pos_rows)
+            key_rows = select_key_token_rows(expected_answer, pos_rows)
+            agg["key_rows"].extend(key_rows)
             agg["first_step_layers"].append(summarize_layer_diags(layer_diags))
             if not core_ok and len(agg["failures"]) < failures_to_keep:
                 agg["failures"].append({
                     "recall_user": recall_user,
                     "expected_answer": expected_answer,
                     "response": response,
-                    "first_positions": pos_rows[: min(4, len(pos_rows))],
+                    "positions": pos_rows[: min(positions_to_keep, len(pos_rows))],
+                    "key_positions": key_rows,
                 })
 
     summary = {
@@ -388,6 +424,7 @@ def evaluate_dataset(model, tokenizer, dataset_path, limit, ablation_modes, dete
             "exact_accuracy": agg["exact"] / num_examples,
             "core_accuracy": agg["core"] / num_examples,
             "teacher_forced": summarize_position_rows(agg["position_rows"]),
+            "key_tokens": summarize_key_rows(agg["key_rows"]),
             "first_step_layer_summary": layers,
             "failures": agg["failures"],
         }
@@ -404,18 +441,19 @@ def main():
     parser.add_argument("--limit", type=int, default=20)
     parser.add_argument("--deterministic-max-tokens", type=int, default=64)
     parser.add_argument("--failures-to-keep", type=int, default=3)
+    parser.add_argument("--positions-to-keep", type=int, default=32, help="number of teacher-forced answer positions to retain per failure")
     parser.add_argument(
         "--ablation-mode",
         action="append",
         dest="ablation_modes",
         default=None,
-        choices=["full", "no_memory_state", "no_top_logits", "no_workspace", "no_residual_memory", "no_token_logits"],
+        choices=["full", "no_memory_state", "no_memory_read"],
         help="may be provided multiple times; defaults to a useful diagnostic set",
     )
     parser.add_argument("--save-json", type=str, default="", help="optional path to save the full JSON report")
     args = parser.parse_args()
 
-    ablation_modes = args.ablation_modes or ["full", "no_memory_state", "no_top_logits", "no_workspace", "no_residual_memory", "no_token_logits"]
+    ablation_modes = args.ablation_modes or ["full", "no_memory_state", "no_memory_read"]
     device_type = autodetect_device_type() if args.device_type == "" else args.device_type
     ddp, rank, local_rank, world_size, device = compute_init(device_type)
     model, tokenizer, meta = load_model(args.source, device, phase="eval", model_tag=args.model_tag, step=args.step)
@@ -423,6 +461,13 @@ def main():
     report = {
         "model_tag": meta.get("_model_tag", args.model_tag),
         "step": meta.get("_step", args.step),
+        "notes": {
+            "memory_probe_logits": "auxiliary diagnostic/training head only; not added directly to final logits",
+            "ablations": {
+                "no_memory_state": "clears persisted memory banks",
+                "no_memory_read": "keeps banks but strongly suppresses memory attention scores",
+            },
+        },
         "datasets": [],
     }
 
@@ -436,6 +481,7 @@ def main():
                 ablation_modes=ablation_modes,
                 deterministic_max_tokens=args.deterministic_max_tokens,
                 failures_to_keep=args.failures_to_keep,
+                positions_to_keep=args.positions_to_keep,
             )
         )
 

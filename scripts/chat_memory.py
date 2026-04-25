@@ -71,12 +71,18 @@ parser.add_argument("--anchor-margin-loss-weight", type=float, default=0.25, hel
 parser.add_argument("--anchor-margin", type=float, default=2.0, help="target logit margin for fact anchors against the strongest confuser")
 parser.add_argument("--anchor-loss-tokens", type=int, default=3, help="number of early fact tokens to apply the anchor/confuser loss to")
 parser.add_argument("--memory-probe-loss-weight", type=float, default=0.10, help="extra loss weight that makes the decoded memory read more lexical at fact positions")
+parser.add_argument("--key-token-ce-loss-weight", type=float, default=0.75, help="direct CE weight on exact remembered value tokens")
+parser.add_argument("--key-token-rank-loss-weight", type=float, default=0.75, help="loss weight that pushes exact remembered value tokens above every competing token")
+parser.add_argument("--key-token-rank-margin", type=float, default=2.0, help="target top-1 logit margin for exact remembered value tokens")
+parser.add_argument("--key-token-utility-loss-weight", type=float, default=1.0, help="loss weight for memory-vs-no-memory improvement on exact remembered value tokens")
+parser.add_argument("--key-token-utility-margin", type=float, default=2.0, help="target log-probability gain over no-memory on exact remembered value tokens")
 parser.add_argument("--rollout-loss-weight", type=float, default=0.0, help="extra loss weight for short autoregressive rollout recovery training")
 parser.add_argument("--rollout-batch-frac", type=float, default=0.0, help="fraction of episodes that receive rollout-aware loss when enabled")
 parser.add_argument("--rollout-steps", type=int, default=4, help="number of answer tokens to generate before rollout recovery loss")
 parser.add_argument("--rollout-continuation-tokens", type=int, default=8, help="number of gold continuation tokens to supervise after the generated prefix")
 parser.add_argument("--rollout-temperature", type=float, default=0.0, help="rollout sampling temperature; 0 means greedy")
 parser.add_argument("--rollout-top-k", type=int, default=1, help="top-k filter for rollout sampling; 1 with temperature 0 is greedy")
+parser.add_argument("--rollout-gold-start", type=str, default="first_fact", choices=["after_rollout", "first_fact"], help="where the gold recovery target starts after generated rollout tokens")
 parser.add_argument("--rollout-anchor-loss-weight", type=float, default=0.25, help="anchor/confuser loss weight inside the rollout recovery objective")
 parser.add_argument("--rollout-missing-key-multiplier", type=float, default=3.0, help="multiply rollout loss when the generated prefix should contain the key but does not")
 parser.add_argument("--rollout-repeat-multiplier", type=float, default=2.0, help="multiply rollout loss when the generated prefix falls into a short repetition loop")
@@ -489,6 +495,77 @@ def anchor_margin_terms(logits_row, token_id, target_margin):
     return loss, float(margin.item())
 
 
+def key_token_objective(outputs, no_memory_outputs, targets, fact_positions):
+    if fact_positions.numel() == 0:
+        return None
+    if (
+        args.key_token_ce_loss_weight <= 0
+        and args.key_token_rank_loss_weight <= 0
+        and args.key_token_utility_loss_weight <= 0
+    ):
+        return None
+
+    fact_targets = targets[:, fact_positions]
+    valid = fact_targets.ne(-1)
+    if not valid.any():
+        return None
+
+    logits = outputs["logits"][:, fact_positions, :]
+    gather_index = fact_targets.clamp_min(0).unsqueeze(-1)
+    correct_logits = logits.gather(-1, gather_index).squeeze(-1)
+    wrong_logits = logits.masked_fill(
+        F.one_hot(fact_targets.clamp_min(0), num_classes=logits.size(-1)).to(dtype=torch.bool),
+        -float("inf"),
+    ).max(dim=-1).values
+    rank_margin = correct_logits - wrong_logits
+
+    total = logits.new_zeros(())
+    ce_value = 0.0
+    rank_loss_value = 0.0
+    rank_margin_value = float(rank_margin[valid].mean().item())
+    utility_loss_value = 0.0
+    utility_margin_value = 0.0
+
+    if args.key_token_ce_loss_weight > 0:
+        ce_loss = F.cross_entropy(
+            logits.reshape(-1, logits.size(-1)),
+            fact_targets.reshape(-1),
+            ignore_index=-1,
+            reduction="mean",
+        )
+        ce_value = float(ce_loss.item())
+        total = total + args.key_token_ce_loss_weight * ce_loss
+
+    if args.key_token_rank_loss_weight > 0:
+        rank_loss = torch.relu(
+            torch.tensor(args.key_token_rank_margin, device=device, dtype=rank_margin.dtype) - rank_margin[valid]
+        ).mean()
+        rank_loss_value = float(rank_loss.item())
+        total = total + args.key_token_rank_loss_weight * rank_loss
+
+    if args.key_token_utility_loss_weight > 0 and no_memory_outputs is not None:
+        memory_lp = F.log_softmax(logits, dim=-1).gather(-1, gather_index).squeeze(-1)
+        base_logits = no_memory_outputs["logits"][:, fact_positions, :]
+        base_lp = F.log_softmax(base_logits, dim=-1).gather(-1, gather_index).squeeze(-1)
+        utility_margin = (memory_lp - base_lp)[valid]
+        if utility_margin.numel() > 0:
+            utility_margin_value = float(utility_margin.mean().item())
+            utility_loss = torch.relu(
+                torch.tensor(args.key_token_utility_margin, device=device, dtype=utility_margin.dtype) - utility_margin
+            ).mean()
+            utility_loss_value = float(utility_loss.item())
+            total = total + args.key_token_utility_loss_weight * utility_loss
+
+    return {
+        "loss": total,
+        "ce": ce_value,
+        "rank_loss": rank_loss_value,
+        "rank_margin": rank_margin_value,
+        "utility_loss": utility_loss_value,
+        "utility_margin": utility_margin_value,
+    }
+
+
 def sample_next_token_from_logits(logits, temperature, top_k):
     logits = logits.float()
     if top_k is not None and top_k > 0 and top_k < logits.numel():
@@ -541,15 +618,27 @@ def rollout_recovery_loss(inputs, targets, answer_positions, fact_positions, mem
     if answer_tokens.numel() <= 1:
         return None
 
+    answer_index_by_position = {int(pos.item()): idx for idx, pos in enumerate(answer_positions)}
+    fact_answer_indices = [
+        answer_index_by_position[int(pos.item())]
+        for pos in fact_positions
+        if int(pos.item()) in answer_index_by_position
+    ]
+    fact_answer_indices = sorted(set(fact_answer_indices))
+
     rollout_steps = min(args.rollout_steps, int(answer_tokens.numel()) - 1)
-    continuation_len = min(args.rollout_continuation_tokens, int(answer_tokens.numel()) - rollout_steps)
+    recovery_start = rollout_steps
+    if args.rollout_gold_start == "first_fact" and fact_answer_indices:
+        recovery_start = min(fact_answer_indices)
+    recovery_start = min(max(0, recovery_start), int(answer_tokens.numel()) - 1)
+    continuation_len = min(args.rollout_continuation_tokens, int(answer_tokens.numel()) - recovery_start)
     if rollout_steps <= 0 or continuation_len <= 0:
         return None
 
     first_answer_pos = int(answer_positions[0].item())
     prefix_tokens = inputs[0, : first_answer_pos + 1].tolist()
     generated_tokens = rollout_prefix_tokens(prefix_tokens, memory_override, rollout_steps)
-    gold_continuation = [int(t.item()) for t in answer_tokens[rollout_steps: rollout_steps + continuation_len]]
+    gold_continuation = [int(t.item()) for t in answer_tokens[recovery_start: recovery_start + continuation_len]]
     rollout_sequence = prefix_tokens + generated_tokens + gold_continuation
     if len(rollout_sequence) < 2:
         return None
@@ -571,19 +660,12 @@ def rollout_recovery_loss(inputs, targets, answer_positions, fact_positions, mem
     )
     ce_loss = rollout_outputs["loss"]
 
-    answer_index_by_position = {int(pos.item()): idx for idx, pos in enumerate(answer_positions)}
-    fact_answer_indices = [
-        answer_index_by_position[int(pos.item())]
-        for pos in fact_positions
-        if int(pos.item()) in answer_index_by_position
-    ]
-    fact_answer_indices = sorted(set(fact_answer_indices))
     anchor_losses = []
     anchor_margins = []
     for answer_idx in fact_answer_indices:
-        if answer_idx < rollout_steps or answer_idx >= rollout_steps + continuation_len:
+        if answer_idx < recovery_start or answer_idx >= recovery_start + continuation_len:
             continue
-        rollout_pos = target_start + (answer_idx - rollout_steps)
+        rollout_pos = target_start + (answer_idx - recovery_start)
         if rollout_pos >= rollout_outputs["logits"].size(1):
             continue
         token_id = int(answer_tokens[answer_idx].item())
@@ -604,7 +686,7 @@ def rollout_recovery_loss(inputs, targets, answer_positions, fact_positions, mem
 
     multiplier = 1.0
     key_missing = False
-    if fact_answer_indices and min(fact_answer_indices) < rollout_steps:
+    if fact_answer_indices:
         key_tokens = [int(answer_tokens[idx].item()) for idx in fact_answer_indices]
         key_missing = key_is_missing(generated_tokens, key_tokens)
         if key_missing:
@@ -668,6 +750,11 @@ smooth_memory_utility_margin = 0.0
 smooth_anchor_margin = 0.0
 smooth_anchor_loss = 0.0
 smooth_memory_probe_ce = 0.0
+smooth_key_token_ce = 0.0
+smooth_key_token_rank_loss = 0.0
+smooth_key_token_rank_margin = 0.0
+smooth_key_token_utility_loss = 0.0
+smooth_key_token_utility_margin = 0.0
 smooth_rollout_ce = 0.0
 smooth_rollout_anchor_margin = 0.0
 smooth_rollout_multiplier = 0.0
@@ -702,6 +789,11 @@ for step in range(args.num_iterations + 1):
     total_anchor_margin = 0.0
     total_anchor_loss = 0.0
     total_memory_probe_ce = 0.0
+    total_key_token_ce = 0.0
+    total_key_token_rank_loss = 0.0
+    total_key_token_rank_margin = 0.0
+    total_key_token_utility_loss = 0.0
+    total_key_token_utility_margin = 0.0
     total_rollout_ce = 0.0
     total_rollout_anchor_margin = 0.0
     total_rollout_multiplier = 0.0
@@ -739,6 +831,8 @@ for step in range(args.num_iterations + 1):
             args.guardrail_kl_weight > 0 and non_fact_positions.numel() > 0
         ) or (
             args.memory_utility_loss_weight > 0 and effective_fact_positions.numel() > 0
+        ) or (
+            args.key_token_utility_loss_weight > 0 and effective_fact_positions.numel() > 0
         )
         if need_no_memory:
             empty_memory_override = build_empty_memory_override(inputs.size(0))
@@ -754,6 +848,11 @@ for step in range(args.num_iterations + 1):
         anchor_margin_value = 0.0
         anchor_loss_value = 0.0
         memory_probe_ce_value = 0.0
+        key_token_ce_value = 0.0
+        key_token_rank_loss_value = 0.0
+        key_token_rank_margin_value = 0.0
+        key_token_utility_loss_value = 0.0
+        key_token_utility_margin_value = 0.0
         rollout_ce_value = 0.0
         rollout_anchor_margin_value = 0.0
         rollout_multiplier_value = 0.0
@@ -881,6 +980,15 @@ for step in range(args.num_iterations + 1):
                 memory_probe_ce_value = probe_loss.item()
                 loss = loss + args.memory_probe_loss_weight * probe_loss
 
+        key_token_metrics = key_token_objective(outputs, no_memory_outputs, targets, effective_fact_positions)
+        if key_token_metrics is not None:
+            loss = loss + key_token_metrics["loss"]
+            key_token_ce_value = key_token_metrics["ce"]
+            key_token_rank_loss_value = key_token_metrics["rank_loss"]
+            key_token_rank_margin_value = key_token_metrics["rank_margin"]
+            key_token_utility_loss_value = key_token_metrics["utility_loss"]
+            key_token_utility_margin_value = key_token_metrics["utility_margin"]
+
         rollout_metrics = rollout_recovery_loss(
             inputs,
             targets,
@@ -908,6 +1016,11 @@ for step in range(args.num_iterations + 1):
         total_anchor_margin += anchor_margin_value
         total_anchor_loss += anchor_loss_value
         total_memory_probe_ce += memory_probe_ce_value
+        total_key_token_ce += key_token_ce_value
+        total_key_token_rank_loss += key_token_rank_loss_value
+        total_key_token_rank_margin += key_token_rank_margin_value
+        total_key_token_utility_loss += key_token_utility_loss_value
+        total_key_token_utility_margin += key_token_utility_margin_value
         total_rollout_ce += rollout_ce_value
         total_rollout_anchor_margin += rollout_anchor_margin_value
         total_rollout_multiplier += rollout_multiplier_value
@@ -933,6 +1046,11 @@ for step in range(args.num_iterations + 1):
     smooth_anchor_margin = ema_beta * smooth_anchor_margin + (1 - ema_beta) * total_anchor_margin
     smooth_anchor_loss = ema_beta * smooth_anchor_loss + (1 - ema_beta) * total_anchor_loss
     smooth_memory_probe_ce = ema_beta * smooth_memory_probe_ce + (1 - ema_beta) * total_memory_probe_ce
+    smooth_key_token_ce = ema_beta * smooth_key_token_ce + (1 - ema_beta) * total_key_token_ce
+    smooth_key_token_rank_loss = ema_beta * smooth_key_token_rank_loss + (1 - ema_beta) * total_key_token_rank_loss
+    smooth_key_token_rank_margin = ema_beta * smooth_key_token_rank_margin + (1 - ema_beta) * total_key_token_rank_margin
+    smooth_key_token_utility_loss = ema_beta * smooth_key_token_utility_loss + (1 - ema_beta) * total_key_token_utility_loss
+    smooth_key_token_utility_margin = ema_beta * smooth_key_token_utility_margin + (1 - ema_beta) * total_key_token_utility_margin
     smooth_rollout_ce = ema_beta * smooth_rollout_ce + (1 - ema_beta) * total_rollout_ce
     smooth_rollout_anchor_margin = ema_beta * smooth_rollout_anchor_margin + (1 - ema_beta) * total_rollout_anchor_margin
     smooth_rollout_multiplier = ema_beta * smooth_rollout_multiplier + (1 - ema_beta) * total_rollout_multiplier
@@ -949,6 +1067,11 @@ for step in range(args.num_iterations + 1):
     debiased_anchor_margin = smooth_anchor_margin / (1 - ema_beta ** (step + 1))
     debiased_anchor_loss = smooth_anchor_loss / (1 - ema_beta ** (step + 1))
     debiased_memory_probe_ce = smooth_memory_probe_ce / (1 - ema_beta ** (step + 1))
+    debiased_key_token_ce = smooth_key_token_ce / (1 - ema_beta ** (step + 1))
+    debiased_key_token_rank_loss = smooth_key_token_rank_loss / (1 - ema_beta ** (step + 1))
+    debiased_key_token_rank_margin = smooth_key_token_rank_margin / (1 - ema_beta ** (step + 1))
+    debiased_key_token_utility_loss = smooth_key_token_utility_loss / (1 - ema_beta ** (step + 1))
+    debiased_key_token_utility_margin = smooth_key_token_utility_margin / (1 - ema_beta ** (step + 1))
     debiased_rollout_ce = smooth_rollout_ce / (1 - ema_beta ** (step + 1))
     debiased_rollout_anchor_margin = smooth_rollout_anchor_margin / (1 - ema_beta ** (step + 1))
     debiased_rollout_multiplier = smooth_rollout_multiplier / (1 - ema_beta ** (step + 1))
@@ -970,6 +1093,9 @@ for step in range(args.num_iterations + 1):
             f"anchor_margin: {debiased_anchor_margin:.4f} | "
             f"anchor_loss: {debiased_anchor_loss:.4f} | "
             f"memory_probe_ce: {debiased_memory_probe_ce:.4f} | "
+            f"key_token_ce: {debiased_key_token_ce:.4f} | "
+            f"key_token_rank_margin: {debiased_key_token_rank_margin:.4f} | "
+            f"key_token_utility_margin: {debiased_key_token_utility_margin:.4f} | "
             f"rollout_ce: {debiased_rollout_ce:.4f} | "
             f"rollout_anchor_margin: {debiased_rollout_anchor_margin:.4f} | "
             f"rollout_multiplier: {debiased_rollout_multiplier:.2f} | "
@@ -993,6 +1119,11 @@ for step in range(args.num_iterations + 1):
             "memory/anchor_margin": debiased_anchor_margin,
             "memory/anchor_loss": debiased_anchor_loss,
             "memory/memory_probe_ce": debiased_memory_probe_ce,
+            "memory/key_token_ce": debiased_key_token_ce,
+            "memory/key_token_rank_loss": debiased_key_token_rank_loss,
+            "memory/key_token_rank_margin": debiased_key_token_rank_margin,
+            "memory/key_token_utility_loss": debiased_key_token_utility_loss,
+            "memory/key_token_utility_margin": debiased_key_token_utility_margin,
             "memory/rollout_ce": debiased_rollout_ce,
             "memory/rollout_anchor_margin": debiased_rollout_anchor_margin,
             "memory/rollout_multiplier": debiased_rollout_multiplier,

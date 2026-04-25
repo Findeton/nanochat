@@ -2,628 +2,593 @@
 
 ## Purpose
 
-NanoChat already has strong short-term working memory through ordinary causal attention over the current context window.
-
-The long-term memory problem is narrower:
+NanoChat already has short-term working memory through ordinary causal attention over the current context window. The long-term memory goal is narrower and more specific:
 
 \[
 p_\theta(y \mid x, M) \approx p_\theta(y \mid x, H)
 \]
 
-where:
+where `x` is the current query, `H` is relevant past context that is no longer in the prompt, `M` is persistent runtime memory written from earlier interaction, and `y` is the answer.
 
-- `x` is the current query
-- `H` is the relevant past context that is no longer in the prompt
-- `M` is persistent memory written from earlier interactions
-- `y` is the answer sequence
+The goal is not an external database, a symbolic key-value lookup, or a special-case copy branch. The goal is a generic transformer-style associative system where persistent memory behaves like missing context.
 
-The goal is not to bolt on a retrieval branch or a special-case copy system. The goal is to make persistent memory behave as much like missing context as possible while staying inside a generic transformer-style associative framework.
+This document is the current design memo. It explains the architecture we have, the evidence that led us here, what is still wrong, and the next architecture we should move toward: symmetric attention-like read/write memory.
 
-This document is the current design memo for that goal. It summarizes the relevant evidence from earlier iterations, explains the present architecture and its failure modes, and lays out the next model and training changes.
+## Visual Overview
+
+Normal transformer attention can only read from the current context window:
+
+![Normal transformer attention](dev/diagrams/01_normal_transformer_attention.svg)
+
+The current memory architecture extends the attention read by adding retrieved persistent memory K/V beside context K/V:
+
+![Unified attention with memory](dev/diagrams/02_unified_attention_with_memory.svg)
+
+The current write path is learned and sparse, but it is not yet the fully symmetric attention-write design:
+
+![Memory write selection](dev/diagrams/03_memory_write_selection.svg)
+
+Training tells the system what is useful to remember by rewarding exact delayed recall while guarding normal answer structure:
+
+![Training alignment and guardrails](dev/diagrams/04_training_alignment_and_guardrails.svg)
 
 ## Executive Summary
 
-The current verdict is:
+The architecture direction is still right:
 
-1. The right architectural family is still **latent persistent memory read through transformer-style attention**.
-2. The current sparse-memory-token implementation is **not yet the right instantiation** of that idea.
-3. The biggest problem is no longer "memory is dead." The biggest problem is now a **train/inference mismatch plus an objective mismatch**:
-   - training builds memory one way
-   - live chat writes memory another way
-   - the loss improves gold-token probability
-   - but does not force the correct token to actually win generation
-4. Training longer with the current setup is not the answer. The long GPU run improved training metrics but over-specialized and did not fix held-out free generation.
+\[
+\mathrm{Attn}(Q, [K_M; K_C], [V_M; V_C])
+\]
 
-So the next step is not "throw away memory" and not "just keep training." The next step is to keep the unified attention-with-memory direction while changing the write dynamics, retrieval interface, and losses so the training problem matches the live recall problem.
+where `C` is the current context and `M` is persistent memory. The read should remain unified attention over context and memory.
 
-The code in `nanochat-felix` now implements the first half of that plan:
+The current implementation is an important intermediate system:
 
-- functional online memory updates shared by training and runtime
-- replay-built memory state from actual turn sequences
-- a stable pre-answer recall mask/query path
-- explicit anchor/confuser supervision
-- a lexical auxiliary on the memory read
-- completed-turn session writes as the default live behavior
-- rollout-aware recovery training for short generated prefixes
+- memory is latent torch tensor state, not Python dicts
+- memory is not prompt text
+- memory is not baked into model weights per session
+- the read path is attention-like and integrated into the transformer block
+- memory writes are sparse and learned
+- the training harness now includes direct key-token objectives and rollout recovery
 
-What is still missing is a full rollout-aware evaluation loop and longer training evidence. The trainer can now optimize against short autoregressive drift, but checkpoint selection still needs to treat live short-horizon generation as a first-class metric.
+But the current implementation is not the final clean architecture. The write path still uses a separate learned salience head (`write_gate`) plus attention-like slot pooling. That was useful because it gave us control and observability, but it is less principled than the read path.
+
+The next architectural refinement should make memory writes symmetric with reads:
+
+\[
+\text{read: context/query tokens attend to memory slots}
+\]
+
+\[
+\text{write: memory slots attend to context tokens}
+\]
+
+That means the same associative-attention idea governs both directions. This is not implemented yet. It should be treated as the next design target, not as a description of the current code.
+
+The caveat is real: pure attention-write can store too much unless it has scarcity. We still need top-k selection, budgets, slot competition, strength decay, no-op behavior, diversity pressure, and guardrail losses. Without those, memory becomes a blurry second context window instead of selective long-term memory.
 
 ## Design Target
 
-The target remains a generic associative-attention system:
+The target is a generic associative-attention memory system:
 
-- ordinary context-window tokens are one associative store
-- persistent memory is another associative store
-- both are read through the same attention-style mechanism
-- the main difference between them is the write/update rule, not the read operator
+- ordinary context tokens are one associative store
+- persistent memory tokens are another associative store
+- both are read through the same transformer attention law
+- persistent memory differs in its update rule and lifetime
+- the write rule should eventually be attention-like too
 
-This is the transformer/Hopfield compatibility point in practical form:
+The read equation is:
 
 \[
-\mathrm{Attn}(Q, K, V) = \mathrm{softmax}(QK^\top)V
+\mathrm{Attn}(Q, [K_M; K_C], [V_M; V_C])
 \]
 
-The read law is the same. The real design question is how persistent state is written, updated, selected, and supervised.
+This stays. The question is not whether generalized read attention changes. It does not.
 
-## What Earlier Iterations Taught Us
-
-### Early Latent-Memory Recall Was Real
-
-The earlier `r18`-style success matters. It showed that narrow delayed recall of specific facts could emerge from persistent latent memory without querying an external retrieval service.
-
-That result still constrains the design space. It means:
-
-- persistent latent memory is viable
-- the project does not need to default to an external symbolic database
-- the right next move should stay close to learned runtime memory rather than abandoning it
-
-### Branchy Rescue Architectures Were Informative but Not the Destination
-
-Plan/payload, workspace, and copy-style branches taught useful lessons:
-
-- the first fact token matters disproportionately
-- later fact subtokens can improve even when the overall answer still fails
-- local token help is not enough if the sequence-level interface is wrong
-
-But those architectures were too ad hoc. They helped isolate bottlenecks, not define the final memory system.
-
-### Sparse Memory Tokens Fixed an Old Failure Mode
-
-The more recent sparse-memory-token architecture fixed two real issues from previous versions:
-
-- gates were no longer effectively shut
-- memory banks were no longer trivially rank-1 collapsed
-
-That was real progress. The memory path became active, sparse, and trainable.
-
-### But the New Failure Mode Is Different
-
-The latest runs show a stronger and more precise diagnosis:
-
-- memory is active
-- memory often improves the correct token's logprob under teacher forcing
-- yet free generation still fails and often degenerates into gibberish or repetition
-
-So the problem is not "memory is absent." The problem is:
-
-- memory is written differently in training and live inference
-- retrieval drifts when generated prefixes drift
-- the loss rewards gold-token uplift more than actual argmax correctness
-- the retrieved memory read is not lexicalized enough to drive clean token selection
+The deeper question is how `K_M` and `V_M` are produced. Today they are produced by a sparse learned writer with a scalar salience head. The cleaner future version should produce them by memory slots attending over context states.
 
 ## Current Architecture
 
-The live architecture today uses persistent latent memory tokens per layer.
+The current implementation uses persistent latent memory tokens per transformer layer.
 
-These are:
+Each layer has a fixed-size memory bank with:
 
-- not prompt tokens
-- not model weights
-- runtime latent vectors stored outside the fixed trunk
-- saved and restored as session state
+- latent memory tokens / values
+- retrieval keys
+- scalar strengths
+- kind ids for summary vs anchor slots
+- source-position metadata for diagnostics
+
+The memory bank itself has no trainable parameters. Learned behavior lives in the shared episodic controller and in the per-block memory interface.
 
 At a high level:
 
-1. The trunk processes the current sequence.
-2. A shared episodic controller scores write salience and projects hidden states into memory-space.
-3. Write-time pooling compresses selected token states into a fixed latent bank.
-4. Sparse budgets keep only a limited number of summary and anchor slots active.
-5. At read time, a retrieval query selects a subset of memory slots.
-6. The current token state attends over those retrieved memory slots through the same attention-style K/V mechanism used by the transformer.
+1. A previous turn is processed by the transformer.
+2. Hidden states are projected into memory key/value space.
+3. A learned write salience head scores candidate token states.
+4. Learned summary and anchor slot queries pool selected states.
+5. Slot competition and budgets keep only a sparse subset active.
+6. At recall time, a stable recall query selects top-k memory slots.
+7. The current token stream attends over those memory slots as extra K/V in the same attention operation used for context.
 
-This preserves the right high-level principle: memory is part of associative attention, not a side output head pretending to be memory.
+Memory retrieval scores must be on the same numeric scale as normal attention logits. The current implementation therefore scales dot-product scores in memory-key space by \(1 / \sqrt{d_M}\) and caps extreme similarities with `episodic_beta`. Without this, 256-dimensional memory-key dot products can become O(100) while normal attention logits are O(10), causing early layers to be hijacked by memory rather than smoothly combining memory and context.
+
+The important point is that memory read is already integrated into attention. It is not a second decoder and not an explicit symbolic retrieval answer.
+
+## Normal Attention vs Memory Attention
+
+A normal transformer layer computes attention over the current context:
+
+\[
+Y = \mathrm{softmax}(Q_C K_C^\top)V_C
+\]
+
+If `Pebble-Cloud` is not in the context window, normal attention cannot retrieve it from runtime state. It may only guess from weights.
+
+Our current memory read computes attention over both retrieved memory and context:
+
+\[
+Y = \mathrm{softmax}(Q_C [K_M;K_C]^\top)[V_M;V_C]
+\]
+
+Memory therefore acts like extra latent context. It can vote in the same token-generation path as normal attention.
+
+This part of the idea is clean and should stay.
+
+## Recall Query
+
+The recall query is the pre-filter that chooses which persistent memory slots are available to token-level attention.
+
+Current implementation:
+
+1. Build a recall mask over the stable prefix, usually up to the latest assistant start token.
+2. Average the hidden states under that mask.
+3. Normalize and project that average with `recall_query_proj`.
+4. Compare the query to stored memory keys.
+5. Retrieve top-k active slots, biased by memory strength and kind bias.
+
+In simplified form:
+
+\[
+r = W_{\text{recall}}\ \mathrm{norm}(\mathrm{mean}(H_{\text{stable prefix}}))
+\]
+
+\[
+S = \mathrm{TopK}(rK_M^\top + \log(\mathrm{strength}))
+\]
+
+Then the selected memory slots become extra K/V for the transformer block.
+
+The stable-prefix mask is a practical fix for retrieval drift. Under teacher forcing, the generated answer prefix is gold; under free generation, the prefix may be wrong or repetitive. If retrieval depends too much on that evolving suffix, one early bad token can change what memory is retrieved. The stable prefix makes retrieval depend more on the question and less on the model's own mistakes.
+
+This is useful, but still not final. A learned answer-level retrieval policy should eventually replace the hand-shaped recall mask.
+
+## Current Write Rule
+
+The current write rule is learned and sparse, but not fully symmetric with read attention.
+
+For each candidate hidden state \(h_t\), the controller computes:
+
+\[
+s_t = W_{\text{write}}\ \mathrm{norm}(h_t)
+\]
+
+\[
+\alpha_t = \sigma(s_t)
+\]
+
+The highest-salience token states survive a max-write-token filter. Then learned slot queries attend over those selected token states:
+
+\[
+a_{slot,token} = q_{slot}^\top W_K h_t
+\]
+
+The system combines slot-to-token attention with token-to-slot competition. Summary slots get a general salience boost; anchor slots get a stronger salience boost because they are meant to preserve sharper identifying details. Memory strength is derived from salience, slot competition, and the active budget mask.
+
+In other words, the current writer decides what to remember using:
+
+- learned scalar salience
+- learned slot-query affinity
+- token-to-slot competition
+- summary/anchor budgets
+- strength decay and overwrite dynamics
+- delayed recall gradients from training
+
+This is not a hand-coded rule like "store dog names." The model learns that facts like `Pebble-Cloud` matter because later recall losses reward storing representations that make the answer token win.
+
+## Why The Current Write Rule Is Not Fully Satisfying
+
+The current write path was chosen because the immediate problem was empirical: memory was either inactive, collapsed, or unable to move logits enough. A scalar write gate gave us a direct way to expose and train salience.
+
+That was useful, but it left a conceptual asymmetry:
+
+- read uses attention from token/query state to memory slots
+- write uses a separate salience detector plus slot pooling
+
+This is better than external symbolic memory, but it is not the cleanest associative architecture. The honest critique is that we solved the immediate bottleneck first and kept an internal engineering knob that now looks less elegant than it should.
+
+The next version should remove that asymmetry.
+
+## Next Architecture: Symmetric Attention-Like Read and Write
+
+The cleaner design is:
+
+\[
+\text{Read: } Q_C \rightarrow K_M,V_M
+\]
+
+\[
+\text{Write: } Q_M \rightarrow K_C,V_C
+\]
+
+Read means current context/query tokens attend to memory slots:
+
+\[
+\mathrm{read}(h_t) = \mathrm{Attn}(W_Q h_t, K_M, V_M)
+\]
+
+Write means persistent memory slots attend to current context states:
+
+\[
+\mathrm{write}(m_s) = \mathrm{Attn}(q_s, K_C, V_C)
+\]
+
+where \(q_s\) is a learned or state-conditioned query for memory slot \(s\).
+
+In this design, salience is not a separate scalar head. It emerges from attention energy and confidence:
+
+\[
+e_{s,t} = q_s^\top k_t
+\]
+
+\[
+a_{s,t} = \mathrm{sparsemax/topk/softmax}(e_{s,t})
+\]
+
+\[
+\tilde{m}_s = \sum_t a_{s,t} v_t
+\]
+
+Slot strength can be derived from the confidence of the attention distribution:
+
+- high max score
+- large margin between best and second-best token
+- low entropy
+- strong agreement across layers or heads
+- downstream utility during delayed recall
+
+This would make memory a bidirectional associative system:
+
+- context writes into memory by attention
+- memory reads back into context by attention
+
+That is closer to the transformer/Hopfield compatibility idea than the current separate salience head.
+
+## Scarcity Is Still Required
+
+Pure attention-write is not automatically good memory.
+
+If every memory slot softly attends to every token, the system can store:
+
+- syntactic glue
+- frequent filler words
+- diffuse summaries
+- duplicated slots
+- noisy global biases
+
+That would make memory act like a blurry second context window, which is not what we want.
+
+The symmetric write design still needs bottlenecks:
+
+- top-k write tokens per slot
+- top-k active slots per write event
+- no-op / do-not-write option
+- strength thresholds
+- summary vs anchor budgets
+- slot diversity pressure
+- overwrite and decay rules
+- memory-vs-no-memory utility loss
+- non-fact guardrail KL
+- exact key-token rank loss
+- rollout validation against gibberish and repetition
+
+The point is not "attention alone solves memory." The point is that attention should be the common association primitive, while scarcity and training objectives make it selective.
+
+## How The System Learns What To Remember
+
+The system does not know ahead of time that a dog name is important. It learns from delayed consequences.
+
+The training episode says, implicitly:
+
+1. This earlier span appeared: `My dog's name is Pebble-Cloud.`
+2. Later, the model is asked: `What's my dog's name?`
+3. The answer requires the exact tokens for `Pebble-Cloud`.
+4. If memory-on improves those tokens, the memory pathway is rewarded.
+5. If memory-on corrupts ordinary answer structure, guardrails penalize it.
+
+Current training signals include:
+
+- normal answer cross-entropy
+- weighted answer CE with higher fact-token weight
+- fact-span hard-negative margin
+- direct key-token CE
+- key-token top-1 rank margin
+- memory-vs-no-memory key-token utility margin
+- anchor/confuser margin
+- memory-read lexical auxiliary
+- write diversity pressure
+- non-fact guardrail KL
+- rollout recovery loss after short generated prefixes
+
+The practical rule is:
+
+> architecture creates scarcity; losses define usefulness.
+
+That is the important mental model. The memory system is not told what facts are by rules. It is trained so that facts that later change an answer become valuable to store.
+
+## Evidence From Earlier Iterations
+
+### Early Latent Recall Was Real
+
+Earlier `r18`-style experiments showed that narrow delayed recall can emerge from latent memory without external retrieval. That result still matters. It means the project should not default to Python dict memory or symbolic retrieval as the core architecture.
+
+### Branchy Rescue Architectures Were Useful But Not Final
+
+Plan/payload, workspace, and copy-style branches taught us that:
+
+- the first fact token matters disproportionately
+- later fact subtokens can improve even when the answer fails
+- local token uplift is not enough if sequence-level generation drifts
+
+But those branches were too ad hoc to be the final architecture. They were probes, not the destination.
+
+### Sparse Memory Tokens Fixed A Real Failure
+
+Sparse memory tokens improved earlier collapse modes:
+
+- memory gates were no longer effectively shut
+- memory banks were no longer trivially rank-1 collapsed
+- memory became active enough to influence logits
+
+That was real progress.
+
+### The New Failure Mode Is Sequence-Level Use
+
+The latest failures are more specific:
+
+- memory can raise correct-token logprob under teacher forcing
+- memory still often fails to make the correct token top-1
+- free generation can degenerate into repetition or gibberish
+- live sequential writes are harder than training-style one-shot memory builds
+
+The system no longer looks like "dead memory." It looks like active but badly aligned memory.
 
 ## Current Implementation State
 
-The current `nanochat-felix` implementation should be understood as a partially completed version of the next design, not as the old system.
+The current `nanochat-felix` code should be understood as a strong intermediate implementation, not the final symmetric design.
 
-### Implemented Now
+Implemented now:
 
-The following changes are already live in code:
+- persistent latent memory tokens per layer
+- shared episodic controller
+- sparse summary and anchor slots
+- functional online memory update
+- replay-based memory construction for training
+- completed-turn write policy for chat
+- stable pre-answer recall mask
+- memory K/V injection into transformer attention
+- direct key-token CE loss
+- key-token rank margin loss
+- key-token memory-utility loss
+- anchor/confuser loss
+- lexical auxiliary on memory read
+- rollout-aware recovery training
+- diagnostic ablations for no-memory-state and no-memory-read
 
-1. **Canonical online memory update rule**
-   - the persistent memory module now exposes a functional state update
-   - the same update logic is used for runtime writes and for training-time replay construction
+Not implemented yet:
 
-2. **Replay-based memory building**
-   - training no longer has to rely on a purely separate one-shot mental model of memory
-   - prior context can be replayed as:
-     - `user`
-     - `turn`
-     - `turn_recall`
-     - `full_context`
-
-3. **Stable pre-answer recall conditioning**
-   - memory subset selection is now anchored to a prefix mask up to the current answer start
-   - this is still heuristic, but it is much closer to the real retrieval problem than conditioning entirely on the evolving generated suffix
-
-4. **Anchor/confuser loss**
-   - the strongest wrong token at the anchor now matters directly in training
-
-5. **Lexical auxiliary on the memory read**
-   - the diagnostic memory-read logit path is now lightly supervised
-
-6. **Improved live write default**
-   - chat now defaults to completed-turn memory writes rather than user-only writes
-
-7. **Rollout-aware recovery loss**
-   - the trainer can generate a short answer prefix from the model's own logits
-   - it then supervises the gold continuation under that generated prefix
-   - the rollout path starts with greedy generation by default and supports later low-temperature sampling
-   - losses are upweighted when the generated prefix misses an expected key token/span or falls into a short repetition loop
-
-### Not Implemented Yet
-
-The following parts of the plan are still missing:
-
-1. **Rollout-aware validation as the primary selection criterion**
-   - the code still needs a clean evaluation loop that treats short-horizon free generation as a first-class checkpoint selection signal
-
-2. **Learned replacement for the current recall-mask heuristic**
-   - the present stable prefix mask is a practical fix, not the final theory
-
-3. **Evidence from a serious GPU run**
-   - the local 500-step MPS run showed stable mechanics but no behavioral success yet
-   - the next question is whether the new aligned trainer plus rollout recovery crosses over in a longer Phase 1 GPU run
-
-## The Current Implementation Gap
-
-The architecture family is still reasonable. The concrete implementation is not yet aligned with the actual task.
-
-There are three different "memory modes" hiding inside the current system:
-
-1. **Training full-context build**
-   - memory is constructed in one shot from the whole prior context
-2. **User-only one-shot build**
-   - memory is built from a narrower user-only subset
-3. **Live sequential write**
-   - memory is written incrementally turn by turn during chat
-
-These are not equivalent, and the experiments show that clearly.
-
-## What The Newest Evidence Says
-
-### 1. Teacher-Forced Full-Context Memory Helps
-
-On the best held-out checkpoint so far (`step 3000`), using the training-aligned full-context memory build improved teacher-forced gold-token probabilities substantially.
-
-On a 20-example probe:
-
-- control/template positions: mean `dlogp` about `+1.30`
-- fact positions: mean `dlogp` about `+4.27`
-- fact-token rank gain was very large
-
-So the memory signal is real. This is not a dead path.
-
-### 2. But Correct-Token Uplift Is Not Translating Into Correct Generation
-
-That same checkpoint still failed badly at top-1 token selection.
-
-On the same held-out probe, top-1 correctness under full-context memory was:
-
-- control positions: base about `53%`, memory about `3%`
-- fact positions: base about `16%`, memory about `0%`
-
-This is the central mismatch in one line:
-
-> memory raises the correct token's probability, but still does not make the correct token win.
-
-That is exactly why free generation still produces nonsense.
-
-### 3. Live Sequential Writing Is Much Worse Than Training-Style Memory
-
-The clearest failure is the difference between training-style memory construction and live chat writes.
-
-On an 8-example comparison:
-
-- full-context build improved both control and fact teacher-forced logprobs
-- user-only one-shot memory was clearly worse
-- live sequential user-turn writes were catastrophic, with both control and fact positions going strongly negative relative to no-memory
-
-That means two separate mismatches exist:
-
-1. **content mismatch**
-   - user-only memory is weaker than richer prior context
-2. **write-dynamics mismatch**
-   - online incremental writing behaves much worse than one-shot memory construction
-
-### 4. The Best Held-Out Checkpoint Was Early
-
-The long GPU run improved training metrics dramatically through `step 10000`:
-
-- lower loss
-- high `memory_utility_margin`
-- high `anchor_margin`
-- lower apparent active slot count
-
-But held-out token behavior was best around `step 3000`, then worsened by `4000` and `10000`.
-
-So the current recipe over-optimizes the training objective without producing the best live recall behavior.
-
-### 5. Interactive Chat Confirms the Same Diagnosis
-
-The local two-session chat test with the `step 3000` checkpoint showed:
-
-- session persistence worked
-- memory was written and loaded correctly
-- the model still generated gibberish
-
-That is important because it removes a simpler excuse. The current problem is not broken session persistence. The current problem is that the model still uses memory badly under live autoregressive generation.
+- symmetric attention-only write rule
+- removal of the standalone `write_gate`
+- learned replacement for the recall-mask heuristic
+- rollout-aware validation as the primary checkpoint selector
+- stochastic low-temperature rollout curriculum after greedy rollout works
+- proof that live chat generation stops degenerating
 
 ## First-Principles Diagnosis
 
 There are four core issues.
 
-### 1. Training and Inference Use Different Memory Dynamics
+### 1. Training And Inference Must Use The Same Memory Dynamics
 
-Training currently approximates something like:
+Training used to approximate:
 
 \[
 M = B_\theta(H_{\text{full prior context}})
 \]
 
-while live chat actually uses:
+Live chat actually uses:
 
 \[
 M_{t+1} = U_\theta(M_t, H_t)
 \]
 
-where:
+These are not equivalent. The current code now supports replay through the online update rule, which is the right direction. The symmetric writer should preserve that: the same write/update operator must be used in training and runtime.
 
-- \(B_\theta\) is a one-shot memory builder
-- \(U_\theta\) is the incremental runtime writer
+### 2. Retrieval Must Not Drift With Bad Generated Prefixes
 
-These are not the same operator.
+Teacher forcing gives the model a gold prefix. Free generation does not. A wrong early answer token can distort hidden state and therefore memory retrieval.
 
-If the goal is a generic transformer attention system with memory, then the same write/update rule must be used in training and inference. Right now it is not.
+The current stable prefix recall query is a practical fix. Longer term, the model should learn answer-level retrieval that is stable for the duration of a response.
 
-### 2. Retrieval Query Drift Makes Teacher Forcing Too Optimistic
+### 3. Correct Token Must Win, Not Merely Improve
 
-The current retrieval subset is conditioned on evolving hidden state that includes generated prefix information.
-
-Under teacher forcing, that prefix is gold.
-Under free generation, one wrong early token changes the hidden state and retrieval shifts with it.
-
-So the model is being trained and diagnosed under a much friendlier retrieval condition than it faces when it actually has to answer.
-
-### 3. The Loss Optimizes Gold-Token Lift More Than Winning the Token Decision
-
-The current utility objective is structurally close to:
+Old memory utility could improve:
 
 \[
-\log p_\theta(y_t \mid x, M) > \log p_\theta(y_t \mid x, \varnothing)
+\log p(y_t \mid x,M) - \log p(y_t \mid x,\varnothing)
 \]
 
-But generation needs something closer to:
+without satisfying:
 
 \[
-z_t(y_t) > \max_{j \neq y_t} z_t(j)
+z(y_t) > \max_{j \ne y_t}z(j)
 \]
 
-The current system can satisfy the first condition without satisfying the second.
+That is why key-token rank margin is now part of training. The memory must make the exact datum win the token decision.
 
-That is exactly what the newest probes show:
+### 4. Memory Must Help Without Becoming A Global Bias
 
-- positive `dlogp`
-- poor top-1 correctness
-- gibberish free generation
+If memory changes every answer token, the model degenerates. The system needs memory to affect fact-bearing decisions while preserving normal answer structure.
 
-### 4. The Retrieved Memory Read Is Not Lexical Enough
-
-The memory path is useful enough to bias logits, but the read itself is still not a clean lexical fact object.
-
-This is why the model often moves toward bizarre attractors such as:
-
-- `stream`
-- `function`
-- `Democratic`
-- `United`
-- repetitive junk like `regard regard ...`
-
-The retrieved latent is influencing the distribution, but not in a directly decodable way.
-
-## Decision
-
-The correct conclusion is:
-
-- **do not abandon the attention-based latent memory direction**
-- **do not keep training the current setup unchanged**
-- **do change the write dynamics, retrieval interface, and objectives**
-
-In other words:
-
-- the architectural family is still promising
-- the current instantiation is not yet right
-
-## Next Architecture and Training Plan
-
-### 1. Unify Training and Inference Around the Same Writer
-
-This is the most important change.
-
-This is now implemented in `nanochat-felix`.
-
-The training harness no longer has to rely only on one-shot full-context memory build as the main memory path. It can train with replay through the same online write/update logic that live chat uses.
-
-That means:
-
-- replay prior turns through the real writer during training
-- treat persistent memory state as an evolving recurrent external state
-- use the same slot-update rule in both training and inference
-
-If the current writer is too awkward to train through directly, then the writer itself should be refactored into a cleaner functional state-update operator and used everywhere.
-
-### 2. Use a Stable Recall Query for Answer-Time Memory Selection
-
-Memory subset selection should not be driven entirely by the evolving generated prefix.
-
-Instead:
-
-1. compute a stable recall query from the pre-answer state, especially the user question
-2. select a memory subset once for the answer
-3. let token-local attention operate over that fixed subset during generation
-
-Conceptually:
-
-\[
-S = \mathrm{TopK}(q_{\text{query}} K_M^\top)
-\]
-
-then during decoding:
-
-\[
-r_t = \mathrm{Attn}(h_t, K_S, V_S)
-\]
-
-This keeps memory relevant to the question while reducing retrieval drift after one bad generated token.
-
-This is also now implemented in a first practical form. The current code uses a stable pre-answer prefix mask to derive the recall query. That is still heuristic, but it is already better aligned than letting the generated answer suffix fully steer subset retrieval.
-
-### 3. Turn `anchor_margin` Into a Real Loss
-
-`anchor_margin` is currently one of the most informative diagnostics, but it is not the core training signal it should be.
-
-It needs to become an explicit max-confuser loss:
-
-\[
-L_{\text{anchor}} = \max(0, m - (z_y - \max_{j \neq y} z_j))
-\]
-
-applied at:
-
-- the first fact token
-- and likely a few subsequent fact tokens
-
-This is more aligned with generation than only pushing up the gold token against curated negatives.
-
-This is now implemented for the early fact tokens. The current trainer still uses a simple fixed early-token window rather than a more adaptive sequence-level version, so this part is improved but not finished.
-
-### 4. Keep Guardrails, but Make Them Answer-Trajectory Aware
-
-The guardrail KL is still useful. It protects non-fact answer structure from gratuitous memory distortion.
-
-It now has help from a short rollout-aware objective, but still needs a proper rollout-aware validation loop.
-
-At minimum, the system should evaluate short autoregressive rollouts for the first few answer tokens. Even a very short horizon is more aligned with the actual failure mode than pure teacher forcing.
-
-The current failure is sequence-level drift after early token mistakes. The training signal needs to see that.
-
-The trainer now includes a first practical version of that signal: it can generate a short answer prefix, feed that generated prefix back in, and train on the gold continuation. The next missing piece is making that same rollout path a primary validation and checkpoint-selection signal.
-
-### 5. Add a Small Lexical Decodability Auxiliary on the Memory Read
-
-The top memory read already has a diagnostic logit path, but it is not being trained as a meaningful lexical object.
-
-A low-weight auxiliary loss on the memory-read logits at fact positions should help make memory more directly decodable without reverting to a branchy explicit copy architecture.
-
-This remains compatible with the generic attention-with-memory goal. It is not a special-case retrieval head; it is an auxiliary shaping signal.
-
-This is now implemented in lightweight form.
-
-### 6. Write Better Runtime Content by Default
-
-The experiments say user-only live memory is worse than richer full-context memory.
-
-So runtime memory writing should move closer to what actually helps:
-
-- write completed turns rather than only the user prompt
-- or write a reconsolidated turn summary plus anchor traces
-- or both
-
-The default chat write policy should not stay in the weakest regime if the training evidence already shows it is mismatched.
-
-This is now implemented in the chat surfaces by making completed-turn writes the default and keeping user-only writes as an explicit debug option.
+That is why guardrails remain essential even in a cleaner symmetric attention-write design.
 
 ## Training Strategy
 
-The previous trunk-heavy schedules were wrong.
+### Phase 1: Memory Path Only
 
-The next serious GPU run should be organized like this.
+Freeze the base trunk. Train the memory controller, writer, retriever, and memory interface. The goal is to make memory useful before the trunk adapts around it.
 
-### Phase 1: Memory and Write/Read Path Only
+Primary metrics:
 
-- freeze the base trunk
-- train the memory controller, writer, retriever, and memory interface
-- train on the actual online memory dynamics
-- keep guardrails active
-
-The memory path needs to become useful before the trunk is allowed to adapt around it.
-
-This phase remains the correct default first training phase.
+- key-token CE down
+- key-token rank margin up toward positive
+- key-token utility margin positive
+- anchor margin improving
+- guardrail KL controlled
+- no explosion in active slots or repetition
 
 ### Phase 2: Interface Joint
 
-- unfreeze a small interface set
-- keep most of the trunk frozen
-- let the model refine how memory enters the answer trajectory
+Unfreeze a small interface set, such as top layers and answer-facing projections. Keep most of the trunk frozen. Start only if held-out live recall improves.
 
-This phase should be conservative and should only begin if held-out live recall is improving.
+### Phase 3: Full Joint Release
 
-### Phase 3: Optional Full Joint Release
-
-- lowest learning rate
-- only after live sequential recall and anchor behavior are clearly improving
-
-This is a release phase, not the place where the memory mechanism should first start working.
+Use a very low learning rate. This is a release phase, not where memory should first become useful.
 
 ## Rollout Training Plan
 
-The trainer now has rollout-aware recovery loss. It should still be used as a curriculum, not turned into noisy sequence training immediately.
+The training path should become increasingly aligned with live generation.
 
-### Stage 1: Greedy or Near-Greedy Rollouts
-
-Start with:
+Stage 1 uses greedy or near-greedy rollout:
 
 - `temperature = 0`
-- or effectively `top_k = 1`
+- `top_k = 1`
+- generate a short prefix from the model itself
+- train the gold continuation beginning at the fact token
+- upweight missing-key and repetition failures
 
-The point is to expose the model to its own most likely early mistakes, not to inject lots of random noise.
+Stage 2 adds low-temperature stochastic rollout only after greedy generation is stable:
 
-This stage should:
+- temperature around `0.2 - 0.4`
+- small top-k
+- evaluate robustness around the decision boundary
 
-- generate the first few answer tokens from the model itself
-- feed those generated prefixes back into the model
-- apply losses to the subsequent positions
-- become a key validation path for checkpoint selection
-- upweight the loss if the generated prefix should contain the key datum but does not
-- upweight the loss if the prefix falls into short repetition
+High-temperature rollout should not be the starting point. It would add noise before the deterministic recall path is healthy.
 
-### Stage 2: Low-Temperature Stochastic Rollouts
+## Evaluation Plan
 
-Only after the deterministic rollout path is working and no longer degenerates should training add small stochasticity.
+Raw loss is not enough. Teacher-forced logprob is not enough.
 
-That means:
+Primary evaluation should include:
 
-- low temperature only
-- roughly in the `0.2 - 0.4` range
-- likely still with a small `top_k`
-
-The purpose of this stage is not diversity for its own sake. The purpose is robustness around the model's real decision boundary once the deterministic path is already stable.
-
-High-temperature rollout training should not be the starting point. It would inject too much noise and blur the actual recall failure we are trying to fix.
-
-## What To Measure
-
-The next training loop should treat these as primary metrics:
-
-- held-out live sequential-write recall
-- held-out short-horizon generation after memory write
+- live sequential-write recall accuracy
+- short-horizon greedy generation accuracy
+- missing-key rate
+- repetition/gibberish rate
 - first fact-token top-1 accuracy
-- next few fact-token top-1 accuracy
-- control-token top-1 accuracy
-- `anchor_margin`
-- `memory_utility_margin`
-- guardrail KL
+- subsequent fact-token top-1 accuracy
+- key-token rank and logprob
+- memory-on vs no-memory key-token delta
+- no-memory-state and no-memory-read ablations
+- control-token accuracy and KL
 - active slot count and retrieval entropy
+- actual memory attention mass per layer/head/token
+- max memory-vs-context attention score at the first generated token
 
-Raw loss alone is not enough, and teacher-forced gold-token logprob alone is not enough either.
+The best checkpoint is not necessarily the one with the lowest training loss. Previous runs showed that held-out behavior could peak early and then worsen.
 
-During the next major run, rollout metrics should be added in this order:
+## Next Code Plan
 
-1. greedy short-horizon rollout accuracy
-2. greedy short-horizon rollout degeneration rate
-3. low-temperature short-horizon rollout accuracy
-4. missing-key rate within the rollout horizon
+### Keep The Current Read Equation
 
-The low-temperature version should only become important after the greedy version is already healthy.
+Do not change the generalized attention read:
+
+\[
+\mathrm{Attn}(Q, [K_M;K_C], [V_M;V_C])
+\]
+
+This is the foundation.
+
+### Refactor Write Into Slot-To-Context Attention
+
+Implement an experimental writer where each memory slot attends over context hidden states:
+
+\[
+A_{s,t} = \mathrm{sparse\_attention}(q_s, k_t)
+\]
+
+\[
+\tilde{m}_s = \sum_t A_{s,t}v_t
+\]
+
+Derive strength from attention confidence rather than a separate scalar write gate.
+
+### Preserve Scarcity
+
+The first symmetric writer should still include:
+
+- top-k token selection per slot
+- top-k slot activation per event
+- summary/anchor budgets
+- slot diversity loss
+- decay and overwrite rules
+- optional no-write slot
+
+### Compare Against The Current Writer
+
+The current writer should stay only long enough to provide a fair ablation:
+
+- current `write_gate` salience writer
+- symmetric slot-to-context attention writer
+- no-memory-state diagnostic
+- no-memory-read diagnostic
+
+If the symmetric writer wins or matches, remove the standalone salience path and its dead parameters.
+
+### Upgrade Validation
+
+Make rollout-aware validation part of the default watcher:
+
+- evaluate checkpoint 500, 1000, 1500, ...
+- save full key-token ranks and logprobs
+- save failure examples with generated text
+- compare full memory, no memory state, and no memory read
 
 ## What To Stop Doing
 
-The current evidence says we should not:
+Do not:
 
-- keep training the current setup and hope gibberish disappears
-- reintroduce old copy/workspace branch architectures as the main path
-- treat full-context teacher-forced gains as proof that live chat is fixed
-- optimize only curated hard-negative losses without real max-confuser supervision
-- keep the live chat writer in a user-only incremental mode if that continues to be the weakest setting
-
-## Concrete Repo Plan
-
-The next code changes should center on these files.
-
-### `nanochat/gpt.py`
-
-- separate stable answer-level recall query from token-local retrieval
-- stop letting evolving generated hidden state fully control memory subset selection
-- expose the memory read path cleanly for auxiliary supervision
-
-### `nanochat/episodic_memory.py`
-
-- make the online writer the canonical state-update mechanism
-- ensure the same update logic is used in training and inference
-- keep sparsity and budget logic, but make it compatible with replayable training
-
-### `scripts/chat_memory.py`
-
-- train with replay through the actual online writer
-- add explicit anchor/confuser loss
-- add lexical auxiliary on the memory read
-- add rollout-aware recovery loss
-- add rollout-aware evaluation and early stopping
-- stop optimizing for memory behaviors that only exist in one-shot build mode
-
-At the time of writing:
-
-- replay training is implemented
-- anchor/confuser loss is implemented
-- lexical auxiliary is implemented
-- rollout-aware recovery training is implemented
-- rollout-aware evaluation and early stopping are still missing
-
-### `scripts/chat_cli.py`
-
-- move the default write behavior toward completed-turn or reconsolidated memory writes
-- keep session persistence simple and inspectable
+- treat full-context teacher-forced gains as proof live chat is fixed
+- optimize only gold-token uplift without rank/top-1 pressure
+- keep adding branchy copy/workspace paths
+- keep dead parameters for backwards compatibility
+- assume attention-write alone solves memory without scarcity
+- move to high-temperature rollout before greedy rollout works
 
 ## Status
 
-The current sparse-memory-token architecture was an important intermediate step. It showed that:
+Current status:
 
-- memory can be active
-- sparsity matters
-- the right architectural family is not dead
-
-But it also showed that the current system still fails the real objective:
-
-- coherent live recall without gibberish
-
-The repository state is therefore:
-
-- architecture direction: still correct
-- runtime/training memory alignment: substantially improved
-- token-level supervision: substantially improved
-- rollout-aware recovery supervision: implemented in the trainer
-- rollout-aware evaluation and checkpoint selection: still missing
+- architecture family: still correct
+- generalized memory/context attention read: implemented
+- sparse latent memory: implemented
+- direct key-token training pressure: implemented
+- rollout recovery training: implemented
+- symmetric attention-write: not implemented yet
 - live generation quality: not solved yet
 
-So the next experiment is now well defined.
+The next design problem is now precise:
 
-The question is no longer:
+> Can NanoChat train a single generic attention-with-memory system whose read and write operations are both associative, whose memory remains scarce and selective, and whose live sequential recall behaves like missing context instead of latent noise?
 
-> can NanoChat have latent persistent memory at all?
-
-The question is:
-
-> can NanoChat train a single generic attention-with-memory system whose online write dynamics, retrieval interface, and token-level objectives are aligned closely enough that live sequential recall behaves like missing context instead of latent noise?
-
-That is the right next design problem.
+That is the right target.

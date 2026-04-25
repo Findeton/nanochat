@@ -38,6 +38,8 @@ class PersistentMemoryTokens(nn.Module):
         max_slots=256,
         top_k=8,
         decay=0.995,
+        score_scale=None,
+        score_cap=None,
     ):
         super().__init__()
         self.token_dim = token_dim
@@ -45,6 +47,8 @@ class PersistentMemoryTokens(nn.Module):
         self.max_slots = max_slots
         self.top_k = top_k
         self.decay = decay
+        self.score_scale = key_dim ** -0.5 if score_scale is None else float(score_scale)
+        self.score_cap = None if score_cap is None or score_cap <= 0 else float(score_cap)
         self.register_buffer("tokens", torch.zeros(max_slots, token_dim), persistent=False)
         self.register_buffer("keys", torch.zeros(max_slots, key_dim), persistent=False)
         self.register_buffer("strengths", torch.zeros(max_slots), persistent=False)
@@ -225,7 +229,10 @@ class PersistentMemoryTokens(nn.Module):
             }
 
         safe_strengths = strengths.clamp(min=1e-6)
-        scores = torch.einsum("bte,bse->bts", query, keys) + safe_strengths.log().unsqueeze(1)
+        similarity = torch.einsum("bte,bse->bts", query, keys) * self.score_scale
+        if self.score_cap is not None:
+            similarity = similarity.clamp(min=-self.score_cap, max=self.score_cap)
+        scores = similarity + safe_strengths.log().unsqueeze(1)
         scores = scores.masked_fill(~active_mask.unsqueeze(1), float("-inf"))
         slot_count = keys.size(1)
         k = slot_count if self.top_k <= 0 else min(self.top_k, slot_count)

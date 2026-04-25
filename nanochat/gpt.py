@@ -99,9 +99,17 @@ class SharedEpisodicController(nn.Module):
         self.kind_bias = nn.Parameter(torch.zeros(2))
         self.summary_budget = min(summary_slots, max(1, config.episodic_summary_budget))
         self.anchor_budget = min(anchor_slots, max(1, config.episodic_anchor_budget))
+        self.score_scale = config.episodic_dim ** -0.5
+        self.score_cap = None if config.episodic_beta <= 0 else float(config.episodic_beta)
 
     def slot_queries(self):
         return torch.cat([self.summary_slot_queries, self.anchor_slot_queries], dim=0)
+
+    def scale_memory_scores(self, scores):
+        scores = scores * self.score_scale
+        if self.score_cap is not None:
+            scores = scores.clamp(min=-self.score_cap, max=self.score_cap)
+        return scores
 
     def slot_kind_ids(self, device):
         return torch.cat(
@@ -179,6 +187,49 @@ class CausalSelfAttention(nn.Module):
 
         return out.permute(0, 2, 1, 3).contiguous()
 
+    @torch.no_grad()
+    def memory_attention_summary(self, x, cos_sin, window_size, memory_kv=None):
+        B, T, _ = x.size()
+        q = self.c_q(x).view(B, T, self.n_head, self.head_dim)
+        k = self.c_k(x).view(B, T, self.n_kv_head, self.head_dim)
+        cos, sin = cos_sin
+        q, k = apply_rotary_emb(q, cos, sin), apply_rotary_emb(k, cos, sin)
+        q, k = norm(q), norm(k)
+        q = q * 1.2
+        k = k * 1.2
+
+        qh = q.permute(0, 2, 1, 3)
+        kh = self._expand_kv_heads(k).permute(0, 2, 1, 3)
+        scores_ctx = torch.einsum("bhtd,bhsd->bhts", qh, kh) / (self.head_dim ** 0.5)
+        positions = torch.arange(T, device=x.device)
+        causal = positions.unsqueeze(1) >= positions.unsqueeze(0)
+        if window_size[0] > 0:
+            causal = causal & (positions.unsqueeze(1) - positions.unsqueeze(0) < window_size[0])
+        scores_ctx = scores_ctx.masked_fill(~causal.view(1, 1, T, T), float("-inf"))
+
+        if memory_kv is None or memory_kv["k"].size(1) == 0:
+            return {
+                "actual_mem_mass_last": 0.0,
+                "actual_mem_mass_mean": 0.0,
+                "actual_mem_score_max_last": 0.0,
+                "actual_ctx_score_max_last": float(scores_ctx[..., -1, :].max().item()),
+                "retrieved_score_max": 0.0,
+            }
+
+        km = self._expand_kv_heads(memory_kv["k"]).permute(0, 2, 1, 3)
+        scores_mem = torch.einsum("bhtd,bhmd->bhtm", qh, km) / (self.head_dim ** 0.5)
+        scores_mem = scores_mem + memory_kv["scores"].to(dtype=scores_mem.dtype).unsqueeze(1)
+        scores = torch.cat([scores_mem, scores_ctx], dim=-1)
+        att = F.softmax(scores.float(), dim=-1)
+        mem_len = scores_mem.size(-1)
+        return {
+            "actual_mem_mass_last": float(att[..., -1, :mem_len].sum(dim=-1).mean().item()),
+            "actual_mem_mass_mean": float(att[..., :mem_len].sum(dim=-1).mean().item()),
+            "actual_mem_score_max_last": float(scores_mem[..., -1, :].max().item()),
+            "actual_ctx_score_max_last": float(scores_ctx[..., -1, :].max().item()),
+            "retrieved_score_max": float(memory_kv["scores"].max().item()) if memory_kv["scores"].numel() else 0.0,
+        }
+
     def forward(self, x, ve, cos_sin, window_size, kv_cache, memory_kv=None):
         B, T, _ = x.size()
         q = self.c_q(x).view(B, T, self.n_head, self.head_dim)
@@ -249,6 +300,8 @@ class Block(nn.Module):
             max_slots=config.episodic_slots,
             top_k=config.episodic_top_k,
             decay=config.episodic_decay,
+            score_scale=config.episodic_dim ** -0.5,
+            score_cap=config.episodic_beta,
         )
         self.mlp = MLP(config)
 
@@ -285,7 +338,7 @@ class Block(nn.Module):
 
         slot_queries = controller.slot_queries().to(device=write_keys.device, dtype=write_keys.dtype)
         slot_queries = slot_queries.unsqueeze(0).expand(write_keys.size(0), -1, -1)
-        att_logits = torch.einsum("bse,bte->bst", slot_queries, norm(write_keys))
+        att_logits = controller.scale_memory_scores(torch.einsum("bse,bte->bst", slot_queries, norm(write_keys)))
         summary_slots = controller.summary_slots
         att_logits[:, :summary_slots, :] = att_logits[:, :summary_slots, :] + salience_logits.unsqueeze(1)
         att_logits[:, summary_slots:, :] = att_logits[:, summary_slots:, :] + 2.0 * salience_logits.unsqueeze(1)
@@ -384,7 +437,7 @@ class Block(nn.Module):
             }
 
         token_query = controller.read_query_proj(norm(x))
-        memory_scores = torch.einsum("bte,bke->btk", norm(token_query), norm(memory_keys))
+        memory_scores = controller.scale_memory_scores(torch.einsum("bte,bke->btk", norm(token_query), norm(memory_keys)))
         memory_scores = memory_scores + retrieved["scores"].unsqueeze(1)
         att = torch.softmax(memory_scores.float(), dim=-1).to(dtype=x.dtype)
         memory_values = memory_tokens.unsqueeze(1).expand(-1, x.size(1), -1, -1)
@@ -906,18 +959,25 @@ class GPT(nn.Module):
             x = self.resid_lambdas[i] * x + self.x0_lambdas[i] * x0
             ve = self.value_embeds[str(i)](idx).to(x.dtype) if str(i) in self.value_embeds else None
             block_memory = None if memory_override is None else memory_override[i]
+            memory_kv = block.build_episodic_attention_kv(
+                x,
+                self.episodic_controller,
+                state_override=block_memory,
+                recall_mask=recall_mask,
+            )
+            attn_memory = block.attn.memory_attention_summary(
+                norm(x),
+                cos_sin,
+                self.window_sizes[i],
+                memory_kv=memory_kv,
+            )
             attn_out = block.attn(
                 norm(x),
                 ve,
                 cos_sin,
                 self.window_sizes[i],
                 kv_cache=None,
-                memory_kv=block.build_episodic_attention_kv(
-                    x,
-                    self.episodic_controller,
-                    state_override=block_memory,
-                    recall_mask=recall_mask,
-                ),
+                memory_kv=memory_kv,
             )
             x_after_attn = x + attn_out
             mem_details = block.read_episodic_memory_details(
@@ -945,6 +1005,11 @@ class GPT(nn.Module):
                     "mem_norm": float(mem_details["retrieved"].norm(dim=-1).mean().item()),
                     "mlp_norm": float(mlp_out.norm(dim=-1).mean().item()),
                     "mem_entropy": float(_entropy(mem_details["attention"]).item()),
+                    "actual_mem_mass_last": attn_memory["actual_mem_mass_last"],
+                    "actual_mem_mass_mean": attn_memory["actual_mem_mass_mean"],
+                    "actual_mem_score_max_last": attn_memory["actual_mem_score_max_last"],
+                    "actual_ctx_score_max_last": attn_memory["actual_ctx_score_max_last"],
+                    "retrieved_score_max": attn_memory["retrieved_score_max"],
                     "slot_strength_mean": float((block_memory["strengths"][0] if block_memory is not None else block.episodic_memory.live_state(batch_size=1)["strengths"][0]).mean().item()),
                     "slot_strength_max": float((block_memory["strengths"][0] if block_memory is not None else block.episodic_memory.live_state(batch_size=1)["strengths"][0]).max().item()),
                 }

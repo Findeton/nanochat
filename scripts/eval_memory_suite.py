@@ -76,7 +76,8 @@ def load_conversations(path, limit=None):
             line = line.strip()
             if not line:
                 continue
-            conversations.append(json.loads(line))
+            item = json.loads(line)
+            conversations.append(item.get("messages", item) if isinstance(item, dict) else item)
             if limit is not None and len(conversations) >= limit:
                 break
     return conversations
