@@ -103,6 +103,17 @@ class PersistentMemoryTokens(nn.Module):
             "source_positions": source_positions,
         }
 
+    def empty_state(self, *, batch_size=1, device=None, dtype=None):
+        device = self.tokens.device if device is None else device
+        dtype = self.tokens.dtype if dtype is None else dtype
+        return self.build_state(
+            torch.zeros(batch_size, self.max_slots, self.token_dim, device=device, dtype=dtype),
+            torch.zeros(batch_size, self.max_slots, self.key_dim, device=device, dtype=dtype),
+            torch.zeros(batch_size, self.max_slots, device=device, dtype=dtype),
+            kind_ids=torch.zeros(batch_size, self.max_slots, device=device, dtype=torch.long),
+            source_positions=torch.full((batch_size, self.max_slots), -1, device=device, dtype=torch.long),
+        )
+
     def live_state(self, *, batch_size=1, device=None, dtype=None):
         device = self.tokens.device if device is None else device
         dtype = self.tokens.dtype if dtype is None else dtype
@@ -123,6 +134,49 @@ class PersistentMemoryTokens(nn.Module):
             "kind_ids": kind_ids,
             "source_positions": source_positions,
         }
+
+    def updated_state(self, current_state, write_state):
+        if current_state is None:
+            batch_size = write_state["tokens"].size(0)
+            current_state = self.empty_state(
+                batch_size=batch_size,
+                device=write_state["tokens"].device,
+                dtype=write_state["tokens"].dtype,
+            )
+        cur_tokens, cur_keys, cur_strengths, cur_kind_ids, cur_positions = self._coerce_state(current_state)
+        write_tokens, write_keys, write_strengths, write_kind_ids, write_positions = self._coerce_state(write_state)
+
+        device = write_tokens.device
+        dtype = write_tokens.dtype
+        cur_tokens = cur_tokens.to(device=device, dtype=dtype)
+        cur_keys = cur_keys.to(device=device, dtype=dtype)
+        cur_strengths = cur_strengths.to(device=device, dtype=dtype).clamp(min=0.0, max=1.0)
+        cur_kind_ids = cur_kind_ids.to(device=device, dtype=torch.long)
+        cur_positions = cur_positions.to(device=device, dtype=torch.long)
+
+        write_tokens = write_tokens.to(device=device, dtype=dtype)
+        write_keys = write_keys.to(device=device, dtype=dtype)
+        write_strengths = write_strengths.to(device=device, dtype=dtype).clamp(min=0.0, max=1.0)
+        write_kind_ids = write_kind_ids.to(device=device, dtype=torch.long)
+        write_positions = write_positions.to(device=device, dtype=torch.long)
+
+        alpha = write_strengths.unsqueeze(-1)
+        decayed_tokens = cur_tokens * self.decay
+        decayed_keys = cur_keys * self.decay
+        new_tokens = decayed_tokens + alpha * (write_tokens - decayed_tokens)
+        new_keys = decayed_keys + alpha * (write_keys - decayed_keys)
+        new_strengths = torch.maximum(cur_strengths * self.decay, write_strengths).clamp(min=0.0, max=1.0)
+
+        kind_mask = write_strengths > 1e-6
+        new_kind_ids = torch.where(kind_mask, write_kind_ids, cur_kind_ids)
+        new_positions = torch.where(kind_mask, write_positions, cur_positions)
+        return self.build_state(
+            new_tokens,
+            new_keys,
+            new_strengths,
+            kind_ids=new_kind_ids,
+            source_positions=new_positions,
+        )
 
     def retrieve_slots(self, query, state_override=None, slot_mask=None):
         """
@@ -210,40 +264,13 @@ class PersistentMemoryTokens(nn.Module):
 
     @torch.no_grad()
     def write(self, state):
-        tokens, keys, strengths, kind_ids, source_positions = self._coerce_state(state)
-        tokens = tokens.mean(dim=0).to(device=self.tokens.device, dtype=self.tokens.dtype)
-        keys = keys.mean(dim=0).to(device=self.keys.device, dtype=self.keys.dtype)
-        strengths = strengths.mean(dim=0).to(device=self.strengths.device, dtype=self.strengths.dtype).clamp(min=0.0, max=1.0)
-        kind_ids = kind_ids[0].to(device=self.kind_ids.device, dtype=self.kind_ids.dtype)
-        source_positions = source_positions.float().mean(dim=0).round().to(device=self.source_positions.device, dtype=self.source_positions.dtype)
-
-        if tokens.size(0) != self.max_slots or keys.size(0) != self.max_slots:
-            limit = min(tokens.size(0), self.max_slots)
-            padded_tokens = self.tokens.new_zeros(self.max_slots, self.token_dim)
-            padded_keys = self.keys.new_zeros(self.max_slots, self.key_dim)
-            padded_strengths = self.strengths.new_zeros(self.max_slots)
-            padded_kinds = self.kind_ids.new_zeros(self.max_slots)
-            padded_positions = self.source_positions.new_full((self.max_slots,), -1)
-            padded_tokens[:limit] = tokens[:limit]
-            padded_keys[:limit] = keys[:limit]
-            padded_strengths[:limit] = strengths[:limit]
-            padded_kinds[:limit] = kind_ids[:limit]
-            padded_positions[:limit] = source_positions[:limit]
-            tokens = padded_tokens
-            keys = padded_keys
-            strengths = padded_strengths
-            kind_ids = padded_kinds
-            source_positions = padded_positions
-
-        alpha = strengths.unsqueeze(-1)
-        self.tokens.mul_(self.decay)
-        self.tokens.add_(alpha * (tokens - self.tokens))
-        self.keys.mul_(self.decay)
-        self.keys.add_(alpha * (keys - self.keys))
-        self.strengths.mul_(self.decay)
-        self.strengths.copy_(torch.maximum(self.strengths, strengths).clamp_(min=0.0, max=1.0))
-        self.kind_ids.copy_(kind_ids)
-        self.source_positions.copy_(source_positions)
+        updated = self.updated_state(self.live_state(batch_size=1, device=self.tokens.device, dtype=self.tokens.dtype), state)
+        tokens, keys, strengths, kind_ids, source_positions = self._coerce_state(updated)
+        self.tokens.copy_(tokens[0].to(device=self.tokens.device, dtype=self.tokens.dtype))
+        self.keys.copy_(keys[0].to(device=self.keys.device, dtype=self.keys.dtype))
+        self.strengths.copy_(strengths[0].to(device=self.strengths.device, dtype=self.strengths.dtype))
+        self.kind_ids.copy_(kind_ids[0].to(device=self.kind_ids.device, dtype=self.kind_ids.dtype))
+        self.source_positions.copy_(source_positions[0].to(device=self.source_positions.device, dtype=self.source_positions.dtype))
         self.num_slots.fill_(int((self.strengths > 1e-6).sum().item()))
 
     @torch.no_grad()
@@ -273,16 +300,26 @@ class PersistentMemoryTokens(nn.Module):
             return
         tokens = state["tokens"]
         keys = state["keys"]
+        if tokens.dim() == 3 and tokens.size(0) == 1:
+            tokens = tokens[0]
+        if keys.dim() == 3 and keys.size(0) == 1:
+            keys = keys[0]
         if tokens.shape[-1] != self.token_dim or keys.shape[-1] != self.key_dim:
             return
         limit = min(tokens.shape[0], self.max_slots)
         self.tokens[:limit].copy_(tokens[:limit].to(device=self.tokens.device, dtype=self.tokens.dtype))
         self.keys[:limit].copy_(keys[:limit].to(device=self.keys.device, dtype=self.keys.dtype))
         strengths = state.get("strengths", torch.ones(limit))
+        if strengths.dim() == 2 and strengths.size(0) == 1:
+            strengths = strengths[0]
         self.strengths[:limit].copy_(strengths[:limit].to(device=self.strengths.device, dtype=self.strengths.dtype))
         kind_ids = state.get("kind_ids", torch.zeros(limit, dtype=torch.long))
+        if kind_ids.dim() == 2 and kind_ids.size(0) == 1:
+            kind_ids = kind_ids[0]
         self.kind_ids[:limit].copy_(kind_ids[:limit].to(device=self.kind_ids.device, dtype=self.kind_ids.dtype))
         source_positions = state.get("source_positions", torch.full((limit,), -1, dtype=torch.long))
+        if source_positions.dim() == 2 and source_positions.size(0) == 1:
+            source_positions = source_positions[0]
         self.source_positions[:limit].copy_(source_positions[:limit].to(device=self.source_positions.device, dtype=self.source_positions.dtype))
         self.num_slots.fill_(int(state.get("num_slots", int((self.strengths > 1e-6).sum().item()))))
 

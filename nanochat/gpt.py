@@ -321,9 +321,22 @@ class Block(nn.Module):
             return state_override
         return self.episodic_memory.live_state(batch_size=x.size(0), device=x.device, dtype=x.dtype)
 
-    def _retrieve_memory_subset(self, x, controller, state_override=None):
+    def _masked_recall_source(self, x, recall_mask=None):
+        if recall_mask is None:
+            return x.mean(dim=1, keepdim=True)
+        mask = recall_mask.to(device=x.device, dtype=x.dtype)
+        if mask.dim() == 1:
+            mask = mask.unsqueeze(0).expand(x.size(0), -1)
+        if mask.size(1) != x.size(1):
+            raise ValueError(f"Recall mask length {mask.size(1)} does not match sequence length {x.size(1)}")
+        mask = mask.unsqueeze(-1)
+        denom = mask.sum(dim=1, keepdim=True).clamp_min(1.0)
+        return (x * mask).sum(dim=1, keepdim=True) / denom
+
+    def _retrieve_memory_subset(self, x, controller, state_override=None, recall_mask=None):
         state = self._memory_state(x, state_override=state_override)
-        recall_query = controller.recall_query_proj(norm(x.mean(dim=1, keepdim=True)))
+        recall_source = self._masked_recall_source(x, recall_mask=recall_mask)
+        recall_query = controller.recall_query_proj(norm(recall_source))
         slots = self.episodic_memory.retrieve_slots(recall_query, state_override=state)
         memory_tokens = slots["values"].squeeze(1)
         memory_keys = slots["keys"].squeeze(1)
@@ -353,8 +366,8 @@ class Block(nn.Module):
             "scores": scores,
         }
 
-    def read_episodic_memory_details(self, x, controller, state_override=None):
-        retrieved = self._retrieve_memory_subset(x, controller, state_override=state_override)
+    def read_episodic_memory_details(self, x, controller, state_override=None, recall_mask=None):
+        retrieved = self._retrieve_memory_subset(x, controller, state_override=state_override, recall_mask=recall_mask)
         memory_tokens = retrieved["tokens"]
         memory_keys = retrieved["keys"]
         if memory_tokens.size(1) == 0:
@@ -386,8 +399,8 @@ class Block(nn.Module):
             "tokens": memory_tokens,
         }
 
-    def build_episodic_attention_kv(self, x, controller, state_override=None):
-        retrieved = self._retrieve_memory_subset(x, controller, state_override=state_override)
+    def build_episodic_attention_kv(self, x, controller, state_override=None, recall_mask=None):
+        retrieved = self._retrieve_memory_subset(x, controller, state_override=state_override, recall_mask=recall_mask)
         memory_tokens = retrieved["tokens"]
         if memory_tokens.size(1) == 0:
             return {
@@ -408,8 +421,8 @@ class Block(nn.Module):
             "keys": retrieved["keys"],
         }
 
-    def forward(self, x, ve, cos_sin, window_size, kv_cache, controller, episodic_state=None):
-        memory_kv = self.build_episodic_attention_kv(x, controller, state_override=episodic_state)
+    def forward(self, x, ve, cos_sin, window_size, kv_cache, controller, episodic_state=None, recall_mask=None):
+        memory_kv = self.build_episodic_attention_kv(x, controller, state_override=episodic_state, recall_mask=recall_mask)
         x = x + self.attn(norm(x), ve, cos_sin, window_size, kv_cache, memory_kv=memory_kv)
         x = x + self.mlp(norm(x))
         return x
@@ -604,6 +617,22 @@ class GPT(nn.Module):
     def get_device(self):
         return self.transformer.wte.weight.device
 
+    def _build_recall_mask(self, idx):
+        special = self._special_token_ids
+        if not special:
+            return torch.ones_like(idx, dtype=torch.bool)
+        assistant_start = special.get("assistant_start")
+        if assistant_start is None:
+            return torch.ones_like(idx, dtype=torch.bool)
+        mask = torch.zeros_like(idx, dtype=torch.bool)
+        for b in range(idx.size(0)):
+            assistant_positions = torch.nonzero(idx[b] == assistant_start, as_tuple=False).flatten()
+            if assistant_positions.numel() == 0:
+                mask[b].fill_(True)
+            else:
+                mask[b, : int(assistant_positions[-1].item()) + 1] = True
+        return mask
+
     def _prepare_inputs(self, idx, kv_cache=None):
         _, T = idx.size()
         assert T <= self.cos.size(1), f"Sequence length grew beyond the rotary embeddings cache: {T} > {self.cos.size(1)}"
@@ -632,7 +661,7 @@ class GPT(nn.Module):
 
         return x, cos_sin
 
-    def _run_trunk(self, idx, x, cos_sin, kv_cache=None, collect_block_ios=False, detach_block_ios=True, memory_override=None):
+    def _run_trunk(self, idx, x, cos_sin, kv_cache=None, collect_block_ios=False, detach_block_ios=True, memory_override=None, recall_mask=None):
         x0 = x
         n_layer = self.config.n_layer
         backout_layer = n_layer // 2
@@ -652,6 +681,7 @@ class GPT(nn.Module):
                 kv_cache,
                 controller=self.episodic_controller,
                 episodic_state=block_memory,
+                recall_mask=recall_mask,
             )
             if collect_block_ios:
                 block_output = x.detach() if detach_block_ios else x
@@ -678,19 +708,13 @@ class GPT(nn.Module):
         )
         return block_ios
 
-    def build_memory_state(self, idx, reward=0.0):
-        idx = self._coerce_idx(idx)
-        if idx.size(1) == 0:
-            return [
-                block.episodic_memory.build_state(
-                    torch.zeros(idx.size(0), self.config.episodic_slots, self.config.n_embd, device=idx.device, dtype=self.transformer.wte.weight.dtype),
-                    torch.zeros(idx.size(0), self.config.episodic_slots, self.config.episodic_dim, device=idx.device, dtype=self.transformer.wte.weight.dtype),
-                    torch.zeros(idx.size(0), self.config.episodic_slots, device=idx.device, dtype=self.transformer.wte.weight.dtype),
-                )
-                for block in self.transformer.h
-            ]
-        block_ios = self.collect_block_ios(idx, detach=False)
-        return self.build_memory_state_from_block_ios(block_ios, reward=reward)
+    def empty_memory_override(self, batch_size, device=None, dtype=None):
+        device = self.get_device() if device is None else device
+        dtype = self.transformer.wte.weight.dtype if dtype is None else dtype
+        return [
+            block.episodic_memory.empty_state(batch_size=batch_size, device=device, dtype=dtype)
+            for block in self.transformer.h
+        ]
 
     def build_memory_state_from_block_ios(self, block_ios, reward=0.0):
         return [
@@ -698,11 +722,147 @@ class GPT(nn.Module):
             for block, (key_source, value_source) in zip(self.transformer.h, block_ios)
         ]
 
+    def _build_recall_trace_state(self, idx, key_positions, value_positions, reward=0.0):
+        idx = self._coerce_idx(idx)
+        if idx.size(1) == 0:
+            return self.empty_memory_override(idx.size(0), device=idx.device, dtype=self.transformer.wte.weight.dtype)
+        block_ios = self.collect_block_ios(idx, detach=False)
+        states = []
+        for block, (key_source_full, value_source_full) in zip(self.transformer.h, block_ios):
+            key_pos = self._normalize_positions(key_positions, key_source_full.size(1), key_source_full.device)
+            value_pos = self._normalize_positions(value_positions, value_source_full.size(1), value_source_full.device)
+            if key_pos is None or value_pos is None or key_pos.numel() == 0 or value_pos.numel() == 0:
+                states.append(block.episodic_memory.empty_state(batch_size=idx.size(0), device=idx.device, dtype=key_source_full.dtype))
+                continue
+            key_source = self._gather_hidden_positions(key_source_full, key_pos)
+            value_source = self._gather_hidden_positions(value_source_full, value_pos)
+            states.append(block.build_episodic_state(key_source, value_source, self.episodic_controller, reward=reward))
+        return states
+
+    def _update_memory_override(self, current_override, write_states):
+        if current_override is None:
+            current_override = self.empty_memory_override(
+                batch_size=write_states[0]["tokens"].size(0),
+                device=write_states[0]["tokens"].device,
+                dtype=write_states[0]["tokens"].dtype,
+            )
+        return [
+            block.episodic_memory.updated_state(current_state, write_state)
+            for block, current_state, write_state in zip(self.transformer.h, current_override, write_states)
+        ]
+
+    def _stack_memory_overrides(self, per_example_states):
+        if not per_example_states:
+            return self.empty_memory_override(0)
+        stacked = []
+        for layer_idx in range(self.config.n_layer):
+            keys = per_example_states[0][layer_idx].keys()
+            layer_state = {}
+            for key in keys:
+                layer_state[key] = torch.cat([example[layer_idx][key] for example in per_example_states], dim=0)
+            stacked.append(layer_state)
+        return stacked
+
+    def _split_memory_events(self, token_row, write_mode="turn"):
+        token_row = [int(t) for t in token_row]
+        if not token_row:
+            return []
+        if write_mode == "full_context":
+            return [{"kind": "memorize", "tokens": token_row}]
+
+        special = self._special_token_ids
+        if not special:
+            return [{"kind": "memorize", "tokens": token_row}]
+
+        bos = token_row[0]
+        user_start = special["user_start"]
+        user_end = special["user_end"]
+        assistant_start = special["assistant_start"]
+        assistant_end = special["assistant_end"]
+
+        events = []
+        i = 0
+        n = len(token_row)
+        while i < n:
+            if token_row[i] != user_start:
+                i += 1
+                continue
+            user_end_idx = next((j for j in range(i + 1, n) if token_row[j] == user_end), None)
+            if user_end_idx is None:
+                break
+            if write_mode == "user":
+                segment = [bos] + token_row[i:user_end_idx + 1]
+                events.append({"kind": "memorize", "tokens": segment})
+                i = user_end_idx + 1
+                continue
+
+            assistant_start_idx = next((j for j in range(user_end_idx + 1, n) if token_row[j] == assistant_start), None)
+            assistant_end_idx = None if assistant_start_idx is None else next((j for j in range(assistant_start_idx + 1, n) if token_row[j] == assistant_end), None)
+            if assistant_start_idx is None or assistant_end_idx is None:
+                break
+
+            segment = [bos] + token_row[i:assistant_end_idx + 1]
+            events.append({"kind": "memorize", "tokens": segment})
+            if write_mode == "turn_recall":
+                query_positions = list(range(2, 2 + max(user_end_idx - i - 1, 0)))
+                value_start = 2 + max(user_end_idx - i - 1, 0) + 2
+                value_positions = list(range(value_start, value_start + max(assistant_end_idx - assistant_start_idx - 1, 0)))
+                if query_positions and value_positions:
+                    events.append(
+                        {
+                            "kind": "recall_trace",
+                            "tokens": segment,
+                            "query_positions": query_positions,
+                            "value_positions": value_positions,
+                        }
+                    )
+            i = assistant_end_idx + 1
+        return events
+
+    def _build_memory_state_single(self, idx, reward=0.0, write_mode="turn"):
+        idx = self._coerce_idx(idx)
+        if idx.size(1) == 0:
+            return self.empty_memory_override(1, device=idx.device, dtype=self.transformer.wte.weight.dtype)
+        if write_mode == "full_context":
+            block_ios = self.collect_block_ios(idx, detach=False)
+            return self.build_memory_state_from_block_ios(block_ios, reward=reward)
+
+        state = self.empty_memory_override(1, device=idx.device, dtype=self.transformer.wte.weight.dtype)
+        events = self._split_memory_events(idx[0].tolist(), write_mode=write_mode)
+        if not events:
+            return state
+        for event in events:
+            tokens = self._coerce_idx(event["tokens"])
+            if event["kind"] == "memorize":
+                write_state = self.build_memory_state(tokens, reward=reward, write_mode="full_context")
+            elif event["kind"] == "recall_trace":
+                write_state = self._build_recall_trace_state(
+                    tokens,
+                    event["query_positions"],
+                    event["value_positions"],
+                    reward=reward,
+                )
+            else:
+                raise ValueError(f"Unknown memory event kind: {event['kind']}")
+            state = self._update_memory_override(state, write_state)
+        return state
+
+    def build_memory_state(self, idx, reward=0.0, write_mode="turn"):
+        idx = self._coerce_idx(idx)
+        if idx.size(1) == 0:
+            return self.empty_memory_override(idx.size(0), device=idx.device, dtype=self.transformer.wte.weight.dtype)
+        per_example_states = [
+            self._build_memory_state_single(idx[b:b + 1], reward=reward, write_mode=write_mode)
+            for b in range(idx.size(0))
+        ]
+        return self._stack_memory_overrides(per_example_states)
+
     def collect_block_outputs(self, idx, positions=None, memory_override=None):
         idx = self._coerce_idx(idx)
         if idx.size(1) == 0:
             return [self.transformer.wte.weight.new_zeros((idx.size(0), 0, self.config.n_embd)) for _ in self.transformer.h]
         x, cos_sin = self._prepare_inputs(idx, kv_cache=None)
+        recall_mask = self._build_recall_mask(idx)
         _, _, block_ios = self._run_trunk(
             idx,
             x,
@@ -711,6 +871,7 @@ class GPT(nn.Module):
             collect_block_ios=True,
             detach_block_ios=False,
             memory_override=memory_override,
+            recall_mask=recall_mask,
         )
         outputs = [block_output for _, block_output in block_ios]
         if positions is None:
@@ -731,6 +892,7 @@ class GPT(nn.Module):
     def collect_memory_diagnostics(self, idx, memory_override=None):
         idx = self._coerce_idx(idx)
         x, cos_sin = self._prepare_inputs(idx, kv_cache=None)
+        recall_mask = self._build_recall_mask(idx)
         x0 = x
         diagnostics = []
 
@@ -744,9 +906,26 @@ class GPT(nn.Module):
             x = self.resid_lambdas[i] * x + self.x0_lambdas[i] * x0
             ve = self.value_embeds[str(i)](idx).to(x.dtype) if str(i) in self.value_embeds else None
             block_memory = None if memory_override is None else memory_override[i]
-            attn_out = block.attn(norm(x), ve, cos_sin, self.window_sizes[i], kv_cache=None, memory_kv=block.build_episodic_attention_kv(x, self.episodic_controller, state_override=block_memory))
+            attn_out = block.attn(
+                norm(x),
+                ve,
+                cos_sin,
+                self.window_sizes[i],
+                kv_cache=None,
+                memory_kv=block.build_episodic_attention_kv(
+                    x,
+                    self.episodic_controller,
+                    state_override=block_memory,
+                    recall_mask=recall_mask,
+                ),
+            )
             x_after_attn = x + attn_out
-            mem_details = block.read_episodic_memory_details(x_after_attn, self.episodic_controller, state_override=block_memory)
+            mem_details = block.read_episodic_memory_details(
+                x_after_attn,
+                self.episodic_controller,
+                state_override=block_memory,
+                recall_mask=recall_mask,
+            )
             mlp_out = block.mlp(norm(x_after_attn))
             x = x_after_attn + mlp_out
 
@@ -797,19 +976,17 @@ class GPT(nn.Module):
 
     @torch.no_grad()
     def write_recall_trace(self, idx, key_positions, value_positions, reward=0.0):
-        idx = self._coerce_idx(idx)
-        if idx.size(1) == 0:
-            return
-        block_ios = self.forward_and_collect(idx)
-        for block, (key_source_full, value_source_full) in zip(self.transformer.h, block_ios):
-            key_pos = self._normalize_positions(key_positions, key_source_full.size(1), key_source_full.device)
-            value_pos = self._normalize_positions(value_positions, value_source_full.size(1), value_source_full.device)
-            if key_pos is None or value_pos is None or key_pos.numel() == 0 or value_pos.numel() == 0:
-                continue
-            key_source = self._gather_hidden_positions(key_source_full, key_pos)
-            value_source = self._gather_hidden_positions(value_source_full, value_pos)
-            state = block.build_episodic_state(key_source, value_source, self.episodic_controller, reward=reward)
+        states = self._build_recall_trace_state(idx, key_positions, value_positions, reward=reward)
+        for block, state in zip(self.transformer.h, states):
             block.episodic_memory.write(state)
+
+    @torch.no_grad()
+    def replay_memory_sequence(self, idx, reward=0.0, write_mode="turn"):
+        idx = self._coerce_idx(idx)
+        state = self.build_memory_state(idx, reward=reward, write_mode=write_mode)
+        self.clear_memory_banks()
+        for block, bank_state in zip(self.transformer.h, state):
+            block.episodic_memory.import_state(bank_state)
 
     @torch.no_grad()
     def clear_memory_banks(self):
@@ -971,6 +1148,7 @@ class GPT(nn.Module):
 
     def _compute_logits(self, idx, kv_cache=None, memory_override=None):
         x, cos_sin = self._prepare_inputs(idx, kv_cache=kv_cache)
+        recall_mask = self._build_recall_mask(idx)
         x, x_backout, _ = self._run_trunk(
             idx,
             x,
@@ -978,6 +1156,7 @@ class GPT(nn.Module):
             kv_cache=kv_cache,
             collect_block_ios=False,
             memory_override=memory_override,
+            recall_mask=recall_mask,
         )
         if x_backout is not None:
             x = x - self.backout_lambda.to(x.dtype) * x_backout
@@ -987,7 +1166,12 @@ class GPT(nn.Module):
         logits = self.lm_head(x)
         top_block = self.transformer.h[-1]
         top_override = None if memory_override is None else memory_override[-1]
-        top_details = top_block.read_episodic_memory_details(x, self.episodic_controller, state_override=top_override)
+        top_details = top_block.read_episodic_memory_details(
+            x,
+            self.episodic_controller,
+            state_override=top_override,
+            recall_mask=recall_mask,
+        )
         top_memory = top_details["retrieved"]
         memory_probe_logits = self.lm_head(norm(top_memory))
         logits = logits[..., :self.config.vocab_size].float()

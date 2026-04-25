@@ -55,7 +55,7 @@ def main():
     parser.add_argument("--device-type", type=str, default="", choices=["cuda", "cpu", "mps"])
     parser.add_argument("--write-prompt", type=str, required=True)
     parser.add_argument("--recall-prompt", type=str, required=True)
-    parser.add_argument("--write-mode", type=str, default="user", choices=["user", "turn"], help="what gets written into episodic memory in the first session")
+    parser.add_argument("--write-mode", type=str, default="turn", choices=["user", "turn"], help="what gets written into episodic memory in the first session")
     args = parser.parse_args()
 
     device_type = autodetect_device_type() if args.device_type == "" else args.device_type

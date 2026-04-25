@@ -21,8 +21,10 @@ parser.add_argument("-s", "--step", type=int, default=None, help="Step to load")
 parser.add_argument("-p", "--prompt", type=str, default="", help="Prompt the model, get a single response back")
 parser.add_argument("-t", "--temperature", type=float, default=0.6, help="Temperature for generation")
 parser.add_argument("-k", "--top-k", type=int, default=50, help="Top-k sampling parameter")
+parser.add_argument("--max-tokens", type=int, default=256, help="Maximum number of tokens to generate")
 parser.add_argument("--session-id", type=str, default="", help="Optional persistent episodic-memory session id")
 parser.add_argument("--forget-session", action="store_true", help="Delete any persisted episodic memory for this session before starting")
+parser.add_argument("--write-mode", type=str, default="turn", choices=["user", "turn"], help="how to write live session memory")
 parser.add_argument("--reconsolidate-recall", action="store_true", help="After each assistant reply, write a latent retrieval trace keyed by the user query and valued by the assistant answer")
 parser.add_argument("--reconsolidate-reward", type=float, default=0.15, help="Reward/strength assigned to reconsolidated retrieval traces")
 parser.add_argument("--device-type", type=str, default="", choices=["cuda", "cpu", "mps"], help="Device type for evaluation: cuda|cpu|mps. empty => autodetect")
@@ -92,7 +94,7 @@ while True:
     user_content_tokens = tokenizer.encode(user_input)
     conversation_tokens.extend(user_content_tokens)
     conversation_tokens.append(user_end)
-    if session_path:
+    if session_path and args.write_mode == "user":
         # Match the training-time memory format from tokenizer.render_conversation:
         # each remembered episode starts with BOS, followed by the rendered user turn.
         user_turn_tokens = [bos, user_start]
@@ -104,7 +106,7 @@ while True:
 
     generate_kwargs = {
         "num_samples": 1,
-        "max_tokens": 256,
+        "max_tokens": args.max_tokens,
         "temperature": args.temperature,
         "top_k": args.top_k,
     }
@@ -120,9 +122,19 @@ while True:
     if response_tokens[-1] != assistant_end:
         response_tokens.append(assistant_end)
     conversation_tokens.extend(response_tokens)
+    answer_content_tokens = response_tokens[:-1] if response_tokens and response_tokens[-1] == assistant_end else response_tokens
+
+    if session_path and args.write_mode == "turn" and answer_content_tokens:
+        turn_tokens = [bos, user_start]
+        turn_tokens.extend(user_content_tokens)
+        turn_tokens.append(user_end)
+        turn_tokens.append(assistant_start)
+        turn_tokens.extend(answer_content_tokens)
+        turn_tokens.append(assistant_end)
+        model.memorize(turn_tokens)
+        model.save_memory_state(session_path)
 
     if session_path and args.reconsolidate_recall:
-        answer_content_tokens = response_tokens[:-1] if response_tokens and response_tokens[-1] == assistant_end else response_tokens
         if answer_content_tokens:
             recall_tokens = [bos, user_start]
             recall_tokens.extend(user_content_tokens)

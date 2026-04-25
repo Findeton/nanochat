@@ -47,6 +47,7 @@ parser.add_argument("-m", "--max-tokens", type=int, default=512, help="Default m
 parser.add_argument("-g", "--model-tag", type=str, default=None, help="Model tag to load")
 parser.add_argument("-s", "--step", type=int, default=None, help="Step to load")
 parser.add_argument("-p", "--port", type=int, default=8000, help="Port to run the server on")
+parser.add_argument("--write-mode", type=str, default="turn", choices=["user", "turn"], help="how to write live session memory")
 parser.add_argument("--reconsolidate-recall", action="store_true", help="After each assistant reply, write a latent retrieval trace keyed by the user query and valued by the assistant answer")
 parser.add_argument("--reconsolidate-reward", type=float, default=0.15, help="Reward/strength assigned to reconsolidated retrieval traces")
 parser.add_argument("--device-type", type=str, default="", choices=["cuda", "cpu", "mps"], help="Device type for evaluation: cuda|cpu|mps. empty => autodetect")
@@ -268,7 +269,7 @@ async def chat_completions(request: ChatRequest):
                 conversation_tokens.append(assistant_end)
 
         conversation_tokens.append(assistant_start)
-        if session_path and last_user is not None:
+        if session_path and last_user is not None and args.write_mode == "user":
             # Keep runtime writes aligned with the training distribution:
             # episodic memories are stored as BOS + rendered user turn.
             user_turn_tokens = [bos, user_start]
@@ -294,6 +295,15 @@ async def chat_completions(request: ChatRequest):
                     yield chunk
             finally:
                 full_response = "".join(response_chunks)
+                if session_path and last_user is not None and args.write_mode == "turn" and full_response:
+                    turn_tokens = [bos, user_start]
+                    turn_tokens.extend(worker.tokenizer.encode(last_user.content))
+                    turn_tokens.append(user_end)
+                    turn_tokens.append(assistant_start)
+                    turn_tokens.extend(worker.tokenizer.encode(full_response))
+                    turn_tokens.append(assistant_end)
+                    worker.engine.model.memorize(turn_tokens)
+                    worker.engine.model.save_memory_state(session_path)
                 if session_path and last_user is not None and args.reconsolidate_recall and full_response:
                     user_content_tokens = worker.tokenizer.encode(last_user.content)
                     answer_content_tokens = worker.tokenizer.encode(full_response)

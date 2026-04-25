@@ -230,3 +230,46 @@ def test_sparse_write_budget_limits_active_slots():
     max_active = model.episodic_controller.summary_budget + model.episodic_controller.anchor_budget
 
     assert active <= max_active
+
+
+def test_turn_replay_build_matches_live_online_writes():
+    model = build_tiny_model()
+    model._special_token_ids = {
+        "user_start": 120,
+        "user_end": 121,
+        "assistant_start": 122,
+        "assistant_end": 123,
+    }
+    conversation = torch.tensor(
+        [[
+            model.config.vocab_size - 1,
+            120, 5, 6, 121, 122, 7, 8, 123,
+            120, 9, 10, 121, 122, 11, 12, 123,
+        ]],
+        dtype=torch.long,
+    )
+
+    expected_state = model.build_memory_state(conversation, write_mode="turn")
+    model.clear_memory_banks()
+    model.replay_memory_sequence(conversation, write_mode="turn")
+    live_state = model.memory_state_dict()
+
+    for layer_idx in range(model.config.n_layer):
+        assert torch.allclose(expected_state[layer_idx]["tokens"][0].cpu(), live_state["banks"][layer_idx]["tokens"])
+        assert torch.allclose(expected_state[layer_idx]["keys"][0].cpu(), live_state["banks"][layer_idx]["keys"])
+        assert torch.allclose(expected_state[layer_idx]["strengths"][0].cpu(), live_state["banks"][layer_idx]["strengths"])
+
+
+def test_recall_mask_anchors_to_prefix_before_current_answer():
+    model = build_tiny_model()
+    model._special_token_ids = {
+        "user_start": 120,
+        "user_end": 121,
+        "assistant_start": 122,
+        "assistant_end": 123,
+    }
+    tokens = torch.tensor([[1, 120, 5, 121, 122, 7, 8, 9]], dtype=torch.long)
+
+    mask = model._build_recall_mask(tokens)
+
+    assert torch.equal(mask[0], torch.tensor([True, True, True, True, True, False, False, False]))

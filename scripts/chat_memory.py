@@ -53,6 +53,7 @@ parser.add_argument("--custom-json", action="append", default=[], help="optional
 parser.add_argument("--custom-repeat", type=int, default=1, help="repeat each custom JSON dataset N times in the mixture")
 parser.add_argument("--target-selection", type=str, default="random", choices=["random", "final"], help="which user/assistant pair to supervise on within each conversation")
 parser.add_argument("--context-mode", type=str, default="full", choices=["full", "user_only"], help="whether memory is built from full prior context or only the user-side messages")
+parser.add_argument("--memory-build-mode", type=str, default="turn", choices=["full_context", "user", "turn", "turn_recall"], help="how prior context is replayed into persistent memory during training")
 parser.add_argument("--joint-top-layers", type=int, default=2, help="number of top transformer blocks to unfreeze during guarded joint training")
 parser.add_argument("--fallback-identity-span-tokens", type=int, default=4, help="fallback fact span length when explicit fact annotations are missing")
 parser.add_argument("--weighted-answer-ce-weight", type=float, default=0.5, help="extra loss weight for position-aware answer CE")
@@ -66,6 +67,19 @@ parser.add_argument("--guardrail-temperature", type=float, default=1.0, help="te
 parser.add_argument("--write-diversity-loss-weight", type=float, default=0.05, help="extra loss weight that penalizes collapsed memory-token banks")
 parser.add_argument("--memory-utility-loss-weight", type=float, default=0.5, help="extra loss weight that forces fact positions to improve when memory is enabled")
 parser.add_argument("--memory-utility-margin", type=float, default=0.5, help="target log-probability improvement for fact positions when memory is enabled")
+parser.add_argument("--anchor-margin-loss-weight", type=float, default=0.25, help="extra loss weight that forces the correct fact anchor to beat the actual strongest confuser")
+parser.add_argument("--anchor-margin", type=float, default=2.0, help="target logit margin for fact anchors against the strongest confuser")
+parser.add_argument("--anchor-loss-tokens", type=int, default=3, help="number of early fact tokens to apply the anchor/confuser loss to")
+parser.add_argument("--memory-probe-loss-weight", type=float, default=0.10, help="extra loss weight that makes the decoded memory read more lexical at fact positions")
+parser.add_argument("--rollout-loss-weight", type=float, default=0.0, help="extra loss weight for short autoregressive rollout recovery training")
+parser.add_argument("--rollout-batch-frac", type=float, default=0.0, help="fraction of episodes that receive rollout-aware loss when enabled")
+parser.add_argument("--rollout-steps", type=int, default=4, help="number of answer tokens to generate before rollout recovery loss")
+parser.add_argument("--rollout-continuation-tokens", type=int, default=8, help="number of gold continuation tokens to supervise after the generated prefix")
+parser.add_argument("--rollout-temperature", type=float, default=0.0, help="rollout sampling temperature; 0 means greedy")
+parser.add_argument("--rollout-top-k", type=int, default=1, help="top-k filter for rollout sampling; 1 with temperature 0 is greedy")
+parser.add_argument("--rollout-anchor-loss-weight", type=float, default=0.25, help="anchor/confuser loss weight inside the rollout recovery objective")
+parser.add_argument("--rollout-missing-key-multiplier", type=float, default=3.0, help="multiply rollout loss when the generated prefix should contain the key but does not")
+parser.add_argument("--rollout-repeat-multiplier", type=float, default=2.0, help="multiply rollout loss when the generated prefix falls into a short repetition loop")
 parser.add_argument("--phase1-steps", type=int, default=0, help="phase 1: memory-only steps with the trunk frozen")
 parser.add_argument("--phase2-steps", type=int, default=0, help="phase 2: guarded joint steps (memory + interface params)")
 parser.add_argument("--phase3-steps", type=int, default=0, help="phase 3: full-joint release steps")
@@ -225,8 +239,10 @@ cursor = 0
 
 def build_supervised_tensors(token_ids, target_mask):
     token_tensor = torch.tensor([token_ids[:args.max_seq_len + 1]], dtype=torch.long, device=device)
-    inputs = token_tensor[:, :-1].contiguous()
-    targets = token_tensor[:, 1:].to(dtype=torch.long).contiguous()
+    # Clone both shifted views so masking targets never back-propagates `-1`
+    # into the overlapping input slice.
+    inputs = token_tensor[:, :-1].clone().contiguous()
+    targets = token_tensor[:, 1:].clone().to(dtype=torch.long).contiguous()
     mask = torch.tensor([target_mask[:args.max_seq_len + 1]], dtype=torch.bool, device=device)
     targets[~mask[:, 1:]] = -1
     return inputs, targets
@@ -264,6 +280,26 @@ def find_subsequence(sequence, pattern):
         if sequence[i:i + len(pattern)] == pattern:
             return i
     return None
+
+
+def has_short_repetition(token_ids):
+    if len(token_ids) < 3:
+        return False
+    run = 1
+    previous = None
+    for token_id in token_ids:
+        if token_id == previous:
+            run += 1
+            if run >= 3:
+                return True
+        else:
+            previous = token_id
+            run = 1
+    if len(token_ids) >= 4:
+        for idx in range(len(token_ids) - 3):
+            if token_ids[idx] == token_ids[idx + 2] and token_ids[idx + 1] == token_ids[idx + 3]:
+                return True
+    return False
 
 
 def target_positions_from_span_ids(rendered_ids, targets, span_ids):
@@ -404,8 +440,7 @@ def next_episode():
 
 
 def build_empty_memory_override(batch_size):
-    empty_idx = torch.empty((batch_size, 0), dtype=torch.long, device=device)
-    return model.build_memory_state(empty_idx)
+    return model.empty_memory_override(batch_size, device=device, dtype=model.transformer.wte.weight.dtype)
 
 
 def slot_diversity_penalty(memory_override):
@@ -438,6 +473,156 @@ def compute_token_margin(logits_row, token_id):
     masked[token_id] = -float("inf")
     wrong_logit = masked.max()
     return float((correct_logit - wrong_logit).item())
+
+
+def anchor_margin_terms(logits_row, token_id, target_margin):
+    token_id = int(token_id)
+    correct_logit = logits_row[token_id]
+    if logits_row.numel() <= 1:
+        zero = logits_row.new_zeros(())
+        return zero, float(correct_logit.item())
+    masked = logits_row.clone()
+    masked[token_id] = -float("inf")
+    wrong_logit = masked.max()
+    margin = correct_logit - wrong_logit
+    loss = torch.relu(torch.tensor(target_margin, device=logits_row.device, dtype=logits_row.dtype) - margin)
+    return loss, float(margin.item())
+
+
+def sample_next_token_from_logits(logits, temperature, top_k):
+    logits = logits.float()
+    if top_k is not None and top_k > 0 and top_k < logits.numel():
+        values, indices = torch.topk(logits, top_k)
+        if temperature <= 0:
+            return int(indices[torch.argmax(values)].item())
+        probs = F.softmax(values / max(temperature, 1e-5), dim=-1)
+        sampled = torch.multinomial(probs, num_samples=1)
+        return int(indices[sampled.item()].item())
+    if temperature <= 0:
+        return int(torch.argmax(logits).item())
+    probs = F.softmax(logits / max(temperature, 1e-5), dim=-1)
+    return int(torch.multinomial(probs, num_samples=1).item())
+
+
+@torch.no_grad()
+def rollout_prefix_tokens(prefix_tokens, memory_override, steps):
+    generated = []
+    rollout_tokens = list(prefix_tokens)
+    for _ in range(steps):
+        rollout_idx = torch.tensor([rollout_tokens], dtype=torch.long, device=device)
+        logits = model(rollout_idx, memory_override=memory_override)[0, -1]
+        next_token = sample_next_token_from_logits(logits, args.rollout_temperature, args.rollout_top_k)
+        generated.append(next_token)
+        rollout_tokens.append(next_token)
+    return generated
+
+
+def key_is_missing(generated_tokens, key_tokens):
+    if not generated_tokens or not key_tokens:
+        return False
+    if len(key_tokens) <= len(generated_tokens):
+        return find_subsequence(generated_tokens, key_tokens) is None
+    return key_tokens[0] not in generated_tokens
+
+
+def rollout_recovery_loss(inputs, targets, answer_positions, fact_positions, memory_override):
+    if args.rollout_loss_weight <= 0 or args.rollout_steps <= 0 or args.rollout_continuation_tokens <= 0:
+        return None
+    if args.rollout_batch_frac <= 0 or rng.random() > args.rollout_batch_frac:
+        return None
+    if answer_positions.numel() <= 1:
+        return None
+
+    answer_tokens = targets[0, answer_positions]
+    valid_answer_mask = answer_tokens.ne(-1)
+    if not valid_answer_mask.all():
+        answer_positions = answer_positions[valid_answer_mask]
+        answer_tokens = answer_tokens[valid_answer_mask]
+    if answer_tokens.numel() <= 1:
+        return None
+
+    rollout_steps = min(args.rollout_steps, int(answer_tokens.numel()) - 1)
+    continuation_len = min(args.rollout_continuation_tokens, int(answer_tokens.numel()) - rollout_steps)
+    if rollout_steps <= 0 or continuation_len <= 0:
+        return None
+
+    first_answer_pos = int(answer_positions[0].item())
+    prefix_tokens = inputs[0, : first_answer_pos + 1].tolist()
+    generated_tokens = rollout_prefix_tokens(prefix_tokens, memory_override, rollout_steps)
+    gold_continuation = [int(t.item()) for t in answer_tokens[rollout_steps: rollout_steps + continuation_len]]
+    rollout_sequence = prefix_tokens + generated_tokens + gold_continuation
+    if len(rollout_sequence) < 2:
+        return None
+
+    rollout_inputs = torch.tensor([rollout_sequence[:-1]], dtype=torch.long, device=device)
+    rollout_targets = torch.tensor([rollout_sequence[1:]], dtype=torch.long, device=device)
+    supervised_targets = torch.full_like(rollout_targets, -1)
+    target_start = len(prefix_tokens) + rollout_steps - 1
+    target_end = min(target_start + continuation_len, supervised_targets.size(1))
+    if target_start < 0 or target_start >= target_end:
+        return None
+    supervised_targets[:, target_start:target_end] = rollout_targets[:, target_start:target_end]
+
+    rollout_outputs = model(
+        rollout_inputs,
+        supervised_targets,
+        memory_override=memory_override,
+        return_components=True,
+    )
+    ce_loss = rollout_outputs["loss"]
+
+    answer_index_by_position = {int(pos.item()): idx for idx, pos in enumerate(answer_positions)}
+    fact_answer_indices = [
+        answer_index_by_position[int(pos.item())]
+        for pos in fact_positions
+        if int(pos.item()) in answer_index_by_position
+    ]
+    fact_answer_indices = sorted(set(fact_answer_indices))
+    anchor_losses = []
+    anchor_margins = []
+    for answer_idx in fact_answer_indices:
+        if answer_idx < rollout_steps or answer_idx >= rollout_steps + continuation_len:
+            continue
+        rollout_pos = target_start + (answer_idx - rollout_steps)
+        if rollout_pos >= rollout_outputs["logits"].size(1):
+            continue
+        token_id = int(answer_tokens[answer_idx].item())
+        if token_id == -1:
+            continue
+        anchor_loss_term, margin_value = anchor_margin_terms(
+            rollout_outputs["logits"][0, rollout_pos],
+            token_id,
+            args.anchor_margin,
+        )
+        anchor_losses.append(anchor_loss_term)
+        anchor_margins.append(margin_value)
+
+    anchor_loss = rollout_inputs.new_zeros((), dtype=rollout_outputs["logits"].dtype)
+    if anchor_losses:
+        anchor_loss = torch.stack(anchor_losses).mean()
+    anchor_margin_value = sum(anchor_margins) / len(anchor_margins) if anchor_margins else 0.0
+
+    multiplier = 1.0
+    key_missing = False
+    if fact_answer_indices and min(fact_answer_indices) < rollout_steps:
+        key_tokens = [int(answer_tokens[idx].item()) for idx in fact_answer_indices]
+        key_missing = key_is_missing(generated_tokens, key_tokens)
+        if key_missing:
+            multiplier *= max(args.rollout_missing_key_multiplier, 1.0)
+    repeated = has_short_repetition(generated_tokens)
+    if repeated:
+        multiplier *= max(args.rollout_repeat_multiplier, 1.0)
+
+    combined = multiplier * (ce_loss + args.rollout_anchor_loss_weight * anchor_loss)
+    return {
+        "loss": combined,
+        "ce": float(ce_loss.item()),
+        "anchor_margin": anchor_margin_value,
+        "multiplier": multiplier,
+        "key_missing": key_missing,
+        "repeated": repeated,
+        "applied": 1.0,
+    }
 
 
 def active_slot_count(memory_override):
@@ -481,6 +666,12 @@ smooth_write_diversity = 0.0
 smooth_memory_utility = 0.0
 smooth_memory_utility_margin = 0.0
 smooth_anchor_margin = 0.0
+smooth_anchor_loss = 0.0
+smooth_memory_probe_ce = 0.0
+smooth_rollout_ce = 0.0
+smooth_rollout_anchor_margin = 0.0
+smooth_rollout_multiplier = 0.0
+smooth_rollout_applied = 0.0
 smooth_active_slots = 0.0
 ema_beta = 0.95
 t_start = time.time()
@@ -509,6 +700,12 @@ for step in range(args.num_iterations + 1):
     total_memory_utility = 0.0
     total_memory_utility_margin = 0.0
     total_anchor_margin = 0.0
+    total_anchor_loss = 0.0
+    total_memory_probe_ce = 0.0
+    total_rollout_ce = 0.0
+    total_rollout_anchor_margin = 0.0
+    total_rollout_multiplier = 0.0
+    total_rollout_applied = 0.0
     total_active_slots = 0.0
 
     for _ in range(args.device_batch_size):
@@ -524,7 +721,7 @@ for step in range(args.num_iterations + 1):
             fact_group_infos,
         ) = next_episode()
         model.clear_memory_banks()
-        memory_override = model.build_memory_state(context_ids)
+        memory_override = model.build_memory_state(context_ids, write_mode=args.memory_build_mode)
         outputs = model(inputs, targets, memory_override=memory_override, return_components=True)
         loss = outputs["loss"]
 
@@ -555,6 +752,12 @@ for step in range(args.num_iterations + 1):
         memory_utility_loss_value = 0.0
         memory_utility_margin_value = 0.0
         anchor_margin_value = 0.0
+        anchor_loss_value = 0.0
+        memory_probe_ce_value = 0.0
+        rollout_ce_value = 0.0
+        rollout_anchor_margin_value = 0.0
+        rollout_multiplier_value = 0.0
+        rollout_applied_value = 0.0
 
         if args.guardrail_kl_weight > 0 and no_memory_outputs is not None and non_fact_positions.numel() > 0:
             temp = max(args.guardrail_temperature, 1e-5)
@@ -645,9 +848,52 @@ for step in range(args.num_iterations + 1):
                     memory_utility_loss_value = memory_utility_loss.item()
                     loss = loss + args.memory_utility_loss_weight * memory_utility_loss
 
-        answer_token = targets[0, anchor_target_pos]
-        if int(answer_token.item()) != -1:
-            anchor_margin_value = compute_token_margin(outputs["logits"][0, anchor_target_pos], answer_token.item())
+        anchor_positions = effective_fact_positions[: max(1, args.anchor_loss_tokens)] if effective_fact_positions.numel() > 0 else answer_positions[:1]
+        if anchor_positions.numel() > 0:
+            anchor_losses = []
+            anchor_margins = []
+            for pos in anchor_positions:
+                answer_token = targets[0, pos]
+                if int(answer_token.item()) == -1:
+                    continue
+                row = outputs["logits"][0, pos]
+                anchor_loss_term, margin_value = anchor_margin_terms(row, answer_token.item(), args.anchor_margin)
+                anchor_losses.append(anchor_loss_term)
+                anchor_margins.append(margin_value)
+            if anchor_margins:
+                anchor_margin_value = sum(anchor_margins) / len(anchor_margins)
+            if anchor_losses and args.anchor_margin_loss_weight > 0:
+                anchor_loss = torch.stack(anchor_losses).mean()
+                anchor_loss_value = anchor_loss.item()
+                loss = loss + args.anchor_margin_loss_weight * anchor_loss
+
+        if args.memory_probe_loss_weight > 0 and effective_fact_positions.numel() > 0:
+            probe_targets = targets[:, effective_fact_positions]
+            valid_probe = probe_targets.ne(-1)
+            if valid_probe.any():
+                probe_logits = outputs["memory_probe_logits"][:, effective_fact_positions, :]
+                probe_loss = F.cross_entropy(
+                    probe_logits.reshape(-1, probe_logits.size(-1)),
+                    probe_targets.reshape(-1),
+                    ignore_index=-1,
+                    reduction="mean",
+                )
+                memory_probe_ce_value = probe_loss.item()
+                loss = loss + args.memory_probe_loss_weight * probe_loss
+
+        rollout_metrics = rollout_recovery_loss(
+            inputs,
+            targets,
+            answer_positions,
+            effective_fact_positions,
+            memory_override,
+        )
+        if rollout_metrics is not None:
+            loss = loss + args.rollout_loss_weight * rollout_metrics["loss"]
+            rollout_ce_value = rollout_metrics["ce"]
+            rollout_anchor_margin_value = rollout_metrics["anchor_margin"]
+            rollout_multiplier_value = rollout_metrics["multiplier"]
+            rollout_applied_value = rollout_metrics["applied"]
 
         loss_value = loss.item()
         (loss / args.device_batch_size).backward()
@@ -660,6 +906,12 @@ for step in range(args.num_iterations + 1):
         total_memory_utility += memory_utility_loss_value
         total_memory_utility_margin += memory_utility_margin_value
         total_anchor_margin += anchor_margin_value
+        total_anchor_loss += anchor_loss_value
+        total_memory_probe_ce += memory_probe_ce_value
+        total_rollout_ce += rollout_ce_value
+        total_rollout_anchor_margin += rollout_anchor_margin_value
+        total_rollout_multiplier += rollout_multiplier_value
+        total_rollout_applied += rollout_applied_value
         total_active_slots += active_slot_count(memory_override)
 
     trainable_params = [p for p in model.parameters() if p.requires_grad]
@@ -679,6 +931,12 @@ for step in range(args.num_iterations + 1):
     smooth_memory_utility = ema_beta * smooth_memory_utility + (1 - ema_beta) * total_memory_utility
     smooth_memory_utility_margin = ema_beta * smooth_memory_utility_margin + (1 - ema_beta) * total_memory_utility_margin
     smooth_anchor_margin = ema_beta * smooth_anchor_margin + (1 - ema_beta) * total_anchor_margin
+    smooth_anchor_loss = ema_beta * smooth_anchor_loss + (1 - ema_beta) * total_anchor_loss
+    smooth_memory_probe_ce = ema_beta * smooth_memory_probe_ce + (1 - ema_beta) * total_memory_probe_ce
+    smooth_rollout_ce = ema_beta * smooth_rollout_ce + (1 - ema_beta) * total_rollout_ce
+    smooth_rollout_anchor_margin = ema_beta * smooth_rollout_anchor_margin + (1 - ema_beta) * total_rollout_anchor_margin
+    smooth_rollout_multiplier = ema_beta * smooth_rollout_multiplier + (1 - ema_beta) * total_rollout_multiplier
+    smooth_rollout_applied = ema_beta * smooth_rollout_applied + (1 - ema_beta) * total_rollout_applied
     smooth_active_slots = ema_beta * smooth_active_slots + (1 - ema_beta) * total_active_slots
 
     debiased_loss = smooth_loss / (1 - ema_beta ** (step + 1))
@@ -689,6 +947,12 @@ for step in range(args.num_iterations + 1):
     debiased_memory_utility = smooth_memory_utility / (1 - ema_beta ** (step + 1))
     debiased_memory_utility_margin = smooth_memory_utility_margin / (1 - ema_beta ** (step + 1))
     debiased_anchor_margin = smooth_anchor_margin / (1 - ema_beta ** (step + 1))
+    debiased_anchor_loss = smooth_anchor_loss / (1 - ema_beta ** (step + 1))
+    debiased_memory_probe_ce = smooth_memory_probe_ce / (1 - ema_beta ** (step + 1))
+    debiased_rollout_ce = smooth_rollout_ce / (1 - ema_beta ** (step + 1))
+    debiased_rollout_anchor_margin = smooth_rollout_anchor_margin / (1 - ema_beta ** (step + 1))
+    debiased_rollout_multiplier = smooth_rollout_multiplier / (1 - ema_beta ** (step + 1))
+    debiased_rollout_applied = smooth_rollout_applied / (1 - ema_beta ** (step + 1))
     debiased_active_slots = smooth_active_slots / (1 - ema_beta ** (step + 1))
     gate_avg = sum(gate_values()) / len(model.transformer.h)
     elapsed = time.time() - t_start
@@ -704,6 +968,12 @@ for step in range(args.num_iterations + 1):
             f"memory_utility: {debiased_memory_utility:.4f} | "
             f"memory_utility_margin: {debiased_memory_utility_margin:.4f} | "
             f"anchor_margin: {debiased_anchor_margin:.4f} | "
+            f"anchor_loss: {debiased_anchor_loss:.4f} | "
+            f"memory_probe_ce: {debiased_memory_probe_ce:.4f} | "
+            f"rollout_ce: {debiased_rollout_ce:.4f} | "
+            f"rollout_anchor_margin: {debiased_rollout_anchor_margin:.4f} | "
+            f"rollout_multiplier: {debiased_rollout_multiplier:.2f} | "
+            f"rollout_applied: {debiased_rollout_applied:.2f} | "
             f"active_slots: {debiased_active_slots:.2f} | "
             f"phase: {current_phase} | "
             f"gate: {gate_avg:.4f} | "
@@ -721,6 +991,12 @@ for step in range(args.num_iterations + 1):
             "memory/utility_loss": debiased_memory_utility,
             "memory/utility_margin": debiased_memory_utility_margin,
             "memory/anchor_margin": debiased_anchor_margin,
+            "memory/anchor_loss": debiased_anchor_loss,
+            "memory/memory_probe_ce": debiased_memory_probe_ce,
+            "memory/rollout_ce": debiased_rollout_ce,
+            "memory/rollout_anchor_margin": debiased_rollout_anchor_margin,
+            "memory/rollout_multiplier": debiased_rollout_multiplier,
+            "memory/rollout_applied": debiased_rollout_applied,
             "memory/active_slots": debiased_active_slots,
             "memory/gate_avg": gate_avg,
             "memory/phase": {
