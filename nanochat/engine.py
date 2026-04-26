@@ -213,7 +213,8 @@ class Engine:
     @torch.inference_mode()
     def generate(self, tokens, num_samples=1, max_tokens=None, temperature=1.0, top_k=None, seed=42):
         assert isinstance(tokens, list) and isinstance(tokens[0], int), "expecting list of ints"
-        if self.model.has_live_memory():
+        has_live_memory = getattr(self.model, "has_live_memory", None)
+        if has_live_memory is not None and has_live_memory():
             yield from self._generate_without_kv_cache(tokens, num_samples=num_samples, max_tokens=max_tokens, temperature=temperature, top_k=top_k, seed=seed)
             return
 

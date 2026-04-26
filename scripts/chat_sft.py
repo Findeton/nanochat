@@ -422,6 +422,10 @@ while True:
                     "episodic_beta": model.config.episodic_beta,
                     "episodic_top_k": model.config.episodic_top_k,
                     "episodic_max_write_tokens": model.config.episodic_max_write_tokens,
+                    "episodic_summary_budget": model.config.episodic_summary_budget,
+                    "episodic_anchor_budget": model.config.episodic_anchor_budget,
+                    "episodic_low_rank": model.config.episodic_low_rank,
+                    "episodic_mode": model.config.episodic_mode,
                     "window_pattern": model.config.window_pattern,
                 },
                 "user_config": user_config, # inputs to the training script

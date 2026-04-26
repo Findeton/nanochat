@@ -381,7 +381,7 @@ print0(f"Memory gates: {trainable_counts['memory_gate_params']:,}")
 print0(f"Memory controller params: {trainable_counts['memory_params']:,}")
 print0(f"Interface params: {trainable_counts['interface_params']:,}")
 print0(f"Frozen trunk params (phase 1): {trainable_counts['trunk_params']:,}")
-print0("Episodic mode: sparse_unified_associative_attention")
+print0(f"Episodic mode: {model.config.episodic_mode}")
 
 base_dir = get_base_dir()
 from tasks.common import TaskMixture

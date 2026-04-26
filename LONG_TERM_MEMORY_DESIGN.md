@@ -2,7 +2,9 @@
 
 ## Purpose
 
-NanoChat already has short-term working memory through ordinary causal attention over the current context window. The long-term memory goal is narrower:
+NanoChat already has short-term working memory through ordinary causal attention over the current context window. The long-term memory objective is to make missing past context available again without turning memory into a Python dictionary, retrieval database, or special-purpose copy path.
+
+The target behavior is:
 
 \[
 p_\theta(y \mid x, M) \approx p_\theta(y \mid x, H)
@@ -10,7 +12,37 @@ p_\theta(y \mid x, M) \approx p_\theta(y \mid x, H)
 
 where `x` is the current query, `H` is relevant past context that is no longer in the prompt, `M` is persistent runtime memory written from earlier interaction, and `y` is the answer.
 
-The goal is not a Python dictionary, an external database, a symbolic key-value lookup, or a special-case copy branch. The goal is a generic transformer-style associative memory where persistent state behaves like missing context.
+The guiding principle is simple: persistent memory should behave like additional attention context, with different lifetime and write rules. It should not be a separate symbolic API.
+
+## Current Bottom Line
+
+The unified attention read architecture is still the right foundation:
+
+\[
+\mathrm{Attn}(Q, [K_M;K_C], [V_M;V_C])
+\]
+
+where `C` is the current context and `M` is persistent memory. We have strong evidence that this memory path is active, causal, and no longer concentrated only in the first layer.
+
+What we achieved:
+
+- Memory is represented as latent torch tensors, not prompt text or Python dicts.
+- Memory K/V is injected into transformer attention, so the decoder remains a normal transformer decoder.
+- The first symmetric attention-like write path is implemented: memory slots query context-token keys and route through an explicit no-write option.
+- Ablations show memory causally improves key-token probabilities and exact recall.
+- Layer probes show memory usage across layers, especially middle and later layers.
+- The training harness now measures token probabilities, no-memory collapse, memory mass by layer, live deterministic recall, sampled recall, branch errors, repetition, and default/habit failures.
+
+What we did not achieve yet:
+
+- Robust live exact recall across sessions.
+- Stable current-vs-old correction, for example `Clover` should override older `Miso`.
+- Reliable post-key stopping and continuation, for example `Fig` should not become `Figaro`.
+- A trained and validated symmetric writer. The architecture is now present, but it still has to earn its keep on GPU runs.
+- A Titans-style test-time learned neural memory.
+- A MemoryLLM-style self-updatable memory pool evaluation pipeline at scale.
+
+The most honest diagnosis is: memory read works, but the generation policy is still brittle under self-generated prefixes. Teacher-forced token probabilities can look much better than live sampled answers. The model often has the right fact available but still picks a wrong branch, repeats, or lets a default answer template dominate.
 
 ## Visual Overview
 
@@ -22,427 +54,644 @@ The current memory architecture extends attention by adding retrieved persistent
 
 ![Unified attention with memory](dev/diagrams/02_unified_attention_with_memory.svg)
 
-The current write path is learned and sparse. It is not yet the cleaner symmetric attention-write design:
+The current write path is now learned, sparse, and attention-shaped. The diagram is still a simplification of the selection bottleneck:
 
 ![Memory write selection](dev/diagrams/03_memory_write_selection.svg)
 
-Training aligns the memory path with delayed recall while guarding normal answer structure:
+Training aligns delayed recall, branch choice, and guardrails:
 
 ![Training alignment and guardrails](dev/diagrams/04_training_alignment_and_guardrails.svg)
 
-## Executive Summary
+## Architecture We Have
 
-The core read architecture is still the right foundation:
+The current implementation uses persistent latent memory banks inside the model. Each layer has fixed-size memory state with:
 
-\[
-\mathrm{Attn}(Q, [K_M; K_C], [V_M; V_C])
-\]
-
-where `C` is current context and `M` is persistent memory. The model should not switch into a separate memory decoder. Memory should enter through the same attention law as context.
-
-The latest runs changed our diagnosis. The main problem is no longer "memory is ignored" or "memory is only used in layer 0." Instrumentation shows memory is causal and distributed across layers. The current failure is more specific:
-
-- The model often knows useful local fact tokens under teacher forcing.
-- Live generation still chooses the wrong remembered branch on some examples.
-- After producing the correct key token, it can continue wrongly, repeat, or drift into a longer lexical neighbor such as `Fig` -> `Figaro`.
-- Current-vs-old corrections remain harder than simple identity recall.
-
-That means more generic memory read/write is still desirable, but the immediate training gap is self-generated prefix robustness. Phase 3.7 implements that next patch locally: generated-context whole-span contrast plus post-key stop/continuation training. It does not add a copy path. It adds losses that make the existing decoder prefer the correct remembered span over wrong remembered branches under prefixes the model actually samples.
-
-## Design Target
-
-The long-term target is a generic associative-attention memory system:
-
-- Context tokens are one associative store.
-- Persistent memory slots are another associative store.
-- The read path attends over both stores using the same attention law.
-- Persistent memory differs by lifetime and update rule, not by being a separate symbolic API.
-- The write path should eventually become attention-like too.
-
-The read equation stays:
-
-\[
-\mathrm{Attn}(Q, [K_M;K_C], [V_M;V_C])
-\]
-
-The open design question is how `K_M` and `V_M` are produced and updated. Today they are produced by a sparse learned writer with salience, slot competition, and budgets. A cleaner future version should make memory slots attend back over context states, so read and write are two directions of the same associative mechanism.
-
-## Current Architecture
-
-The current implementation uses persistent latent torch tensor memory. It is not prompt text and it is not a Python dictionary.
-
-Each layer has a fixed-size memory bank with:
-
-- latent memory values
+- memory values
 - retrieval keys
 - scalar strengths
-- kind ids for summary and anchor behavior
+- kind ids for anchor and summary behavior
 - source-position metadata for diagnostics
 
-The memory bank itself is runtime state. Learned behavior lives in the episodic controller and per-block memory interface.
+At read time, each block receives memory K/V in addition to normal context K/V. Retrieval is sparse: the model selects top memory slots instead of attending densely over every slot. This keeps compute bounded and gives us inspectable active-slot behavior.
 
-At a high level:
+At write time, memory slots query context tokens. The writer uses learned salience, a learned surprise-like priority, recency bias, a no-write route, slot competition, diversity pressure, decay, top-k limits, and write budgets.
 
-1. A previous turn is processed by the transformer.
-2. Hidden states are projected into memory key/value space.
-3. A learned salience/write path scores candidate token states.
-4. Learned summary and anchor queries pool selected states into slots.
-5. Slot competition, budgets, decay, and diversity pressure keep memory sparse.
-6. At recall time, stable recall queries select top-k memory slots.
-7. The current token stream attends over selected memory slots as extra K/V in normal attention.
+The read path is already generic:
 
-Memory retrieval scores must be on the same numeric scale as normal attention logits. The current implementation scales memory-key dot products by \(1 / \sqrt{d_M}\) and caps extreme similarities with `episodic_beta`. This avoids memory logits overwhelming context attention.
+```text
+Q_context = project_queries(hidden_states)
+K_all = concat(K_memory, K_context)
+V_all = concat(V_memory, V_context)
+hidden_states = attention(Q_context, K_all, V_all)
+```
 
-## Read Path
+The write path is now symmetric in shape:
 
-Normal attention computes:
+```text
+Q_memory = learned_slot_queries
+K_context = write_key_proj(hidden_states)
+V_context = write_value_proj(hidden_states)
+write_scores = Q_memory @ K_context.T + salience + surprise + recency
+write_weights = sparse_softmax([write_scores; no_write])
+memory = decay_and_replace(memory, write_weights @ V_context)
+```
 
-\[
-Y = \mathrm{softmax}(Q_CK_C^\top)V_C
-\]
+The remaining issue is not whether write is tensor-native or attention-like. It is whether the new writer trains into the right binding geometry.
 
-If `Pebble-Cloud` is not in the context window, normal attention cannot retrieve it from runtime state.
+## What The Experiments Proved
 
-Memory-augmented attention computes:
+### Memory Is Causal
 
-\[
-Y = \mathrm{softmax}(Q_C [K_M;K_C]^\top)[V_M;V_C]
-\]
+The latest useful local checkpoint family is:
 
-Memory therefore acts like extra latent context. It can vote in the same path that produces next-token logits.
+```text
+d12-memory-phase38-default-branch-lr3-from500 @ step 250
+```
 
-This part is clean and should stay.
+With memory enabled, teacher-forced key-token statistics were much better than with memory ablated:
 
-## Recall Query
+| Slice | Memory key top-1 | No-memory key top-1 | Memory mean rank | No-memory mean rank |
+| --- | ---: | ---: | ---: | ---: |
+| Stage 1 identity | 0.742 | 0.355 | 26.7 | 266.8 |
+| Stage 2 structured | 0.554 | 0.351 | 8.2 | 185.0 |
+| Stage 3 mixed | 0.659 | 0.295 | 7.7 | 497.5 |
 
-The recall query is the pre-filter that chooses which memory slots are available to token-level attention. It is created from current hidden states, then projected into memory-key space. The retrieved memory slots then become extra K/V for the attention block.
+This means the memory state is doing real work. If we remove memory state or memory read, the correct key probability collapses.
 
-The system currently uses a stable-prefix recall mask. This matters because under teacher forcing the answer prefix is always gold, while under live generation the answer prefix may contain mistakes. If retrieval follows every generated suffix too aggressively, one bad token can change the memory being retrieved. Stable-prefix recall makes retrieval depend more on the user question and less on the model's own sampled mistakes.
+### Memory Is Not Layer-0-Only Anymore
 
-## Write Path
+Earlier versions effectively used memory in the first block and then lost it. That was fixed by passing memory K/V into every block and by instrumenting memory attention mass per layer.
 
-The current writer is learned but not fully symmetric with the read path.
+Representative layer mass at the first generated token now looks distributed:
 
-Current write rule:
+| Layer | Memory mass at last token | Mean memory mass | Gate |
+| --- | ---: | ---: | ---: |
+| L2 | 0.485 | 0.429 | 0.307 |
+| L6 | 0.259 | 0.157 | 0.517 |
+| L10 | 0.165 | 0.083 | 0.417 |
+| L4 | 0.149 | 0.080 | 0.329 |
+| L3 | 0.088 | 0.234 | 0.584 |
 
-\[
-\text{salience}_t = f_\theta(h_t)
-\]
+Layer 0 is no longer the story. The memory signal is being used throughout the trunk.
 
-\[
-\tilde{m}_s = \sum_t \mathrm{sparse\_weights}_{s,t} v_t
-\]
+### Exact Live Recall Is Still Weak
 
-where token states compete to be written into summary or anchor slots.
+The same checkpoint family gives roughly:
 
-This is not ad hoc in the sense of using symbolic rules or hand-coded facts. It is trained tensor machinery. But it is less elegant than the read equation because salience is a separate scalar decision, not the same energy function used by attention.
+| Evaluation | Exact | Core exact |
+| --- | ---: | ---: |
+| Deterministic, overall | 0.133 | 0.150 |
+| Sampled, overall | 0.117 | 0.133 |
+| Stage 1 curriculum sampled core | 0.139 | 0.139 |
 
-The future symmetric writer should look more like:
+This is not good enough. It is above no-memory collapse, but it is not a usable memory system.
 
-\[
-A_{s,t} = \mathrm{sparse\_attention}(q_s, k_t)
-\]
+### Failure Modes Are Now Specific
 
-\[
-\tilde{m}_s = \sum_t A_{s,t} v_t
-\]
+The useful failures are not random gibberish anymore. They are structured:
 
-where memory slots attend to context tokens to decide what to absorb.
+- Branch error: the model recalls a plausible but wrong remembered value.
+- Old/new conflict: an older fact wins over the current corrected fact.
+- Post-key continuation error: the first key token is right, then the word drifts.
+- Template habit: the decoder falls into a memorized answer shell instead of using the specific memory.
+- Repetition: the answer repeats the key or phrase after a correct start.
+- Endpoint drift: a run can improve mid-way and regress by the saved endpoint.
 
-Pure attention-write is not automatically better. Without scarcity, it will store too much. We still need budgets, no-write behavior, decay, slot competition, and diversity pressure. The goal is not "write everything by attention." The goal is "write selectively using an attention-shaped mechanism."
+Examples we saw:
 
-## How Salience Is Determined
+- `Biscuit` can be locally top-1, but live output repeats it.
+- `Pepper` can lose to `Juniper` even when memory is present.
+- `Fig` can become `Figaro`; the first token is correct but the continuation is wrong.
+- `Clover` can lose to older `Miso`; correction/currentness is still weak.
 
-Today, salience is learned from training pressure, not hand-coded rules. Tokens become worth writing when writing them helps delayed recall and does not damage guardrails.
+The goblin in the walls is not "no memory." It is "memory is present but not decisive enough during rollout."
 
-The training signal says, in effect:
+## Training Path So Far
 
-- If a fact token is needed later, memory should make it easier to predict.
-- If no memory is present, the model should not hallucinate arbitrary old facts.
-- If multiple facts conflict, current/correct facts should beat stale facts.
-- If a token is ordinary conversational filler, writing it should not help enough to spend scarce slots.
+### Phase 1: Memory-Only Alignment
 
-Mathematically, salience is induced by gradients from recall losses, utility margins, anchor losses, write diversity, and guardrail losses. The scalar write gate is only the current parameterization of that learned decision.
+Goal: make the memory path useful while freezing most of the trunk.
 
-## Training Harness
+What improved:
 
-The current training harness is phased because the base model already knows language, but the memory interface starts untrained.
+- key-token CE dropped substantially
+- memory utility margins became positive
+- anchor margins crossed positive after enough steps
+- no-memory ablations showed memory was causal
 
-### Phase 1: Memory Path Only
+What failed:
 
-Freeze the base trunk. Train memory controller, writer, retriever, and memory interface.
+- live generation still looped or produced template gibberish in early checkpoints
+- teacher-forced gains did not transfer cleanly to live recall
 
-Primary goals:
+### Phase 2: Interface Joint Training
 
-- make memory causally useful
-- avoid destroying base language behavior
-- make key-token CE and rank margins improve
-- keep active slots sparse and stable
+Goal: let memory and the decoder interface co-adapt without fully destabilizing the base model.
 
-### Phase 2: Interface Joint
+Added losses:
 
-Unfreeze a limited interface set. Keep most of the trunk frozen. Train the model to combine memory with normal answer structure.
+- answer-start CE
+- habit-confuser margin
+- stronger key-token rank and utility margins
+- rollout-aware penalties
 
-This phase introduced answer-start pressure, habit-confuser margins, and deference objectives. It helped memory become useful but did not fully solve live generation.
+What improved:
 
-### Phase 2.5: Deference and Span Robustness
+- answer starts became more sane
+- key-token ranks improved
+- habit/default answers became more measurable
 
-Add stronger branch/deference objectives:
+What failed:
 
-- current fact over old fact
-- correct remembered branch over no-memory habit
-- answer start and key-token margins
-- post-key continuation losses
+- exact recall remained low
+- branch selection and post-key continuation were still brittle
 
-This improved margins and reduced some obvious wrong defaults. It still left failures where local token probabilities looked good, but live generation selected the wrong branch or drifted after the key.
+### Phase 2.5: Span And Post-Key Pressure
+
+Goal: stop rewarding only the first key token and start shaping the entire answer span.
+
+Added losses:
+
+- span contrast margin
+- span utility margin
+- post-key CE
+- post-key repeat margin
+
+What improved:
+
+- post-key CE became very low in teacher-forced settings
+- span margins improved
+- repetition became measurable and sometimes reduced
+
+What failed:
+
+- live decoding could still pick the wrong branch before the span loss helped
+- some examples had the correct key top-1 under teacher forcing but failed under generation
 
 ### Phase 3: Generated-Prefix Recovery
 
-Train on prefixes sampled from the model itself. This moves training closer to inference because the model must recover after its own imperfect early tokens.
+Goal: train on prefixes the model actually produces, not only gold prefixes.
 
-This is the right direction, but early versions mostly taught recovery after generic bad prefixes. They did not directly contrast whole wrong remembered branches against the correct remembered span.
+The idea was: after memorizing a fact, ask the recall question, sample a few answer tokens, detect a bad or fragile prefix, and train the model to recover toward the gold answer.
 
-### Phase 3.5 and 3.6: Branch Recovery Attempts
+This was conceptually right, but early versions were too blunt. If the model sampled a bad path, the recovery loss sometimes pushed a hard correction without enough structure around branch choice, stop behavior, or no-memory defaults.
 
-These phases added generated-context branch recovery and dynamic no-memory confuser detection.
+### Phase 3.5 To 3.7: Branch And Stop Losses
 
-Findings:
+Goal: target the actual observed failure families.
 
-- Memory was causal: no-memory-state and no-memory-read ablations collapsed.
-- Memory was not only layer 0. A representative diagnostic showed memory mass around layer 2, layer 6, layer 10, and layer 4 rather than only the first block.
-- Some token probabilities improved. Phase 3.6 step 250 raised geometric key probability from about `0.1472` to `0.1629` compared with the prior branch run, and top-1 key-token accuracy moved from about `61.5%` to `62.8%`.
-- End-to-end live exact recall remained poor at `2/15 = 13.3%`.
-- Stage 2 structured examples improved more than mixed/current-vs-old examples.
+Added losses:
 
-The central lesson: local token training is insufficient. The model can know a token locally and still choose the wrong remembered branch as a sequence.
+- branch contrast
+- stop margin
+- no-memory default detection
+- wrong-span detection
+- partial-wrong detection
+- repetition detection
 
-### Phase 3.7: Generated-Context Span Contrast
+What improved:
 
-Phase 3.7 is the current local patch.
+- diagnostics became much more informative
+- several margins improved
+- the model sometimes became very close to positive trajectory margins
 
-It trains on generated answer prefixes, but the loss is span-level rather than single-token only:
+What failed:
+
+- stronger losses could rough up the distribution while improving a margin
+- final checkpoints were often worse than the best mid-run pockets
+- exact live recall stayed flat enough that we should not declare success
+
+### Phase 3.8: Trajectory Preference And Default-Branch Pressure
+
+Goal: prefer the whole good trajectory over the sampled bad/default trajectory.
+
+Representative good sign:
+
+```text
+phase38_traj_margin approached zero from below
+phase38_no_memory_default became measurable
+phase38_wrong_span and phase38_partial_wrong exposed branch failures
+```
+
+This was a genuine conceptual improvement. It turned the problem from "make token X high under gold prefix" into "make the full answer path better than the bad sampled path."
+
+But the run did not produce a decisive exact-recall breakthrough. The important lesson is not that trajectory preference is wrong. The lesson is that it needs a better curriculum and checkpoint selection policy.
+
+### Default Curriculum Attempt
+
+We tried a staged curriculum from the latest good checkpoint:
+
+```text
+d12-memory-phase38-default-branch-lr3-from500 @ 250
+```
+
+Stage 1 improved teacher-forced key metrics slightly:
+
+- Stage 1 key top-1: 0.742 -> 0.774
+- Stage 2 key top-1: 0.554 -> 0.581
+- Stage 3 key top-1: 0.659 -> 0.682
+
+But live exact recall stayed roughly flat. Mid-run logs had promising pockets, while saved endpoints regressed. This tells us to checkpoint more often and select by live evaluation windows, not by final training loss.
+
+## What We Learned From Titans
+
+Paper: [Titans: Learning to Memorize at Test Time](https://arxiv.org/html/2501.00663)
+
+The most relevant Titans ideas are:
+
+- Attention is short-term associative memory; long-term memory should be a separate but interoperable memory system.
+- Long-term memory should be updated at test time, not only trained offline.
+- Surprise is a useful write signal: events that violate model expectation deserve more memory.
+- Forgetting should be adaptive and capacity-aware.
+- Memory can be incorporated as context, as a gated branch, or as a layer; each choice trades off precision, efficiency, and coupling.
+- Persistent task memory and contextual long-term memory are distinct concepts.
+
+The direct implication for NanoChat is that our learned salience gate should not be the only notion of "what to remember." We should add surprise/residual-based write pressure:
 
 \[
-\Delta = \log p(\text{correct remembered span} \mid \text{generated prefix}) -
-\log \sum_i p(\text{wrong branch}_i \mid \text{generated prefix}_i)
+\mathrm{write\_priority}_t =
+\alpha \cdot \mathrm{salience}_t +
+\beta \cdot \mathrm{surprise}_t +
+\gamma \cdot \mathrm{utility}_t -
+\lambda \cdot \mathrm{redundancy}_t
 \]
 
-The loss pushes:
+where surprise can be approximated by high CE, high key/value prediction error, or disagreement between memory and no-memory branches.
+
+Titans also argues for evaluating memory as an online learner. For us, that means tests should include:
+
+- write fact now, recall later
+- overwrite fact now, recall latest later
+- distractor facts between write and recall
+- no-memory ablations
+- memory-update ablations
+- retention under many updates
+- specificity: unrelated behavior should not degrade
+
+What we should not copy blindly:
+
+- Titans uses neural memory weights updated at test time. Our current memory is a latent slot bank, not a neural module whose weights are optimized online.
+- Titans is primarily a long-context/sequence-model architecture paper. Our hardest failure is exact session fact binding under live chat rollout.
+
+Still, Titans gives the right north star: memory write should be surprise-aware, online, capacity-limited, and integrated with attention rather than bolted on.
+
+## What We Learned From MemoryLLM
+
+Paper: [MEMORYLLM: Towards Self-Updatable Large Language Models](https://arxiv.org/abs/2402.04624)
+
+MemoryLLM is especially relevant because it uses a fixed-size memory pool in the latent space of a transformer. Its memory pool is layerwise, self-updatable, and designed so old knowledge gradually phases out instead of growing without bound.
+
+The relevant ideas are:
+
+- Split static backbone parameters from self-updatable memory parameters.
+- Store memory as hidden vectors inside transformer layers.
+- During generation, allow normal hidden states to attend to memory tokens.
+- During update, replace only a proportion of memory so capacity stays fixed.
+- Evaluate not just recall, but efficacy, generalization, specificity, retention, and robustness after many updates.
+
+This overlaps strongly with our direction. We already use a fixed-size latent memory bank and layerwise memory. The difference is that MemoryLLM treats the memory pool more like self-updatable parameters/tokens per layer, while our current design exposes retrieved K/V to attention and writes with a learned sparse controller.
+
+MemoryLLM changes our test plan more than our immediate architecture:
+
+- Efficacy: after one session writes a fact, does recall succeed?
+- Generalization: can paraphrased questions retrieve the same fact?
+- Specificity: do unrelated facts and normal chat behavior survive?
+- Retention: does the fact survive after many unrelated writes?
+- Conflict update: does a later correction override an earlier fact?
+- Robustness: does repeated memory updating avoid distribution collapse?
+
+The old dog-name test is necessary but not sufficient. It is one row in a bigger model-editing style evaluation.
+
+## The Symmetric Read/Write Architecture
+
+The clean architecture is not "add a copy head." The clean architecture is to make read and write two directions of the same associative mechanism. The first implementation of this now exists in `nanochat/gpt.py`.
+
+Read:
 
 \[
-\Delta > \text{margin}
-\]
-
-It also adds post-key stop/continuation pressure:
-
-- after the correct key appears, prefer the correct next token
-- penalize repeating the key span
-- penalize drifting into known lexical continuations such as `Figaro` when the fact is `Fig`
-
-This is a dynamic training algorithm in the practical sense: it samples from the current model, finds the mistakes that actually occur, and turns those into contrastive training events. It is not dynamic runtime weight update, and it is not a copy mechanism.
-
-Implemented metrics include:
-
-- `phase37_branch_ce`
-- `phase37_branch_loss`
-- `phase37_branch_margin`
-- `phase37_stop_loss`
-- `phase37_stop_margin`
-- `phase37_applied`
-- `phase37_no_memory_default`
-- `phase37_wrong_span`
-- `phase37_partial_wrong`
-- `phase37_repeated`
-
-## Current Failure Model
-
-The current failures split into three buckets.
-
-### 1. Branch Selection
-
-The model retrieves useful memory but chooses the wrong remembered branch. Example pattern:
-
-```text
-expected current: Clover
-predicted stale: Miso
-```
-
-This is not solved by copying one token. It requires scoring the correct remembered span above competing remembered spans under the same live prefix.
-
-### 2. Post-Key Continuation
-
-The model emits the correct key but continues wrongly:
-
-```text
-expected: Fig
-generated: Figaro
-```
-
-or:
-
-```text
-expected: Biscuit
-generated: Biscuit Biscuit ...
-```
-
-This means the first key token is not enough. The system needs a stop/continuation loss after the remembered fact.
-
-### 3. Teacher-Forcing Mismatch
-
-Teacher forcing sees the gold prefix. Live generation sees the model's own prefix. If training never conditions on generated prefixes, the model can look good in token-probability probes but fail in actual chat.
-
-Phase 3.7 directly targets this mismatch.
-
-## What We Know From Instrumentation
-
-Important findings so far:
-
-- The memory path is causal: disabling memory state or memory read damages recall.
-- The read path is not concentrated only in the first layer after the multi-layer memory fix.
-- Active slots remain sparse, typically around the intended budget rather than all slots saturating.
-- Guardrail KL rises when memory objectives get aggressive, so language preservation remains a real constraint.
-- Key-token rank and probability are necessary diagnostics but not sufficient.
-- Live exact recall is the primary metric.
-
-Useful checkpoint diagnostics:
-
-- full memory vs no-memory-state vs no-memory-read
-- token probabilities for first key token and continuation pieces
-- generated text examples, not just CE
-- memory attention mass per layer
-- key-token rank margin
-- branch/span contrast margin
-- post-key repeat margin
-- current-vs-old correction accuracy
-
-## Why Not A Copy Branch
-
-A direct copy path would make some toy examples look better, but it is not the architecture target.
-
-A copy branch says:
-
-```text
-retrieve span -> bypass decoder -> emit span
-```
-
-The architecture target says:
-
-```text
-retrieve memory as latent K/V -> attend with context -> decoder assigns token probabilities
-```
-
-Phase 3.7 stays in the second category. It changes the loss, not the inference architecture. The model must still generate through its normal logits.
-
-## Symmetric Attention-Like Write Direction
-
-The cleaner architecture remains:
-
-\[
-\text{read: context/query tokens attend to memory slots}
+A_{\text{read}} = \mathrm{sparse\_softmax}(Q_C K_M^\top)
 \]
 
 \[
-\text{write: memory slots attend to context tokens}
+Y_C = A_{\text{read}} V_M
 \]
 
-This would reduce the mismatch between "what got written" and "what gets queried later." It is especially relevant for binding failures, because the same associative geometry would shape both writing and reading.
+Write:
 
-But it is not implemented yet, and it should not be treated as magic. A symmetric writer must preserve scarcity:
+\[
+A_{\text{write}} =
+\mathrm{sparse\_softmax}(Q_M K_C^\top + B_{\text{surprise}} + B_{\text{recency}} - B_{\text{redundancy}})
+\]
 
-- top-k token selection
-- top-k slot activation
-- no-write slot or threshold
-- slot diversity
-- strength decay
-- overwrite rules
-- summary/anchor budgets
-- guardrail losses
+\[
+\Delta M = A_{\text{write}} V_C
+\]
 
-The current recommendation is not to jump directly to a full writer rewrite before validating phase 3.7. If phase 3.7 improves live exact recall but binding failures remain, the symmetric writer becomes the next architecture patch.
+\[
+M \leftarrow \mathrm{decay}(M) + \mathrm{gate} \odot \Delta M
+\]
 
-## Current Implementation Status
+In words:
 
-Implemented in `nanochat-felix`:
+- context queries memory to read
+- memory queries context to write
+- both use attention-shaped competition
+- write has scarcity terms so it does not store everything
+- decay and replacement decide what old memory loses
 
-- unified memory/context attention read
-- sparse latent memory slots
-- scaled memory logits
-- stable-prefix recall
-- multi-layer memory use
-- memory utility and anchor losses
-- key-token CE and rank margins
-- answer-start and habit-confuser objectives
-- rollout/generation-aware recovery
-- phase 3.7 generated-context span contrast
-- phase 3.7 post-key stop/continuation loss
-- CPU/MPS-compatible diagnostics and smoke tests
+This is the general version of "the attention structure determines what to read and write." It still has a bottleneck: top-k write budgets and an explicit no-write score. Pure attention-write without scarcity would write too much and become a compressed context dump. The important design constraint is that memory must be useful because it is scarce.
 
-Not implemented yet:
+### Why Symmetry Should Help
 
-- symmetric attention-write replacing scalar salience
-- learned no-write slot for the symmetric writer
-- full online generated-chat training loop with long multi-turn sampled conversations
-- runtime weight updates
-- a separate copy/pointer decoder, intentionally
+The current writer can write one representation and the later reader can query a slightly different representation. That mismatch is a plausible reason for branch errors.
 
-## Recommended Next Training Step
+A symmetric writer should improve:
 
-Run phase 3.7 from the best current checkpoint rather than blindly continuing older phases.
+- binding: the slot that later answers `dog name?` is the slot that wrote from the dog-name context
+- correction: new write attention can target and weaken old slots with overlapping key structure
+- field separation: region, service, person, project, and pet-name slots can compete separately
+- salience: surprise and retrieval utility can shape write attention directly
 
-The first run should be short enough to catch regressions:
+It will not automatically fix:
 
-- 250 steps: check branch margin, post-key stop margin, live exact recall
-- 500 steps: check if gains persist or overfit
-- stop early if live exact recall does not move while guardrail KL climbs
+- decoder loops
+- bad stop behavior
+- insufficient SFT/chat ability in the base model
+- all live rollout mismatch
 
-Expected healthy signs:
+So the symmetric architecture is necessary for elegance and likely helpful for binding, but it still needs training and rollout-aware validation.
 
-- `phase37_branch_margin` moves positive
-- `phase37_stop_margin` improves
-- `phase37_repeated` drops
-- generated examples stop repeating key spans
-- current-vs-old examples improve, not just simple identity facts
-- memory ablations still show that memory is the cause of the improvement
+## Next Architecture Plan
 
-Unhealthy signs:
+### Step 1: Keep The Read Path Stable
 
-- key-token CE improves but live exact recall stays flat
-- guardrail KL climbs without end-to-end gains
-- phase37 events mostly become no-ops
-- model learns templates but still picks stale facts
-- memory attention collapses back into one layer
+Do not rewrite the whole model first. Keep:
+
+```text
+Attn(Q, [K_memory; K_context], [V_memory; V_context])
+```
+
+This is the part that is already proven causal.
+
+### Step 2: Replace The Writer With Attention-Like Slot Queries
+
+Introduce per-layer memory-slot write queries:
+
+```text
+write_scores = q_memory_slots @ k_context_tokens.T
+write_scores += surprise_bias + recency_bias - redundancy_bias
+write_weights = sparse_softmax(write_scores, top_tokens, top_slots)
+slot_updates = write_weights @ v_context_tokens
+```
+
+The writer should have no free-form Python rule for facts. It should be a tensor operation trained end-to-end.
+
+### Step 3: Add Scarcity As A First-Class Constraint
+
+Use:
+
+- top-k context tokens per update
+- top-k slots per token
+- no-write slot
+- diversity pressure
+- age/strength decay
+- overwrite penalty for unrelated memory
+- anti-redundancy against existing slots
+
+The no-write slot matters. Without it, every token must be stored somewhere, which is exactly how memory becomes sludge.
+
+### Step 4: Add Surprise-Aware Write Bias
+
+Borrowing from Titans, add a write-priority term from:
+
+- next-token CE
+- memory-vs-no-memory disagreement
+- answer-span utility
+- field/key novelty
+- correction markers such as "actually", "not X, Y", "changed to"
+
+This should be trained as a soft bias, not a hard rule.
+
+### Step 5: Add Correction-Aware Slot Update
+
+Correction examples need an operation closer to:
+
+```text
+old_slot = attend(memory, new_fact_key)
+memory[old_slot].strength *= forget_gate
+memory[new_or_old_slot] = write(new_fact_value)
+```
+
+In differentiable form, this is just attention over old memory plus a learned decay/update gate. It should not be a symbolic delete operation.
+
+## Training Plan
+
+### Stage A: Stabilize Current Architecture With Better Selection
+
+Before architecture surgery, run short continuation experiments with:
+
+- checkpoint every 25 to 50 steps
+- live deterministic exact recall every checkpoint
+- sampled exact recall at temperature 0.2 to 0.4
+- no-memory ablation every checkpoint
+- layer memory mass every checkpoint
+- token probability tables for first key token and post-key continuation
+
+Select by a score like:
+
+\[
+S =
+3 \cdot \mathrm{live\_exact}
++ 2 \cdot \mathrm{sampled\_core}
++ \mathrm{key\_top1}
+- \mathrm{no\_memory\_default}
+- \mathrm{repeat\_rate}
+- \mathrm{wrong\_span\_rate}
+\]
+
+Do not trust final-step training loss. We repeatedly saw mid-run pockets beat saved endpoints.
+
+### Stage B: Train The Symmetric Writer
+
+The model now reports:
+
+```text
+episodic_mode=symmetric_associative_attention
+```
+
+The old sparse write behavior is no longer the target path. Start from the original chat checkpoint and let missing memory parameters initialize fresh.
+
+Minimum smoke tests:
+
+- shape compatibility on CPU/MPS/CUDA
+- no-memory mode still works
+- memory write changes state after a write turn
+- no-write route can leave memory mostly unchanged on filler text
+- layerwise memory diagnostics still run
+
+### Stage C: Train With Frozen Trunk First
+
+Start from the original NanoChat checkpoint or the best stable memory checkpoint, depending on compatibility.
+
+Freeze:
+
+- token embeddings
+- most trunk weights
+- LM head unless needed for interface repair
+
+Train:
+
+- write queries
+- memory key/value projections
+- write/read gates
+- low-rank interface adapters
+
+Losses:
+
+- answer CE
+- key-token CE
+- memory utility margin
+- span contrast margin
+- post-key CE
+- no-memory default contrast
+- correction/currentness margin
+- guardrail KL
+
+### Stage D: Add Rollout Training Only After Teacher-Forced Memory Is Stable
+
+Rollout training should not be the first hammer. It is expensive and noisy.
+
+Once teacher-forced and ablation metrics are good:
+
+- sample at temperature 0.2 first
+- detect first bad token or bad branch
+- train recovery on the next 8 to 16 tokens
+- gradually increase temperature to 0.4
+- include "recover after one or two bad tokens" examples
+
+This is the user's idea and it is correct: train on real chat failure prefixes, not only clean gold prefixes. It belongs after the memory mechanism reliably places the fact into the logits.
+
+### Stage E: Add Titans-Inspired Surprise Write
+
+Train surprise write in two forms:
+
+- differentiable proxy during normal supervised batches
+- online update simulation during write-then-recall tasks
+
+Tests:
+
+- surprising fact should be written more than filler
+- repeated filler should not overwrite useful facts
+- correction should update current fact more than duplicate old fact
+- unrelated chat should not decay recent important memory too quickly
+
+### Stage F: Add MemoryLLM-Inspired Self-Update Benchmarks
+
+Create a benchmark family with:
+
+- single-fact injection
+- paraphrased recall
+- multi-fact retention
+- conflict update
+- stale fact rejection
+- unrelated specificity
+- many-update robustness
+
+Report:
+
+- efficacy
+- generalization
+- specificity
+- retention
+- conflict accuracy
+- live exact recall
+- sampled exact recall
+- memory ablation delta
 
 ## Evaluation Standard
 
-The best checkpoint is the one with the best live behavior, not the lowest training loss.
+A checkpoint is not good because one loss went down. It is good only if it passes all of:
 
-Required evaluation:
+- Live deterministic exact recall improves.
+- Sampled recall at small temperature improves.
+- No-memory ablation remains much worse.
+- Correct key tokens have high probability under generated prefixes.
+- Post-key continuation and stop behavior are sane.
+- Old/new correction improves.
+- Normal chat guardrails do not collapse.
+- Memory use is distributed across useful layers, not an artifact of one block.
 
-- live sequential write/recall exact accuracy
-- simple identity recall
-- structured field recall
-- mixed current-vs-old correction recall
-- first key-token probability and rank
-- full fact-span probability
-- generated answer text
-- repetition and gibberish rate
-- memory-on vs no-memory-state vs no-memory-read
-- memory attention mass by layer
-- guardrail KL and normal chat sanity
+Minimum dog-name test:
 
-## What To Stop Doing
+```bash
+PYTHONPATH=$PWD python scripts/chat_cli.py \
+  -i sft -g <checkpoint_group> -s <step> \
+  --session-id dog-demo --forget-session \
+  -t 0 -k 1 --max-tokens 16 \
+  -p "My dog's name is Pebble-Cloud."
 
-Do not:
+PYTHONPATH=$PWD python scripts/chat_cli.py \
+  -i sft -g <checkpoint_group> -s <step> \
+  --session-id dog-demo \
+  -t 0 -k 1 --max-tokens 16 \
+  -p "What's my dog's name?"
+```
 
-- treat teacher-forced token gains as proof chat recall is solved
-- add a copy/pointer branch just to win the dog-name demo
-- keep dead parameters for backwards compatibility
-- train high-temperature rollouts before low-temperature/greedy recovery is stable
-- optimize only the first arbitrary token and ignore post-key continuation
-- ignore stale-vs-current correction examples
+But this is only a smoke test. The real evaluation is the multi-slice suite with token probabilities, layer probes, and no-memory ablations.
 
-## Current Status
+## What We Should Stop Doing
 
-The architecture family still looks right. Memory is real, causal, and distributed across layers. The live problem is now sharper: the decoder must make the correct remembered branch stable under its own generated prefixes, then stop or continue sanely after the remembered key.
+Stop treating a positive margin as success by itself. Margins can improve while the distribution gets rougher.
 
-Phase 3.7 is the current local implementation of that idea. If it moves live exact recall, the next step is to consolidate it and then revisit the symmetric attention-write design. If it does not, the evidence points toward an architecture-level write/read alignment problem rather than simply "train longer."
+Stop saving only endpoint checkpoints. The model has shown mid-run pockets that are better than the final saved state.
+
+Stop adding narrow copy logic. If a patch cannot be expressed as normal attention, normal logits, or a differentiable memory update, it is probably the wrong direction.
+
+Stop relying on teacher forcing as the main signal. It is necessary but insufficient.
+
+Stop ignoring correction/currentness. Memory that cannot update is just a polite archive with bad manners.
+
+## Current Implementation Status
+
+Implemented:
+
+- sparse unified associative attention read
+- symmetric attention-like write from memory slots to context tokens
+- explicit no-write route for memory scarcity
+- learned surprise-like write priority and recency bias
+- fixed-size self-update with decay plus replacement
+- latent persistent memory banks
+- per-layer memory K/V injection
+- memory write salience and slot competition
+- active slot diagnostics
+- memory/no-memory ablations
+- key-token probability diagnostics
+- rollout and trajectory diagnostics
+- phase 1, 2, 2.5, 3, 3.5, 3.6, 3.7, and 3.8 training harnesses
+- symmetric-memory GPU launcher: `dev/run_symmetric_memory_training.sh`
+- diagrams for normal attention, unified memory attention, write selection, and training alignment
+
+Not implemented:
+
+- true Titans-style test-time neural-memory weight updates
+- CE-derived surprise write scores; the current surprise signal is a learned proxy
+- correction-aware differentiable overwrite
+- MemoryLLM-style full self-update retention benchmark
+- automatic best-window checkpoint selection
+
+## Recommended Next Step
+
+The next serious step is to train and evaluate the new writer, not to add another stronger loss to the old one:
+
+1. Add best-window checkpoint selection to the current harness.
+2. Run `dev/run_symmetric_memory_training.sh` from the original checkpoint on GPU.
+3. Train only the memory/interface parameters first.
+4. Evaluate with no-memory ablations and live rollout at every short checkpoint.
+5. Add CE-derived surprise and correction-aware overwrite once the symmetric writer is stable.
+
+This is the clean path that respects the original goal: a generic transformer attention system with memory, not an ad-hoc external store.
+
+## References
+
+- [Titans: Learning to Memorize at Test Time](https://arxiv.org/html/2501.00663)
+- [MEMORYLLM: Towards Self-Updatable Large Language Models](https://arxiv.org/abs/2402.04624)

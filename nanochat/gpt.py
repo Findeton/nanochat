@@ -12,6 +12,7 @@ Key ideas:
 """
 
 import os
+import math
 from dataclasses import dataclass
 
 import torch
@@ -45,6 +46,7 @@ class GPTConfig:
     episodic_summary_budget: int = 4
     episodic_anchor_budget: int = 8
     episodic_low_rank: int = 128
+    episodic_mode: str = "symmetric_associative_attention"
 
 
 def norm(x):
@@ -73,8 +75,8 @@ class SharedEpisodicController(nn.Module):
     Shared read/write controller for persistent latent memory tokens.
 
     The controller learns:
-    - write salience
-    - write-time pooling into summary / anchor memory tokens
+    - write salience and surprise-like priority
+    - symmetric write attention from memory slots back to context tokens
     - recall queries used to retrieve the relevant persistent memory subset
     """
 
@@ -94,9 +96,12 @@ class SharedEpisodicController(nn.Module):
         self.recall_query_proj = Linear(config.n_embd, config.episodic_dim, bias=False)
         self.write_value_proj = LowRankLinear(config.n_embd, config.n_embd, rank)
         self.write_gate = Linear(config.n_embd, 1, bias=False)
+        self.write_surprise_gate = Linear(config.n_embd, 1, bias=False)
         self.summary_slot_queries = nn.Parameter(torch.zeros(summary_slots, config.episodic_dim))
         self.anchor_slot_queries = nn.Parameter(torch.zeros(anchor_slots, config.episodic_dim))
         self.kind_bias = nn.Parameter(torch.zeros(2))
+        self.no_write_bias = nn.Parameter(torch.zeros(()))
+        self.write_recency_bias = nn.Parameter(torch.zeros(()))
         self.summary_budget = min(summary_slots, max(1, config.episodic_summary_budget))
         self.anchor_budget = min(anchor_slots, max(1, config.episodic_anchor_budget))
         self.score_scale = config.episodic_dim ** -0.5
@@ -333,25 +338,42 @@ class Block(nn.Module):
         key_source, value_source, source_positions = self._select_write_positions(key_source, value_source, controller)
         write_keys = controller.write_key_proj(norm(key_source))
         write_values = value_source + controller.write_value_proj(norm(value_source))
+
+        # Symmetric write: memory slots query context-token keys using the same
+        # associative geometry later used for recall. A no-write option keeps
+        # memory scarce instead of forcing every token into a slot.
         salience_logits = self.compute_write_salience(key_source, controller)
-        salience = torch.sigmoid(salience_logits)
+        surprise_logits = controller.write_surprise_gate(norm(value_source)).squeeze(-1)
+        if source_positions.numel() > 0:
+            recency = source_positions.to(dtype=write_keys.dtype)
+            recency = recency / recency.amax(dim=1, keepdim=True).clamp_min(1.0)
+        else:
+            recency = write_keys.new_zeros(write_keys.size(0), write_keys.size(1))
+        write_priority = salience_logits + surprise_logits + controller.write_recency_bias.to(dtype=write_keys.dtype) * recency
 
         slot_queries = controller.slot_queries().to(device=write_keys.device, dtype=write_keys.dtype)
         slot_queries = slot_queries.unsqueeze(0).expand(write_keys.size(0), -1, -1)
-        att_logits = controller.scale_memory_scores(torch.einsum("bse,bte->bst", slot_queries, norm(write_keys)))
-        summary_slots = controller.summary_slots
-        att_logits[:, :summary_slots, :] = att_logits[:, :summary_slots, :] + salience_logits.unsqueeze(1)
-        att_logits[:, summary_slots:, :] = att_logits[:, summary_slots:, :] + 2.0 * salience_logits.unsqueeze(1)
-        slot_to_token = torch.softmax(att_logits.float(), dim=-1).to(dtype=write_values.dtype)
-        token_to_slot = torch.softmax(att_logits.float(), dim=1).to(dtype=write_values.dtype)
-        att = slot_to_token * token_to_slot
-        att = att / att.sum(dim=-1, keepdim=True).clamp_min(1e-6)
-        slot_competition = token_to_slot.sum(dim=-1) / max(token_to_slot.size(-1), 1)
+        write_scores = controller.scale_memory_scores(torch.einsum("bse,bte->bst", norm(slot_queries), norm(write_keys)))
+        write_scores = write_scores + write_priority.unsqueeze(1)
 
+        token_count = max(int(write_scores.size(-1)), 1)
+        no_write_score = write_scores.new_full((*write_scores.shape[:-1], 1), math.log(token_count))
+        no_write_score = no_write_score + controller.no_write_bias.to(dtype=write_scores.dtype)
+        slot_to_token_with_null = torch.softmax(torch.cat([write_scores, no_write_score], dim=-1).float(), dim=-1).to(dtype=write_values.dtype)
+        slot_to_token = slot_to_token_with_null[..., :-1]
+        token_to_slot = torch.softmax(write_scores.float(), dim=1).to(dtype=write_values.dtype)
+
+        att = slot_to_token * token_to_slot
+        raw_strengths = att.sum(dim=-1).clamp(min=0.0, max=1.0)
+        att = att / raw_strengths.unsqueeze(-1).clamp_min(1e-6)
+
+        priority_weight = torch.sigmoid(write_priority).unsqueeze(1)
         memory_tokens = torch.einsum("bst,btd->bsd", att, write_values)
         memory_keys = torch.einsum("bst,bte->bse", att, write_keys)
-        memory_strengths = (att * salience.unsqueeze(1)).sum(dim=-1) * slot_competition.clamp_min(1e-3).sqrt()
+        memory_strengths = (slot_to_token * token_to_slot * priority_weight).sum(dim=-1).clamp(min=0.0, max=1.0)
         memory_strengths = memory_strengths * (0.3 + 0.7 * float(reward))
+
+        summary_slots = controller.summary_slots
         summary_mask = self._budget_mask(memory_strengths[:, :summary_slots], controller.summary_budget)
         anchor_mask = self._budget_mask(memory_strengths[:, summary_slots:], controller.anchor_budget)
         slot_mask = torch.cat([summary_mask, anchor_mask], dim=1).to(dtype=memory_strengths.dtype)
@@ -603,9 +625,12 @@ class GPT(nn.Module):
         ]:
             torch.nn.init.uniform_(proj.weight, -s, s)
         torch.nn.init.zeros_(self.episodic_controller.write_gate.weight)
+        torch.nn.init.zeros_(self.episodic_controller.write_surprise_gate.weight)
         torch.nn.init.uniform_(self.episodic_controller.summary_slot_queries, -s, s)
         torch.nn.init.uniform_(self.episodic_controller.anchor_slot_queries, -s, s)
         torch.nn.init.constant_(self.episodic_controller.kind_bias, self.config.episodic_kind_bias_init)
+        torch.nn.init.zeros_(self.episodic_controller.no_write_bias)
+        torch.nn.init.zeros_(self.episodic_controller.write_recency_bias)
         torch.nn.init.uniform_(self.episodic_controller.write_value_proj.in_proj.weight, -s, s)
         torch.nn.init.zeros_(self.episodic_controller.write_value_proj.out_proj.weight)
 

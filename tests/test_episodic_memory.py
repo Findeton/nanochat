@@ -43,6 +43,9 @@ def test_missing_episodic_params_are_reinitialized_and_legacy_keys_dropped():
 
     assert "transformer.h.0.episodic_plan_score_gate" not in model_data
     assert "episodic_controller.write_key_proj.weight" in model_data
+    assert "episodic_controller.write_surprise_gate.weight" in model_data
+    assert "episodic_controller.no_write_bias" in model_data
+    assert "episodic_controller.write_recency_bias" in model_data
     assert "episodic_controller.recall_query_proj.weight" in model_data
     assert "transformer.h.0.episodic_memory_score_bias" in model_data
 
@@ -132,6 +135,8 @@ def test_memory_override_backprop_reaches_controller():
     loss.backward()
 
     assert model.episodic_controller.write_key_proj.weight.grad is not None
+    assert model.episodic_controller.write_surprise_gate.weight.grad is not None
+    assert model.episodic_controller.no_write_bias.grad is not None
     assert model.episodic_controller.write_value_proj.in_proj.weight.grad is not None
     assert model.episodic_controller.recall_query_proj.weight.grad is not None
     assert model.episodic_controller.write_key_proj.weight.grad.abs().sum().item() > 0
@@ -230,6 +235,21 @@ def test_sparse_write_budget_limits_active_slots():
     max_active = model.episodic_controller.summary_budget + model.episodic_controller.anchor_budget
 
     assert active <= max_active
+
+
+def test_fixed_size_update_can_decay_stale_slots():
+    model = build_tiny_model()
+    block = model.transformer.h[0]
+    current = block.episodic_memory.build_state(
+        torch.ones(1, model.config.episodic_slots, model.config.n_embd),
+        torch.ones(1, model.config.episodic_slots, model.config.episodic_dim),
+        torch.ones(1, model.config.episodic_slots),
+    )
+    write = block.episodic_memory.empty_state(batch_size=1)
+    updated = block.episodic_memory.updated_state(current, write)
+
+    assert torch.all(updated["strengths"] < current["strengths"])
+    assert torch.allclose(updated["strengths"], current["strengths"] * block.episodic_memory.decay)
 
 
 def test_turn_replay_build_matches_live_online_writes():

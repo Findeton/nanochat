@@ -169,7 +169,10 @@ class PersistentMemoryTokens(nn.Module):
         decayed_keys = cur_keys * self.decay
         new_tokens = decayed_tokens + alpha * (write_tokens - decayed_tokens)
         new_keys = decayed_keys + alpha * (write_keys - decayed_keys)
-        new_strengths = torch.maximum(cur_strengths * self.decay, write_strengths).clamp(min=0.0, max=1.0)
+        # Fixed-size self-update: slots that receive write mass are replaced,
+        # slots that do not receive mass simply decay. This lets stale facts fade
+        # instead of surviving forever behind a max-strength rule.
+        new_strengths = (cur_strengths * self.decay * (1.0 - write_strengths) + write_strengths).clamp(min=0.0, max=1.0)
 
         kind_mask = write_strengths > 1e-6
         new_kind_ids = torch.where(kind_mask, write_kind_ids, cur_kind_ids)
