@@ -42,5 +42,10 @@ class SmolTalk(Task):
         # create and return the Conversation object (ok to emit the system message too)
         conversation = {
             "messages": messages,
+            # SmolTalk is standard conversational preservation data, not a
+            # memory-supervision source. Mark it explicitly so memory training
+            # keeps normal language behavior without inventing fallback facts
+            # from the first answer tokens.
+            "memory_target": {"mode": "guardrail_only", "family": "smoltalk"},
         }
         return conversation

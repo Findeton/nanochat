@@ -29,7 +29,9 @@ def run_prompt(model, tokenizer, engine, user_text, max_tokens=128):
     conversation_tokens.append(user_end)
     conversation_tokens.append(assistant_start)
     out = []
-    for token_column, _ in engine.generate(
+    # Persistent-memory decoding currently uses the no-KV path; KV-cache
+    # generation is intentionally unsupported when memory tokens are active.
+    for token_column, _ in engine._generate_without_kv_cache(
         conversation_tokens,
         num_samples=1,
         max_tokens=max_tokens,

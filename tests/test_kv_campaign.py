@@ -5,6 +5,18 @@ from types import SimpleNamespace
 
 from tasks.customjson import CustomJSON
 from scripts.generate_kv_campaign_corpus import generate_corpus
+from scripts.prepare_memory_curriculum_data import (
+    make_answer_realization,
+    make_contextual_drag_reset_or_reuse,
+    make_guardrail_with_irrelevant_memory,
+    make_hard_prefix_identity,
+    make_heuristic_override_irrelevant,
+    make_heuristic_override_memory,
+    make_memory_reasoning_response,
+    make_multi_update_binding,
+    make_structured_pair_fields,
+    make_structured_single_field,
+)
 from scripts.prepare_kv_campaign_data import STAGE_SPECS, build_manifest, build_stage
 from scripts.run_kv_campaign import build_train_command, compute_eval_steps
 
@@ -192,3 +204,39 @@ def test_customjson_accepts_object_rows_with_metadata(tmp_path):
     assert "messages" in example
     assert "memory_target" in example
     assert example["memory_target"]["fact_groups"][0]["text"] == "tuna"
+
+
+def test_memory_curriculum_builders_cover_varied_metadata():
+    rng = random.Random(11)
+    rows = [
+        make_hard_prefix_identity(rng),
+        make_answer_realization(rng),
+        make_multi_update_binding(rng),
+        make_structured_single_field(rng),
+        make_structured_pair_fields(rng),
+        make_memory_reasoning_response(rng),
+        make_guardrail_with_irrelevant_memory(rng),
+        make_contextual_drag_reset_or_reuse(rng),
+        make_heuristic_override_memory(rng),
+        make_heuristic_override_irrelevant(rng),
+    ]
+
+    families = {row["memory_target"]["family"] for row in rows}
+    assert "curriculum_answer_realization" in families
+    assert "curriculum_irrelevant_memory_guardrail" in families
+    assert any(family.startswith("curriculum_contextual_drag_") for family in families)
+    assert "curriculum_heuristic_override_memory" in families
+    assert "curriculum_heuristic_override_irrelevant" in families
+    assert any(row["memory_target"].get("mode") == "guardrail_only" for row in rows)
+
+    for row in rows:
+        messages = row["messages"]
+        assert len(messages) >= 4
+        for i, message in enumerate(messages):
+            expected_role = "user" if i % 2 == 0 else "assistant"
+            assert message["role"] == expected_role
+            assert isinstance(message["content"], str) and message["content"]
+        assert "memory_target" in row
+        if row["memory_target"].get("mode") != "guardrail_only":
+            assert row["memory_target"]["fact_groups"]
+            assert all(group["text"] for group in row["memory_target"]["fact_groups"])

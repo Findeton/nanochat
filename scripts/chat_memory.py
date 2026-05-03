@@ -41,12 +41,21 @@ parser.add_argument("--model-step", type=int, default=None, help="checkpoint ste
 parser.add_argument("--output-tag", type=str, default=None, help="tag to save the memory-trained checkpoint under")
 parser.add_argument("--num-iterations", type=int, default=1000, help="number of optimizer steps")
 parser.add_argument("--device-batch-size", type=int, default=4, help="number of memory episodes per optimizer step")
+parser.add_argument("--phase2-device-batch-size", type=int, default=0, help="override device batch size during phase 2; 0 uses --device-batch-size")
+parser.add_argument("--phase3-device-batch-size", type=int, default=0, help="override device batch size during phase 3; useful when the full trunk is unfrozen")
+parser.add_argument("--phase38-device-batch-size", type=int, default=0, help="override device batch size during phase 3.8; 0 uses --device-batch-size")
 parser.add_argument("--max-seq-len", type=int, default=None, help="sequence length for context/target rendering")
+parser.add_argument("--episode-cache-size", type=int, default=65536, help="number of pre-tokenized episodes kept in RAM before training (0 disables)")
+parser.add_argument("--episode-cache-reshuffle", action="store_true", help="reshuffle the pre-tokenized episode cache every cache epoch")
+parser.add_argument("--episode-cache-refresh", action="store_true", help="rebuild the pre-tokenized cache from the next dataset window every cache epoch")
+parser.add_argument("--gc-every", type=int, default=0, help="run Python gc every N steps; 0 disables on non-MPS devices")
 parser.add_argument("--gate-lr", type=float, default=1e-2, help="learning rate for episodic gate logits")
 parser.add_argument("--memory-lr", type=float, default=2e-3, help="learning rate for the shared episodic controller")
 parser.add_argument("--interface-lr", type=float, default=2e-5, help="learning rate for the guarded interface phase (lm_head + top layers)")
 parser.add_argument("--train-lr", type=float, default=5e-6, help="learning rate for full-joint release phase")
 parser.add_argument("--save-every", type=int, default=250, help="save every N steps (-1 disables intermediate saves)")
+parser.add_argument("--save-optimizer-checkpoints", action="store_true", help="also save optimizer shards; disabled by default to keep long GPU runs from filling small root disks")
+parser.add_argument("--keep-last-checkpoints", type=int, default=0, help="keep only the latest N saved steps in the output tag; 0 disables pruning")
 parser.add_argument("--reset-gates-to", type=float, default=None, help="optionally reset all episodic gate logits before training")
 parser.add_argument("--skip-smoltalk", action="store_true", help="exclude SmolTalk from the training mixture")
 parser.add_argument("--custom-json", action="append", default=[], help="optional custom JSONL conversation file(s) to mix in")
@@ -107,8 +116,10 @@ parser.add_argument("--rollout-missing-key-multiplier", type=float, default=3.0,
 parser.add_argument("--rollout-repeat-multiplier", type=float, default=2.0, help="multiply rollout loss when the generated prefix falls into a short repetition loop")
 parser.add_argument("--rollout-wrong-default-multiplier", type=float, default=2.0, help="phase-aware rollout multiplier when generated tokens choose a no-memory habit/confuser before the key")
 parser.add_argument("--phase3-trunk-trainable", action="store_true", help="unfreeze the full trunk during phase 3; by default phase 3 trains memory + interface only")
+parser.add_argument("--phase3-only-trunk-trainable", action="store_true", help="when --phase3-trunk-trainable is set, restrict full-trunk updates to phase3_generated_recovery only")
 parser.add_argument("--phase3-recovery-loss-weight", type=float, default=0.0, help="loss weight for generated-prefix recovery training")
 parser.add_argument("--phase3-recovery-start-phase", type=str, default="phase3", choices=["phase2", "phase3"], help="phase where generated-prefix recovery becomes active")
+parser.add_argument("--phase3-recovery-phase-only", action="store_true", help="apply generated-prefix recovery only during phase3_generated_recovery, instead of all later phases")
 parser.add_argument("--phase3-recovery-batch-frac", type=float, default=0.0, help="fraction of episodes that receive generated-prefix recovery loss")
 parser.add_argument("--phase3-recovery-steps", type=int, default=16, help="maximum sampled answer-prefix tokens before recovery supervision")
 parser.add_argument("--phase3-recovery-temperature", type=float, default=0.2, help="temperature used to sample phase-3 generated prefixes")
@@ -175,6 +186,15 @@ parser.add_argument("--phase38-default-recovery-tokens", type=int, default=8, he
 parser.add_argument("--phase38-probe-binding-loss-weight", type=float, default=0.0, help="phase 3.8 loss weight forcing memory-probe spans to prefer current/gold spans over stale/confuser spans")
 parser.add_argument("--phase38-probe-binding-margin", type=float, default=2.0, help="target memory-probe average log-prob margin for gold spans over stale/confuser spans")
 parser.add_argument("--phase38-probe-binding-max-spans", type=int, default=4, help="maximum remembered spans per example used by phase 3.8 probe binding")
+parser.add_argument("--phase38-branchpoint-loss-weight", type=float, default=0.0, help="phase 3.8 loss weight for earliest sampled bad decision on the answer path")
+parser.add_argument("--phase38-branchpoint-batch-frac", type=float, default=0.0, help="fraction of phase 3.8 examples that receive branch-point training")
+parser.add_argument("--phase38-branchpoint-margin", type=float, default=3.0, help="target log-prob margin for the gold branch token over the sampled bad token/confusers")
+parser.add_argument("--phase38-branchpoint-recovery-ce-weight", type=float, default=0.25, help="CE weight on the gold continuation after a branch-point correction")
+parser.add_argument("--phase38-branchpoint-recovery-tokens", type=int, default=8, help="number of gold tokens supervised after a branch-point correction")
+parser.add_argument("--phase38-branchpoint-answer-start-tokens", type=int, default=0, help="number of early answer tokens treated as structural branch points")
+parser.add_argument("--phase38-branchpoint-steps", type=int, default=24, help="maximum sampled answer tokens searched for a branch-point event")
+parser.add_argument("--phase38-branchpoint-temperature", type=float, default=0.30, help="sampling temperature for branch-point event discovery")
+parser.add_argument("--phase38-branchpoint-top-k", type=int, default=16, help="top-k filter for branch-point event discovery")
 parser.add_argument("--phase1-steps", type=int, default=0, help="phase 1: memory-only steps with the trunk frozen")
 parser.add_argument("--phase2-steps", type=int, default=0, help="phase 2: guarded joint steps (memory + interface params)")
 parser.add_argument("--phase3-steps", type=int, default=0, help="phase 3: generated-prefix recovery steps")
@@ -340,6 +360,7 @@ def phase38_enabled(phase_name):
         and (
             args.phase38_trajectory_loss_weight > 0
             or args.phase38_probe_binding_loss_weight > 0
+            or args.phase38_branchpoint_loss_weight > 0
         )
     )
 
@@ -352,7 +373,10 @@ def set_phase_trainability(phase_name):
         enabled = (memory_gate_params, memory_params, interface_params)
         disabled = (trunk_params,)
     else:
-        if args.phase3_trunk_trainable:
+        trunk_trainable = args.phase3_trunk_trainable and (
+            not args.phase3_only_trunk_trainable or phase_name == "phase3_generated_recovery"
+        )
+        if trunk_trainable:
             enabled = (memory_gate_params, memory_params, interface_params, trunk_params)
             disabled = ()
         else:
@@ -366,6 +390,16 @@ def set_phase_trainability(phase_name):
         for param in group:
             param.requires_grad_(False)
     return sum(p.numel() for p in model.parameters() if p.requires_grad)
+
+
+def device_batch_size_for_phase(phase_name):
+    if phase_name == "phase2_interface_joint" and args.phase2_device_batch_size > 0:
+        return args.phase2_device_batch_size
+    if phase_name == "phase3_generated_recovery" and args.phase3_device_batch_size > 0:
+        return args.phase3_device_batch_size
+    if phase_name == "phase3_8_trajectory_preference" and args.phase38_device_batch_size > 0:
+        return args.phase38_device_batch_size
+    return args.device_batch_size
 
 
 trainable_counts = {
@@ -548,14 +582,27 @@ def resolve_fact_groups(target_ids, targets, memory_target):
     return resolved
 
 
-def build_episode(conversation):
+def _tensor_positions_to_list(positions):
+    if positions is None:
+        return []
+    return [int(pos) for pos in positions.detach().cpu().flatten().tolist()]
+
+
+def build_episode_record(conversation):
     messages = conversation["messages"]
     memory_target = conversation.get("memory_target")
-    if len(messages) < 4:
+    guardrail_only = (
+        isinstance(memory_target, dict)
+        and (
+            memory_target.get("mode") == "guardrail_only"
+            or memory_target.get("family") in {"ordinary_chat_guardrail", "smoltalk"}
+        )
+    )
+    if len(messages) < 4 and not guardrail_only:
         return None
 
     has_system = messages[0]["role"] == "system"
-    min_split = 3 if has_system else 1
+    min_split = 3 if has_system else (0 if guardrail_only else 1)
     candidate_splits = []
     for split in range(min_split, len(messages) - 1):
         if messages[split]["role"] == "user" and messages[split + 1]["role"] == "assistant":
@@ -574,26 +621,49 @@ def build_episode(conversation):
     if has_system:
         target_messages = [messages[0]] + target_messages
 
-    context_ids, _ = tokenizer.render_conversation({"messages": context_messages}, max_tokens=args.max_seq_len)
-    if len(context_ids) < 2:
+    if context_messages:
+        context_ids, _ = tokenizer.render_conversation({"messages": context_messages}, max_tokens=args.max_seq_len)
+    else:
+        # Guardrail-only two-message rows intentionally have no memory context.
+        # Keep a minimal BOS context so the user/turn memory builder produces
+        # an empty memory state while the final user/assistant pair still trains.
+        context_ids = [int(tokenizer.get_bos_token_id())]
+    if len(context_ids) < 2 and not guardrail_only:
         return None
     target_ids, target_mask = tokenizer.render_conversation({"messages": target_messages}, max_tokens=args.max_seq_len + 1)
     if len(target_ids) < 2:
         return None
 
-    context_tensor = torch.tensor([context_ids[-args.max_seq_len:]], dtype=torch.long, device=device)
-    inputs, targets = build_supervised_tensors(target_ids, target_mask)
+    context_ids = context_ids[-args.max_seq_len:]
+    mask = target_mask[:args.max_seq_len + 1]
+    target_ids = target_ids[:args.max_seq_len + 1]
+    if len(target_ids) < 2:
+        return None
+    input_ids = [int(token_id) for token_id in target_ids[:-1]]
+    shifted_targets = [int(token_id) for token_id in target_ids[1:]]
+    shifted_mask = list(mask[1:])
+    shifted_targets = [
+        token_id if bool(shifted_mask[idx]) else -1
+        for idx, token_id in enumerate(shifted_targets)
+    ]
+    targets = torch.tensor([shifted_targets], dtype=torch.long)
     answer_positions = positions_from_target_mask(targets)
     if answer_positions.numel() == 0:
         return None
 
     first_target_pos = int(answer_positions[0].item())
-    fact_group_infos = resolve_fact_groups(target_ids, targets, memory_target)
-    if fact_group_infos:
+    fact_group_infos = [] if guardrail_only else resolve_fact_groups(target_ids, targets, memory_target)
+    if guardrail_only:
+        fact_positions = torch.zeros((0,), dtype=torch.long, device=targets.device)
+        identity_positions = torch.zeros((0,), dtype=torch.long, device=targets.device)
+        anchor_target_pos = first_target_pos
+        template_positions = answer_positions
+        rest_answer_positions = torch.zeros((0,), dtype=torch.long, device=targets.device)
+    elif fact_group_infos:
         fact_positions = torch.unique(torch.cat([group["positions"] for group in fact_group_infos], dim=0))
         fact_positions, _ = torch.sort(fact_positions)
         anchor_target_pos = int(fact_positions[0].item())
-        fact_mask = torch.zeros(targets.size(1), dtype=torch.bool, device=device)
+        fact_mask = torch.zeros(targets.size(1), dtype=torch.bool, device=targets.device)
         fact_mask[fact_positions] = True
         template_positions = answer_positions[answer_positions < anchor_target_pos]
         identity_positions = fact_positions
@@ -606,35 +676,305 @@ def build_episode(conversation):
             anchor_target_pos,
             args.fallback_identity_span_tokens,
         )
-        identity_mask = torch.zeros(targets.size(1), dtype=torch.bool, device=device)
+        identity_mask = torch.zeros(targets.size(1), dtype=torch.bool, device=targets.device)
         if identity_positions.numel() > 0:
             identity_mask[identity_positions] = True
         rest_answer_positions = answer_positions[(answer_positions >= anchor_target_pos) & ~identity_mask[answer_positions]]
 
+    fact_group_records = []
+    for group in fact_group_infos:
+        fact_group_records.append(
+            {
+                "text": group.get("text"),
+                "span_ids": [int(token_id) for token_id in group.get("span_ids", [])],
+                "positions": _tensor_positions_to_list(group.get("positions")),
+                "hard_negative_token_ids": [int(token_id) for token_id in group.get("hard_negative_token_ids", [])],
+                "hard_negative_span_ids": [
+                    [int(token_id) for token_id in span]
+                    for span in group.get("hard_negative_span_ids", [])
+                ],
+            }
+        )
+
+    return {
+        "context_ids": [int(token_id) for token_id in context_ids],
+        "input_ids": input_ids,
+        "target_ids": shifted_targets,
+        "template_positions": _tensor_positions_to_list(template_positions),
+        "identity_positions": _tensor_positions_to_list(identity_positions),
+        "fact_positions": _tensor_positions_to_list(fact_positions),
+        "rest_answer_positions": _tensor_positions_to_list(rest_answer_positions),
+        "anchor_target_pos": int(anchor_target_pos),
+        "fact_group_infos": fact_group_records,
+        "guardrail_only": bool(guardrail_only),
+    }
+
+
+def tensorize_positions(positions):
+    return torch.tensor(positions, dtype=torch.long, device=device) if positions else torch.zeros((0,), dtype=torch.long, device=device)
+
+
+def tensorize_fact_groups(groups):
+    tensor_groups = []
+    for group in groups:
+        tensor_group = dict(group)
+        tensor_group["positions"] = tensorize_positions(group.get("positions", []))
+        tensor_groups.append(tensor_group)
+    return tensor_groups
+
+
+def build_episode(conversation):
+    record = build_episode_record(conversation)
+    if record is None:
+        return None
+    context_tensor = torch.tensor([record["context_ids"]], dtype=torch.long, device=device)
+    inputs = torch.tensor([record["input_ids"]], dtype=torch.long, device=device)
+    targets = torch.tensor([record["target_ids"]], dtype=torch.long, device=device)
     return (
         context_tensor,
         inputs,
         targets,
-        template_positions,
-        identity_positions,
-        fact_positions,
-        rest_answer_positions,
-        anchor_target_pos,
-        fact_group_infos,
+        tensorize_positions(record["template_positions"]),
+        tensorize_positions(record["identity_positions"]),
+        tensorize_positions(record["fact_positions"]),
+        tensorize_positions(record["rest_answer_positions"]),
+        int(record["anchor_target_pos"]),
+        tensorize_fact_groups(record["fact_group_infos"]),
     )
 
 
-def next_episode():
-    global cursor
+def build_episode_cache(start_cursor=0):
+    if args.episode_cache_size <= 0:
+        return None, start_cursor
+    target_size = min(args.episode_cache_size, len(dataset))
+    records = []
+    scan_cursor = int(start_cursor) % max(len(dataset), 1)
+    scanned = 0
+    skipped = 0
+    next_report = 10000
+    start_time = time.time()
+    while len(records) < target_size and scanned < len(dataset):
+        record = build_episode_record(dataset[scan_cursor])
+        scan_cursor = (scan_cursor + 1) % len(dataset)
+        scanned += 1
+        if record is not None:
+            records.append(record)
+        else:
+            skipped += 1
+        if len(records) >= next_report:
+            print0(f"Pre-tokenized memory episodes: {len(records):,}/{target_size:,}")
+            next_report += 10000
+    print0(
+        f"Pre-tokenized memory episode cache: {len(records):,} examples "
+        f"(skipped {skipped:,}, scanned {scanned:,}, next source cursor {scan_cursor:,}) "
+        f"in {time.time() - start_time:.1f}s"
+    )
+    return records, scan_cursor
+
+
+episode_cache, cache_source_cursor = build_episode_cache()
+
+
+def next_episode_record():
+    global cursor, episode_cache, cache_source_cursor
+    if episode_cache:
+        cache_idx = cursor % len(episode_cache)
+        if (args.episode_cache_reshuffle or args.episode_cache_refresh) and cursor > 0 and cache_idx == 0:
+            if args.episode_cache_refresh:
+                episode_cache, cache_source_cursor = build_episode_cache(cache_source_cursor)
+                print0(f"Refreshed pre-tokenized episode cache after {cursor:,} consumed examples")
+            else:
+                rng.shuffle(episode_cache)
+                print0(f"Reshuffled pre-tokenized episode cache after {cursor:,} examples")
+        record = episode_cache[cache_idx]
+        cursor += 1
+        return record
     while True:
-        episode = build_episode(dataset[cursor])
+        episode = build_episode_record(dataset[cursor])
         cursor = (cursor + 1) % len(dataset)
         if episode is not None:
             return episode
 
 
+def next_episode():
+    record = next_episode_record()
+    context_tensor = torch.tensor([record["context_ids"]], dtype=torch.long, device=device)
+    inputs = torch.tensor([record["input_ids"]], dtype=torch.long, device=device)
+    targets = torch.tensor([record["target_ids"]], dtype=torch.long, device=device)
+    return (
+        context_tensor,
+        inputs,
+        targets,
+        tensorize_positions(record["template_positions"]),
+        tensorize_positions(record["identity_positions"]),
+        tensorize_positions(record["fact_positions"]),
+        tensorize_positions(record["rest_answer_positions"]),
+        int(record["anchor_target_pos"]),
+        tensorize_fact_groups(record["fact_group_infos"]),
+    )
+
+
 def build_empty_memory_override(batch_size):
     return model.empty_memory_override(batch_size, device=device, dtype=model.transformer.wte.weight.dtype)
+
+
+PAD_TOKEN_ID = 0
+
+
+def pad_token_rows(rows, pad_value=PAD_TOKEN_ID):
+    batch_size = len(rows)
+    max_len = max((len(row) for row in rows), default=1)
+    max_len = max(max_len, 1)
+    tokens = torch.full((batch_size, max_len), int(pad_value), dtype=torch.long, device=device)
+    mask = torch.zeros((batch_size, max_len), dtype=torch.bool, device=device)
+    for batch_idx, row in enumerate(rows):
+        if not row:
+            continue
+        row_tensor = torch.tensor(row, dtype=torch.long, device=device)
+        tokens[batch_idx, : row_tensor.numel()] = row_tensor
+        mask[batch_idx, : row_tensor.numel()] = True
+    return tokens, mask
+
+
+def pad_target_rows(rows):
+    batch_size = len(rows)
+    max_len = max((len(row) for row in rows), default=1)
+    max_len = max(max_len, 1)
+    targets = torch.full((batch_size, max_len), -1, dtype=torch.long, device=device)
+    for batch_idx, row in enumerate(rows):
+        if not row:
+            continue
+        row_tensor = torch.tensor(row, dtype=torch.long, device=device)
+        targets[batch_idx, : row_tensor.numel()] = row_tensor
+    return targets
+
+
+def next_episode_batch(batch_size=None):
+    batch_size = max(1, int(batch_size or args.device_batch_size))
+    records = [next_episode_record() for _ in range(batch_size)]
+    context_ids, context_mask = pad_token_rows([record["context_ids"] for record in records])
+    inputs, _ = pad_token_rows([record["input_ids"] for record in records])
+    targets = pad_target_rows([record["target_ids"] for record in records])
+    metas = []
+    for record in records:
+        metas.append(
+            {
+                "context_ids": record["context_ids"],
+                "template_positions": tensorize_positions(record["template_positions"]),
+                "identity_positions": tensorize_positions(record["identity_positions"]),
+                "fact_positions": tensorize_positions(record["fact_positions"]),
+                "rest_answer_positions": tensorize_positions(record["rest_answer_positions"]),
+                "anchor_target_pos": int(record["anchor_target_pos"]),
+                "fact_group_infos": tensorize_fact_groups(record["fact_group_infos"]),
+                "guardrail_only": bool(record.get("guardrail_only", False)),
+            }
+        )
+    return context_ids, context_mask, inputs, targets, metas
+
+
+def slice_outputs(outputs, batch_idx):
+    sliced = {}
+    for key, value in outputs.items():
+        if torch.is_tensor(value) and value.dim() > 0 and value.size(0) > batch_idx:
+            sliced[key] = value[batch_idx: batch_idx + 1]
+        else:
+            sliced[key] = value
+    return sliced
+
+
+def slice_memory_override(memory_override, batch_idx):
+    return [
+        {
+            key: value[batch_idx: batch_idx + 1] if torch.is_tensor(value) and value.dim() > 0 else value
+            for key, value in layer_state.items()
+        }
+        for layer_state in memory_override
+    ]
+
+
+def select_memory_override(memory_override, batch_indices):
+    idx = torch.tensor(batch_indices, dtype=torch.long, device=device)
+    return [
+        {
+            key: value.index_select(0, idx) if torch.is_tensor(value) and value.dim() > 0 and value.size(0) >= idx.numel() else value
+            for key, value in layer_state.items()
+        }
+        for layer_state in memory_override
+    ]
+
+
+def scatter_memory_override(memory_override, batch_indices, updated):
+    idx = torch.tensor(batch_indices, dtype=torch.long, device=device)
+    for layer_state, updated_state in zip(memory_override, updated):
+        for key, value in layer_state.items():
+            if torch.is_tensor(value) and value.dim() > 0 and key in updated_state:
+                value.index_copy_(0, idx, updated_state[key])
+
+
+def batched_write_state(token_rows):
+    event_tokens, event_mask = pad_token_rows(token_rows)
+    block_ios = model.collect_block_ios(event_tokens, detach=False)
+    return [
+        block.build_episodic_state(
+            key_source,
+            value_source,
+            model.episodic_controller,
+            source_mask=event_mask,
+        )
+        for block, (key_source, value_source) in zip(model.transformer.h, block_ios)
+    ]
+
+
+def build_memory_override_for_batch(context_ids, context_mask, metas):
+    if args.memory_build_mode == "full_context":
+        block_ios = model.collect_block_ios(context_ids, detach=False)
+        return [
+            block.build_episodic_state(
+                key_source,
+                value_source,
+                model.episodic_controller,
+                source_mask=context_mask,
+            )
+            for block, (key_source, value_source) in zip(model.transformer.h, block_ios)
+        ]
+
+    batch_size = len(metas)
+    memory_override = build_empty_memory_override(batch_size)
+    event_lists = [
+        model._split_memory_events(meta["context_ids"], write_mode=args.memory_build_mode)
+        for meta in metas
+    ]
+    max_events = max((len(events) for events in event_lists), default=0)
+    for event_idx in range(max_events):
+        grouped = []
+        batch_indices = []
+        for batch_idx, events in enumerate(event_lists):
+            if event_idx >= len(events):
+                continue
+            event = events[event_idx]
+            # The common training path uses turn/user/full-context writes. Keep
+            # recall-trace events on the old exact path instead of complicating
+            # the hot path with per-example position gathers.
+            if event.get("kind") != "memorize":
+                single = torch.tensor([event["tokens"]], dtype=torch.long, device=device)
+                write_state = model._build_recall_trace_state(
+                    single,
+                    event["query_positions"],
+                    event["value_positions"],
+                    reward=0.0,
+                )
+                current = slice_memory_override(memory_override, batch_idx)
+                updated = model._update_memory_override(current, write_state)
+                scatter_memory_override(memory_override, [batch_idx], updated)
+                continue
+            grouped.append(event["tokens"])
+            batch_indices.append(batch_idx)
+        if grouped:
+            write_state = batched_write_state(grouped)
+            current = select_memory_override(memory_override, batch_indices)
+            updated = model._update_memory_override(current, write_state)
+            scatter_memory_override(memory_override, batch_indices, updated)
+    return memory_override
 
 
 def slot_diversity_penalty(memory_override):
@@ -1349,6 +1689,8 @@ def generated_hits_no_memory_confuser(generated_tokens, answer_tokens, answer_po
 def phase3_recovery_enabled(phase_name):
     if args.phase3_recovery_loss_weight <= 0 or args.phase3_recovery_batch_frac <= 0:
         return False
+    if args.phase3_recovery_phase_only and phase_name != "phase3_generated_recovery":
+        return False
     return PHASE_RANK[phase_name] >= PHASE_RANK[args.phase3_recovery_start_phase]
 
 
@@ -1959,20 +2301,20 @@ def sequence_token_logprobs(prefix_tokens, candidate_ids, memory_override):
     if len(sequence) < 2:
         return None, None
     rollout_inputs = torch.tensor([sequence[:-1]], dtype=torch.long, device=device)
-    outputs = model(rollout_inputs, memory_override=memory_override, return_components=True)
+    logits = model(rollout_inputs, memory_override=memory_override, return_components=False)
     start = len(prefix_tokens) - 1
-    end = min(start + len(candidate_ids), outputs["logits"].size(1))
+    end = min(start + len(candidate_ids), logits.size(1))
     if start < 0 or start >= end:
         return None, None
     usable = end - start
     ids = torch.tensor(candidate_ids[:usable], dtype=torch.long, device=device)
-    vocab_size = outputs["logits"].size(-1)
+    vocab_size = logits.size(-1)
     valid = (ids >= 0) & (ids < vocab_size)
     if not valid.any():
-        return None, outputs
-    log_probs = F.log_softmax(outputs["logits"][0, start:end, :], dim=-1)
+        return None, {"logits": logits}
+    log_probs = F.log_softmax(logits[0, start:end, :], dim=-1)
     token_lps = log_probs[valid].gather(-1, ids[valid].view(-1, 1)).squeeze(-1)
-    return token_lps, outputs
+    return token_lps, {"logits": logits}
 
 
 def sequence_mean_logprob(prefix_tokens, candidate_ids, memory_override):
@@ -2091,8 +2433,8 @@ def phase38_default_branch_objective(
         return None
 
     branch_inputs = torch.tensor([branch_prefix], dtype=torch.long, device=device)
-    branch_outputs = model(branch_inputs, memory_override=memory_override, return_components=True)
-    row = branch_outputs["logits"][0, -1]
+    branch_logits = model(branch_inputs, memory_override=memory_override, return_components=False)
+    row = branch_logits[0, -1]
     log_probs = F.log_softmax(row, dim=-1)
     margin = log_probs[gold_token] - log_probs[default_token]
     margin_target = torch.tensor(
@@ -2122,6 +2464,185 @@ def phase38_default_branch_objective(
         "branch_loss": float(branch_loss.item()),
         "branch_margin": float(margin.item()),
         "recovery_ce": recovery_ce_value,
+    }
+
+
+def phase38_branchpoint_offsets(answer_positions, targets, spans, max_answer_tokens):
+    offsets = set()
+    for offset in range(min(max(0, args.phase38_branchpoint_answer_start_tokens), max_answer_tokens)):
+        offsets.add(offset)
+    offsets.update(phase38_decisive_answer_offsets(answer_positions, targets, spans, max_answer_tokens))
+    return offsets
+
+
+@torch.no_grad()
+def sampled_phase38_branchpoint_event(
+    prefix_tokens,
+    memory_override,
+    no_memory_override,
+    spans,
+    gold_answer_ids,
+    answer_positions,
+    targets,
+):
+    if not spans or not gold_answer_ids:
+        return None
+
+    max_answer_tokens = min(len(gold_answer_ids), max(1, args.phase38_answer_tokens))
+    targeted_offsets = phase38_branchpoint_offsets(answer_positions, targets, spans, max_answer_tokens)
+    if not targeted_offsets:
+        return None
+
+    rollout_tokens = list(prefix_tokens)
+    rollin_answer_ids = []
+    gold_answer_set = {int(token_id) for token_id in gold_answer_ids}
+
+    for offset in range(min(max_answer_tokens, max(1, args.phase38_branchpoint_steps))):
+        gold_token = int(gold_answer_ids[offset])
+        rollout_idx = torch.tensor([rollout_tokens], dtype=torch.long, device=device)
+        logits = model(rollout_idx, memory_override=memory_override)[0, -1]
+        next_token = sample_next_token_from_logits(
+            logits,
+            args.phase38_branchpoint_temperature,
+            args.phase38_branchpoint_top_k,
+        )
+
+        no_memory_top_ids = no_memory_top_ids_for_context(
+            rollout_tokens,
+            no_memory_override,
+            gold_answer_set,
+            args.phase38_no_memory_confuser_top_k,
+        )
+        candidate = rollin_answer_ids + [int(next_token)]
+        reason = None
+
+        if int(next_token) == gold_token:
+            rollin_answer_ids.append(gold_token)
+            rollout_tokens.append(gold_token)
+            continue
+
+        if generated_partial_wrong_span(candidate, spans):
+            reason = "partial_wrong"
+        elif generated_contains_any_negative_span(candidate, spans):
+            reason = "wrong_span"
+        elif generated_has_wrong_post_key_continuation(candidate, spans):
+            reason = "wrong_after_key"
+        elif has_short_repetition(candidate):
+            reason = "repeated"
+        elif (
+            int(next_token) in no_memory_top_ids
+            and int(next_token) not in gold_answer_set
+            and first_missing_span(rollin_answer_ids, spans) is not None
+        ):
+            reason = "no_memory_default"
+        elif offset in targeted_offsets:
+            reason = "answer_start" if offset < args.phase38_branchpoint_answer_start_tokens else "fact_branch"
+
+        if reason is not None:
+            target_ids = [
+                int(token_id)
+                for token_id in gold_answer_ids[offset : offset + max(1, args.phase38_branchpoint_recovery_tokens)]
+                if 0 <= int(token_id) < model.config.vocab_size
+            ]
+            if not target_ids:
+                return None
+            return {
+                "reason": reason,
+                "offset": offset,
+                "rollin_answer_ids": list(rollin_answer_ids),
+                "bad_token": int(next_token),
+                "gold_token": gold_token,
+                "target_ids": target_ids,
+                "no_memory_top_ids": set(int(token_id) for token_id in no_memory_top_ids),
+            }
+
+        # Keep non-targeted, non-factual deviations from consuming the curriculum.
+        # This lets us search for the memory-critical branch while remaining on a
+        # sane gold path, similar to scheduled sampling with immediate correction.
+        rollin_answer_ids.append(gold_token)
+        rollout_tokens.append(gold_token)
+
+    return None
+
+
+def phase38_branchpoint_objective(
+    prefix_tokens,
+    gold_answer_ids,
+    answer_positions,
+    targets,
+    spans,
+    memory_override,
+    no_memory_override,
+):
+    if args.phase38_branchpoint_loss_weight <= 0 or args.phase38_branchpoint_batch_frac <= 0:
+        return None
+    if rng.random() > args.phase38_branchpoint_batch_frac:
+        return None
+
+    event = sampled_phase38_branchpoint_event(
+        prefix_tokens,
+        memory_override,
+        no_memory_override,
+        spans,
+        gold_answer_ids,
+        answer_positions,
+        targets,
+    )
+    if event is None:
+        return None
+
+    branch_prefix = list(prefix_tokens) + [int(token_id) for token_id in event["rollin_answer_ids"]]
+    if not branch_prefix:
+        return None
+
+    branch_inputs = torch.tensor([branch_prefix], dtype=torch.long, device=device)
+    branch_logits = model(branch_inputs, memory_override=memory_override, return_components=False)
+    row = branch_logits[0, -1]
+    gold_token = int(event["gold_token"])
+    if gold_token < 0 or gold_token >= row.numel():
+        return None
+
+    confuser_ids = set(int(token_id) for token_id in event.get("no_memory_top_ids", set()))
+    confuser_ids.add(int(event["bad_token"]))
+    confuser_ids = sorted(
+        token_id
+        for token_id in confuser_ids
+        if 0 <= token_id < row.numel() and token_id != gold_token
+    )
+
+    log_probs = F.log_softmax(row.float(), dim=-1)
+    if confuser_ids:
+        confuser_tensor = torch.tensor(confuser_ids, dtype=torch.long, device=row.device)
+        margin = log_probs[gold_token] - torch.logsumexp(log_probs[confuser_tensor], dim=0)
+    else:
+        masked = log_probs.clone()
+        masked[gold_token] = -float("inf")
+        margin = log_probs[gold_token] - masked.max()
+    branch_loss = F.softplus(
+        torch.tensor(args.phase38_branchpoint_margin, device=margin.device, dtype=margin.dtype) - margin
+    )
+
+    recovery_ce_value = 0.0
+    total = branch_loss
+    recovery_lps, _ = sequence_token_logprobs(branch_prefix, event["target_ids"], memory_override)
+    if recovery_lps is not None and args.phase38_branchpoint_recovery_ce_weight > 0:
+        recovery_ce = -recovery_lps.mean()
+        recovery_ce_value = float(recovery_ce.item())
+        total = total + args.phase38_branchpoint_recovery_ce_weight * recovery_ce
+
+    return {
+        "loss": total,
+        "branch_loss": float(branch_loss.item()),
+        "branch_margin": float(margin.item()),
+        "recovery_ce": recovery_ce_value,
+        "applied": 1.0,
+        "answer_start": event["reason"] == "answer_start",
+        "fact_branch": event["reason"] == "fact_branch",
+        "no_memory_default": event["reason"] == "no_memory_default",
+        "wrong_span": event["reason"] == "wrong_span",
+        "partial_wrong": event["reason"] == "partial_wrong",
+        "wrong_after_key": event["reason"] == "wrong_after_key",
+        "repeated": event["reason"] == "repeated",
     }
 
 
@@ -2543,6 +3064,17 @@ def phase38_trajectory_preference_loss(
     default_branch_margin_value = 0.0
     default_recovery_ce_value = 0.0
     default_branch_applied = 0.0
+    branchpoint_loss_value = 0.0
+    branchpoint_margin_value = 0.0
+    branchpoint_recovery_ce_value = 0.0
+    branchpoint_applied_value = 0.0
+    branchpoint_answer_start_value = 0.0
+    branchpoint_fact_branch_value = 0.0
+    branchpoint_no_memory_default_value = 0.0
+    branchpoint_wrong_span_value = 0.0
+    branchpoint_partial_wrong_value = 0.0
+    branchpoint_wrong_after_key_value = 0.0
+    branchpoint_repeated_value = 0.0
     applied = 0.0
     reason = "none"
 
@@ -2553,16 +3085,41 @@ def phase38_trajectory_preference_loss(
         probe_margin_value = probe_metrics["probe_margin"]
         applied = 1.0
 
+    answer_token_ids = [
+        int(token_id)
+        for token_id in targets[0, answer_positions].tolist()
+        if int(token_id) != -1
+    ]
+    gold_answer_ids = answer_token_ids[: max(1, args.phase38_answer_tokens)]
+    first_answer_pos = int(answer_positions[0].item())
+    prefix_tokens = inputs[0, : first_answer_pos + 1].tolist()
+
+    branchpoint_metrics = phase38_branchpoint_objective(
+        prefix_tokens,
+        gold_answer_ids,
+        answer_positions,
+        targets,
+        spans,
+        memory_override,
+        no_memory_override,
+    )
+    if branchpoint_metrics is not None:
+        total = total + args.phase38_branchpoint_loss_weight * branchpoint_metrics["loss"]
+        branchpoint_loss_value = branchpoint_metrics["branch_loss"]
+        branchpoint_margin_value = branchpoint_metrics["branch_margin"]
+        branchpoint_recovery_ce_value = branchpoint_metrics["recovery_ce"]
+        branchpoint_applied_value = branchpoint_metrics["applied"]
+        branchpoint_answer_start_value = 1.0 if branchpoint_metrics["answer_start"] else 0.0
+        branchpoint_fact_branch_value = 1.0 if branchpoint_metrics["fact_branch"] else 0.0
+        branchpoint_no_memory_default_value = 1.0 if branchpoint_metrics["no_memory_default"] else 0.0
+        branchpoint_wrong_span_value = 1.0 if branchpoint_metrics["wrong_span"] else 0.0
+        branchpoint_partial_wrong_value = 1.0 if branchpoint_metrics["partial_wrong"] else 0.0
+        branchpoint_wrong_after_key_value = 1.0 if branchpoint_metrics["wrong_after_key"] else 0.0
+        branchpoint_repeated_value = 1.0 if branchpoint_metrics["repeated"] else 0.0
+        applied = 1.0
+
     if args.phase38_trajectory_loss_weight > 0 and args.phase38_trajectory_batch_frac > 0:
         if rng.random() <= args.phase38_trajectory_batch_frac:
-            answer_token_ids = [
-                int(token_id)
-                for token_id in targets[0, answer_positions].tolist()
-                if int(token_id) != -1
-            ]
-            gold_answer_ids = answer_token_ids[: max(1, args.phase38_answer_tokens)]
-            first_answer_pos = int(answer_positions[0].item())
-            prefix_tokens = inputs[0, : first_answer_pos + 1].tolist()
 
             event = sampled_phase38_trajectory_event(
                 prefix_tokens,
@@ -2642,6 +3199,17 @@ def phase38_trajectory_preference_loss(
         "default_branch_margin": default_branch_margin_value,
         "default_recovery_ce": default_recovery_ce_value,
         "default_branch_applied": default_branch_applied,
+        "branchpoint_loss": branchpoint_loss_value,
+        "branchpoint_margin": branchpoint_margin_value,
+        "branchpoint_recovery_ce": branchpoint_recovery_ce_value,
+        "branchpoint_applied": branchpoint_applied_value,
+        "branchpoint_answer_start": branchpoint_answer_start_value,
+        "branchpoint_fact_branch": branchpoint_fact_branch_value,
+        "branchpoint_no_memory_default": branchpoint_no_memory_default_value,
+        "branchpoint_wrong_span": branchpoint_wrong_span_value,
+        "branchpoint_partial_wrong": branchpoint_partial_wrong_value,
+        "branchpoint_wrong_after_key": branchpoint_wrong_after_key_value,
+        "branchpoint_repeated": branchpoint_repeated_value,
         "probe_loss": probe_loss_value,
         "probe_margin": probe_margin_value,
         "applied": applied,
@@ -2782,14 +3350,41 @@ def gate_values():
     return [torch.sigmoid(block.episodic_memory_score_bias).item() for block in model.transformer.h]
 
 
+def prune_saved_checkpoints(checkpoint_dir, keep_last):
+    if keep_last <= 0 or ddp_rank != 0 or not os.path.isdir(checkpoint_dir):
+        return
+    steps = set()
+    for name in os.listdir(checkpoint_dir):
+        if name.startswith(("model_", "meta_")):
+            stem = name.split("_", 1)[1].split(".", 1)[0]
+        elif name.startswith("optim_"):
+            stem = name.split("_", 2)[1]
+        else:
+            continue
+        if stem.isdigit():
+            steps.add(int(stem))
+    delete_steps = sorted(steps)[:-keep_last]
+    for old_step in delete_steps:
+        for name in (
+            f"model_{old_step:06d}.pt",
+            f"meta_{old_step:06d}.json",
+            f"optim_{old_step:06d}_rank{ddp_rank:d}.pt",
+        ):
+            path = os.path.join(checkpoint_dir, name)
+            if os.path.exists(path):
+                os.remove(path)
+                print0(f"Pruned old checkpoint file: {path}")
+
+
 def save_memory_checkpoint(step, smooth_loss):
     checkpoint_dir = os.path.join(base_dir, "chatsft_checkpoints", output_tag)
     model.clear_memory_banks()
+    prune_saved_checkpoints(checkpoint_dir, max(args.keep_last_checkpoints - 1, 0))
     save_checkpoint(
         checkpoint_dir,
         step,
         model.state_dict(),
-        optimizer.state_dict(),
+        optimizer.state_dict() if args.save_optimizer_checkpoints else None,
         {
             "step": step,
             "memory_loss": smooth_loss,
@@ -2802,6 +3397,7 @@ def save_memory_checkpoint(step, smooth_loss):
         },
         rank=ddp_rank,
     )
+    prune_saved_checkpoints(checkpoint_dir, args.keep_last_checkpoints)
 
 
 smooth_loss = 0.0
@@ -2874,6 +3470,17 @@ smooth_phase38_default_branch_loss = 0.0
 smooth_phase38_default_branch_margin = 0.0
 smooth_phase38_default_recovery_ce = 0.0
 smooth_phase38_default_branch_applied = 0.0
+smooth_phase38_branchpoint_loss = 0.0
+smooth_phase38_branchpoint_margin = 0.0
+smooth_phase38_branchpoint_recovery_ce = 0.0
+smooth_phase38_branchpoint_applied = 0.0
+smooth_phase38_branchpoint_answer_start = 0.0
+smooth_phase38_branchpoint_fact_branch = 0.0
+smooth_phase38_branchpoint_no_memory_default = 0.0
+smooth_phase38_branchpoint_wrong_span = 0.0
+smooth_phase38_branchpoint_partial_wrong = 0.0
+smooth_phase38_branchpoint_wrong_after_key = 0.0
+smooth_phase38_branchpoint_repeated = 0.0
 smooth_phase38_probe_loss = 0.0
 smooth_phase38_probe_margin = 0.0
 smooth_phase38_applied = 0.0
@@ -2899,7 +3506,11 @@ for step in range(args.num_iterations + 1):
         trainable_now = set_phase_trainability(phase_name)
         model.zero_grad(set_to_none=True)
         current_phase = phase_name
-        print0(f"Switched training phase: {current_phase} | trainable parameters: {trainable_now:,}")
+        phase_batch_size = device_batch_size_for_phase(current_phase)
+        print0(
+            f"Switched training phase: {current_phase} | "
+            f"trainable parameters: {trainable_now:,} | device_batch_size: {phase_batch_size}"
+        )
 
     optimizer.zero_grad(set_to_none=True)
     model.train()
@@ -2973,6 +3584,17 @@ for step in range(args.num_iterations + 1):
     total_phase38_default_branch_margin = 0.0
     total_phase38_default_recovery_ce = 0.0
     total_phase38_default_branch_applied = 0.0
+    total_phase38_branchpoint_loss = 0.0
+    total_phase38_branchpoint_margin = 0.0
+    total_phase38_branchpoint_recovery_ce = 0.0
+    total_phase38_branchpoint_applied = 0.0
+    total_phase38_branchpoint_answer_start = 0.0
+    total_phase38_branchpoint_fact_branch = 0.0
+    total_phase38_branchpoint_no_memory_default = 0.0
+    total_phase38_branchpoint_wrong_span = 0.0
+    total_phase38_branchpoint_partial_wrong = 0.0
+    total_phase38_branchpoint_wrong_after_key = 0.0
+    total_phase38_branchpoint_repeated = 0.0
     total_phase38_probe_loss = 0.0
     total_phase38_probe_margin = 0.0
     total_phase38_applied = 0.0
@@ -2984,23 +3606,81 @@ for step in range(args.num_iterations + 1):
     total_phase38_repeated = 0.0
     total_active_slots = 0.0
 
-    for _ in range(args.device_batch_size):
-        (
-            context_ids,
-            inputs,
-            targets,
-            template_positions,
-            identity_positions,
-            fact_positions,
-            rest_answer_positions,
-            anchor_target_pos,
-            fact_group_infos,
-        ) = next_episode()
-        model.clear_memory_banks()
-        memory_override = model.build_memory_state(context_ids, write_mode=args.memory_build_mode)
-        outputs = model(inputs, targets, memory_override=memory_override, return_components=True)
-        loss = outputs["loss"]
-        use_deference = deference_enabled(phase_name)
+    (
+        batch_context_ids,
+        batch_context_mask,
+        batch_inputs,
+        batch_targets,
+        batch_metas,
+    ) = next_episode_batch(device_batch_size_for_phase(phase_name))
+    batch_size = batch_inputs.size(0)
+    model.clear_memory_banks()
+    batch_memory_override = build_memory_override_for_batch(batch_context_ids, batch_context_mask, batch_metas)
+    batch_outputs = model(batch_inputs, batch_targets, memory_override=batch_memory_override, return_components=True)
+    batch_base_loss = batch_outputs["loss"]
+    extra_loss = batch_base_loss.new_zeros(())
+    total_loss = float(batch_base_loss.item()) * batch_size
+    use_deference = deference_enabled(phase_name)
+
+    batch_has_effective_facts = any(
+        meta["fact_positions"].numel() > 0 or meta["identity_positions"].numel() > 0
+        for meta in batch_metas
+    )
+    batch_has_non_fact = any(positions_from_target_mask(batch_targets[b:b + 1]).numel() > 0 for b in range(batch_size))
+    need_no_memory = (
+        args.guardrail_kl_weight > 0 and batch_has_non_fact
+    ) or (
+        args.memory_utility_loss_weight > 0 and batch_has_effective_facts
+    ) or (
+        args.key_token_utility_loss_weight > 0 and batch_has_effective_facts
+    ) or (
+        use_deference and args.habit_confuser_loss_weight > 0 and batch_has_effective_facts
+    ) or (
+        use_deference
+        and batch_has_effective_facts
+        and (
+            args.span_utility_loss_weight > 0
+            or args.span_contrast_loss_weight > 0
+            or args.span_hard_token_loss_weight > 0
+        )
+    ) or (
+        use_deference and args.rollout_loss_weight > 0 and args.rollout_wrong_default_multiplier > 1.0
+    ) or (
+        phase35_enabled(phase_name)
+        and args.phase35_branch_loss_weight > 0
+        and args.phase35_branch_no_memory_top_k > 0
+    ) or (
+        phase36_enabled(phase_name)
+        and args.phase36_no_memory_confuser_top_k > 0
+    ) or (
+        phase37_enabled(phase_name)
+        and args.phase37_no_memory_confuser_top_k > 0
+    ) or (
+        phase38_enabled(phase_name)
+        and args.phase38_no_memory_confuser_top_k > 0
+    )
+    batch_empty_memory_override = None
+    batch_no_memory_outputs = None
+    if need_no_memory:
+        batch_empty_memory_override = build_empty_memory_override(batch_size)
+        with torch.no_grad():
+            batch_no_memory_outputs = model(batch_inputs, return_components=True, memory_override=batch_empty_memory_override)
+
+    for batch_idx, meta in enumerate(batch_metas):
+        inputs = batch_inputs[batch_idx: batch_idx + 1]
+        targets = batch_targets[batch_idx: batch_idx + 1]
+        template_positions = meta["template_positions"]
+        identity_positions = meta["identity_positions"]
+        fact_positions = meta["fact_positions"]
+        rest_answer_positions = meta["rest_answer_positions"]
+        anchor_target_pos = meta["anchor_target_pos"]
+        fact_group_infos = meta["fact_group_infos"]
+        guardrail_only = bool(meta.get("guardrail_only", False))
+        memory_override = slice_memory_override(batch_memory_override, batch_idx)
+        empty_memory_override = slice_memory_override(batch_empty_memory_override, batch_idx) if batch_empty_memory_override is not None else None
+        outputs = slice_outputs(batch_outputs, batch_idx)
+        no_memory_outputs = slice_outputs(batch_no_memory_outputs, batch_idx) if batch_no_memory_outputs is not None else None
+        loss = batch_base_loss.new_zeros(())
 
         effective_fact_positions = fact_positions if fact_positions.numel() > 0 else identity_positions
         answer_positions = positions_from_target_mask(targets)
@@ -3009,45 +3689,6 @@ for step in range(args.num_iterations + 1):
         if effective_fact_positions.numel() > 0:
             non_fact_mask[effective_fact_positions] = False
         non_fact_positions = non_fact_mask.nonzero(as_tuple=False).flatten()
-
-        empty_memory_override = None
-        no_memory_outputs = None
-        need_no_memory = (
-            args.guardrail_kl_weight > 0 and non_fact_positions.numel() > 0
-        ) or (
-            args.memory_utility_loss_weight > 0 and effective_fact_positions.numel() > 0
-        ) or (
-            args.key_token_utility_loss_weight > 0 and effective_fact_positions.numel() > 0
-        ) or (
-            use_deference and args.habit_confuser_loss_weight > 0 and effective_fact_positions.numel() > 0
-        ) or (
-            use_deference
-            and effective_fact_positions.numel() > 0
-            and (
-                args.span_utility_loss_weight > 0
-                or args.span_contrast_loss_weight > 0
-                or args.span_hard_token_loss_weight > 0
-            )
-        ) or (
-            use_deference and args.rollout_loss_weight > 0 and args.rollout_wrong_default_multiplier > 1.0
-        ) or (
-            phase35_enabled(phase_name)
-            and args.phase35_branch_loss_weight > 0
-            and args.phase35_branch_no_memory_top_k > 0
-        ) or (
-            phase36_enabled(phase_name)
-            and args.phase36_no_memory_confuser_top_k > 0
-        ) or (
-            phase37_enabled(phase_name)
-            and args.phase37_no_memory_confuser_top_k > 0
-        ) or (
-            phase38_enabled(phase_name)
-            and args.phase38_no_memory_confuser_top_k > 0
-        )
-        if need_no_memory:
-            empty_memory_override = build_empty_memory_override(inputs.size(0))
-            with torch.no_grad():
-                no_memory_outputs = model(inputs, return_components=True, memory_override=empty_memory_override)
 
         guardrail_kl_value = 0.0
         weighted_answer_ce_value = 0.0
@@ -3118,6 +3759,17 @@ for step in range(args.num_iterations + 1):
         phase38_default_branch_margin_value = 0.0
         phase38_default_recovery_ce_value = 0.0
         phase38_default_branch_applied_value = 0.0
+        phase38_branchpoint_loss_value = 0.0
+        phase38_branchpoint_margin_value = 0.0
+        phase38_branchpoint_recovery_ce_value = 0.0
+        phase38_branchpoint_applied_value = 0.0
+        phase38_branchpoint_answer_start_value = 0.0
+        phase38_branchpoint_fact_branch_value = 0.0
+        phase38_branchpoint_no_memory_default_value = 0.0
+        phase38_branchpoint_wrong_span_value = 0.0
+        phase38_branchpoint_partial_wrong_value = 0.0
+        phase38_branchpoint_wrong_after_key_value = 0.0
+        phase38_branchpoint_repeated_value = 0.0
         phase38_probe_loss_value = 0.0
         phase38_probe_margin_value = 0.0
         phase38_applied_value = 0.0
@@ -3217,7 +3869,12 @@ for step in range(args.num_iterations + 1):
                     memory_utility_loss_value = memory_utility_loss.item()
                     loss = loss + args.memory_utility_loss_weight * memory_utility_loss
 
-        anchor_positions = effective_fact_positions[: max(1, args.anchor_loss_tokens)] if effective_fact_positions.numel() > 0 else answer_positions[:1]
+        if effective_fact_positions.numel() > 0:
+            anchor_positions = effective_fact_positions[: max(1, args.anchor_loss_tokens)]
+        elif guardrail_only:
+            anchor_positions = torch.zeros((0,), dtype=torch.long, device=device)
+        else:
+            anchor_positions = answer_positions[:1]
         if anchor_positions.numel() > 0:
             anchor_losses = []
             anchor_margins = []
@@ -3416,6 +4073,17 @@ for step in range(args.num_iterations + 1):
             phase38_default_branch_margin_value = phase38_metrics["default_branch_margin"]
             phase38_default_recovery_ce_value = phase38_metrics["default_recovery_ce"]
             phase38_default_branch_applied_value = phase38_metrics["default_branch_applied"]
+            phase38_branchpoint_loss_value = phase38_metrics["branchpoint_loss"]
+            phase38_branchpoint_margin_value = phase38_metrics["branchpoint_margin"]
+            phase38_branchpoint_recovery_ce_value = phase38_metrics["branchpoint_recovery_ce"]
+            phase38_branchpoint_applied_value = phase38_metrics["branchpoint_applied"]
+            phase38_branchpoint_answer_start_value = phase38_metrics["branchpoint_answer_start"]
+            phase38_branchpoint_fact_branch_value = phase38_metrics["branchpoint_fact_branch"]
+            phase38_branchpoint_no_memory_default_value = phase38_metrics["branchpoint_no_memory_default"]
+            phase38_branchpoint_wrong_span_value = phase38_metrics["branchpoint_wrong_span"]
+            phase38_branchpoint_partial_wrong_value = phase38_metrics["branchpoint_partial_wrong"]
+            phase38_branchpoint_wrong_after_key_value = phase38_metrics["branchpoint_wrong_after_key"]
+            phase38_branchpoint_repeated_value = phase38_metrics["branchpoint_repeated"]
             phase38_probe_loss_value = phase38_metrics["probe_loss"]
             phase38_probe_margin_value = phase38_metrics["probe_margin"]
             phase38_applied_value = phase38_metrics["applied"]
@@ -3426,9 +4094,8 @@ for step in range(args.num_iterations + 1):
             phase38_no_memory_default_value = 1.0 if phase38_metrics["no_memory_default"] else 0.0
             phase38_repeated_value = 1.0 if phase38_metrics["repeated"] else 0.0
 
+        extra_loss = extra_loss + loss
         loss_value = loss.item()
-        (loss / args.device_batch_size).backward()
-
         total_loss += loss_value
         total_guardrail_kl += guardrail_kl_value
         total_weighted_answer_ce += weighted_answer_ce_value
@@ -3499,6 +4166,17 @@ for step in range(args.num_iterations + 1):
         total_phase38_default_branch_margin += phase38_default_branch_margin_value
         total_phase38_default_recovery_ce += phase38_default_recovery_ce_value
         total_phase38_default_branch_applied += phase38_default_branch_applied_value
+        total_phase38_branchpoint_loss += phase38_branchpoint_loss_value
+        total_phase38_branchpoint_margin += phase38_branchpoint_margin_value
+        total_phase38_branchpoint_recovery_ce += phase38_branchpoint_recovery_ce_value
+        total_phase38_branchpoint_applied += phase38_branchpoint_applied_value
+        total_phase38_branchpoint_answer_start += phase38_branchpoint_answer_start_value
+        total_phase38_branchpoint_fact_branch += phase38_branchpoint_fact_branch_value
+        total_phase38_branchpoint_no_memory_default += phase38_branchpoint_no_memory_default_value
+        total_phase38_branchpoint_wrong_span += phase38_branchpoint_wrong_span_value
+        total_phase38_branchpoint_partial_wrong += phase38_branchpoint_partial_wrong_value
+        total_phase38_branchpoint_wrong_after_key += phase38_branchpoint_wrong_after_key_value
+        total_phase38_branchpoint_repeated += phase38_branchpoint_repeated_value
         total_phase38_probe_loss += phase38_probe_loss_value
         total_phase38_probe_margin += phase38_probe_margin_value
         total_phase38_applied += phase38_applied_value
@@ -3510,14 +4188,40 @@ for step in range(args.num_iterations + 1):
         total_phase38_repeated += phase38_repeated_value
         total_active_slots += active_slot_count(memory_override)
 
+    combined_loss = batch_base_loss + extra_loss / max(batch_size, 1)
+    if not torch.isfinite(combined_loss):
+        print0(f"Skipping step {step}: non-finite combined loss")
+        optimizer.zero_grad(set_to_none=True)
+        model.zero_grad(set_to_none=True)
+        model.clear_memory_banks()
+        continue
+    combined_loss.backward()
+
     trainable_params = [p for p in model.parameters() if p.requires_grad]
-    torch.nn.utils.clip_grad_norm_(trainable_params, max_norm=1.0)
+    nonfinite_grad_tensors = 0
+    for param in trainable_params:
+        if param.grad is None:
+            continue
+        if not torch.isfinite(param.grad).all():
+            nonfinite_grad_tensors += 1
+            param.grad.nan_to_num_(nan=0.0, posinf=1e4, neginf=-1e4)
+    if nonfinite_grad_tensors > 0 and step % 10 == 0:
+        print0(f"Sanitized non-finite gradients at step {step}: {nonfinite_grad_tensors} tensors")
+    grad_norm = torch.nn.utils.clip_grad_norm_(trainable_params, max_norm=1.0, error_if_nonfinite=False)
+    if not torch.isfinite(grad_norm):
+        print0(f"Skipping step {step}: non-finite grad norm ({grad_norm})")
+        optimizer.zero_grad(set_to_none=True)
+        model.zero_grad(set_to_none=True)
+        model.clear_memory_banks()
+        continue
     optimizer.step()
     model.zero_grad(set_to_none=True)
     model.clear_memory_banks()
-    gc.collect()
     if device.type == "mps":
+        gc.collect()
         torch.mps.empty_cache()
+    elif args.gc_every > 0 and step > 0 and step % args.gc_every == 0:
+        gc.collect()
 
     smooth_loss = ema_beta * smooth_loss + (1 - ema_beta) * total_loss
     smooth_guardrail_kl = ema_beta * smooth_guardrail_kl + (1 - ema_beta) * total_guardrail_kl
@@ -3589,6 +4293,17 @@ for step in range(args.num_iterations + 1):
     smooth_phase38_default_branch_margin = ema_beta * smooth_phase38_default_branch_margin + (1 - ema_beta) * total_phase38_default_branch_margin
     smooth_phase38_default_recovery_ce = ema_beta * smooth_phase38_default_recovery_ce + (1 - ema_beta) * total_phase38_default_recovery_ce
     smooth_phase38_default_branch_applied = ema_beta * smooth_phase38_default_branch_applied + (1 - ema_beta) * total_phase38_default_branch_applied
+    smooth_phase38_branchpoint_loss = ema_beta * smooth_phase38_branchpoint_loss + (1 - ema_beta) * total_phase38_branchpoint_loss
+    smooth_phase38_branchpoint_margin = ema_beta * smooth_phase38_branchpoint_margin + (1 - ema_beta) * total_phase38_branchpoint_margin
+    smooth_phase38_branchpoint_recovery_ce = ema_beta * smooth_phase38_branchpoint_recovery_ce + (1 - ema_beta) * total_phase38_branchpoint_recovery_ce
+    smooth_phase38_branchpoint_applied = ema_beta * smooth_phase38_branchpoint_applied + (1 - ema_beta) * total_phase38_branchpoint_applied
+    smooth_phase38_branchpoint_answer_start = ema_beta * smooth_phase38_branchpoint_answer_start + (1 - ema_beta) * total_phase38_branchpoint_answer_start
+    smooth_phase38_branchpoint_fact_branch = ema_beta * smooth_phase38_branchpoint_fact_branch + (1 - ema_beta) * total_phase38_branchpoint_fact_branch
+    smooth_phase38_branchpoint_no_memory_default = ema_beta * smooth_phase38_branchpoint_no_memory_default + (1 - ema_beta) * total_phase38_branchpoint_no_memory_default
+    smooth_phase38_branchpoint_wrong_span = ema_beta * smooth_phase38_branchpoint_wrong_span + (1 - ema_beta) * total_phase38_branchpoint_wrong_span
+    smooth_phase38_branchpoint_partial_wrong = ema_beta * smooth_phase38_branchpoint_partial_wrong + (1 - ema_beta) * total_phase38_branchpoint_partial_wrong
+    smooth_phase38_branchpoint_wrong_after_key = ema_beta * smooth_phase38_branchpoint_wrong_after_key + (1 - ema_beta) * total_phase38_branchpoint_wrong_after_key
+    smooth_phase38_branchpoint_repeated = ema_beta * smooth_phase38_branchpoint_repeated + (1 - ema_beta) * total_phase38_branchpoint_repeated
     smooth_phase38_probe_loss = ema_beta * smooth_phase38_probe_loss + (1 - ema_beta) * total_phase38_probe_loss
     smooth_phase38_probe_margin = ema_beta * smooth_phase38_probe_margin + (1 - ema_beta) * total_phase38_probe_margin
     smooth_phase38_applied = ema_beta * smooth_phase38_applied + (1 - ema_beta) * total_phase38_applied
@@ -3598,7 +4313,8 @@ for step in range(args.num_iterations + 1):
     smooth_phase38_partial_wrong = ema_beta * smooth_phase38_partial_wrong + (1 - ema_beta) * total_phase38_partial_wrong
     smooth_phase38_no_memory_default = ema_beta * smooth_phase38_no_memory_default + (1 - ema_beta) * total_phase38_no_memory_default
     smooth_phase38_repeated = ema_beta * smooth_phase38_repeated + (1 - ema_beta) * total_phase38_repeated
-    smooth_active_slots = ema_beta * smooth_active_slots + (1 - ema_beta) * total_active_slots
+    mean_active_slots = total_active_slots / max(batch_size, 1)
+    smooth_active_slots = ema_beta * smooth_active_slots + (1 - ema_beta) * mean_active_slots
 
     debiased_loss = smooth_loss / (1 - ema_beta ** (step + 1))
     debiased_guardrail_kl = smooth_guardrail_kl / (1 - ema_beta ** (step + 1))
@@ -3670,6 +4386,17 @@ for step in range(args.num_iterations + 1):
     debiased_phase38_default_branch_margin = smooth_phase38_default_branch_margin / (1 - ema_beta ** (step + 1))
     debiased_phase38_default_recovery_ce = smooth_phase38_default_recovery_ce / (1 - ema_beta ** (step + 1))
     debiased_phase38_default_branch_applied = smooth_phase38_default_branch_applied / (1 - ema_beta ** (step + 1))
+    debiased_phase38_branchpoint_loss = smooth_phase38_branchpoint_loss / (1 - ema_beta ** (step + 1))
+    debiased_phase38_branchpoint_margin = smooth_phase38_branchpoint_margin / (1 - ema_beta ** (step + 1))
+    debiased_phase38_branchpoint_recovery_ce = smooth_phase38_branchpoint_recovery_ce / (1 - ema_beta ** (step + 1))
+    debiased_phase38_branchpoint_applied = smooth_phase38_branchpoint_applied / (1 - ema_beta ** (step + 1))
+    debiased_phase38_branchpoint_answer_start = smooth_phase38_branchpoint_answer_start / (1 - ema_beta ** (step + 1))
+    debiased_phase38_branchpoint_fact_branch = smooth_phase38_branchpoint_fact_branch / (1 - ema_beta ** (step + 1))
+    debiased_phase38_branchpoint_no_memory_default = smooth_phase38_branchpoint_no_memory_default / (1 - ema_beta ** (step + 1))
+    debiased_phase38_branchpoint_wrong_span = smooth_phase38_branchpoint_wrong_span / (1 - ema_beta ** (step + 1))
+    debiased_phase38_branchpoint_partial_wrong = smooth_phase38_branchpoint_partial_wrong / (1 - ema_beta ** (step + 1))
+    debiased_phase38_branchpoint_wrong_after_key = smooth_phase38_branchpoint_wrong_after_key / (1 - ema_beta ** (step + 1))
+    debiased_phase38_branchpoint_repeated = smooth_phase38_branchpoint_repeated / (1 - ema_beta ** (step + 1))
     debiased_phase38_probe_loss = smooth_phase38_probe_loss / (1 - ema_beta ** (step + 1))
     debiased_phase38_probe_margin = smooth_phase38_probe_margin / (1 - ema_beta ** (step + 1))
     debiased_phase38_applied = smooth_phase38_applied / (1 - ema_beta ** (step + 1))
@@ -3750,6 +4477,17 @@ for step in range(args.num_iterations + 1):
             f"phase38_default_margin: {debiased_phase38_default_branch_margin:.4f} | "
             f"phase38_default_recovery_ce: {debiased_phase38_default_recovery_ce:.4f} | "
             f"phase38_default_applied: {debiased_phase38_default_branch_applied:.2f} | "
+            f"phase38_branchpoint_loss: {debiased_phase38_branchpoint_loss:.4f} | "
+            f"phase38_branchpoint_margin: {debiased_phase38_branchpoint_margin:.4f} | "
+            f"phase38_branchpoint_recovery_ce: {debiased_phase38_branchpoint_recovery_ce:.4f} | "
+            f"phase38_branchpoint_applied: {debiased_phase38_branchpoint_applied:.2f} | "
+            f"phase38_branchpoint_answer_start: {debiased_phase38_branchpoint_answer_start:.2f} | "
+            f"phase38_branchpoint_fact_branch: {debiased_phase38_branchpoint_fact_branch:.2f} | "
+            f"phase38_branchpoint_no_memory_default: {debiased_phase38_branchpoint_no_memory_default:.2f} | "
+            f"phase38_branchpoint_wrong_span: {debiased_phase38_branchpoint_wrong_span:.2f} | "
+            f"phase38_branchpoint_partial_wrong: {debiased_phase38_branchpoint_partial_wrong:.2f} | "
+            f"phase38_branchpoint_wrong_after_key: {debiased_phase38_branchpoint_wrong_after_key:.2f} | "
+            f"phase38_branchpoint_repeated: {debiased_phase38_branchpoint_repeated:.2f} | "
             f"phase38_probe_loss: {debiased_phase38_probe_loss:.4f} | "
             f"phase38_probe_margin: {debiased_phase38_probe_margin:.4f} | "
             f"phase38_applied: {debiased_phase38_applied:.2f} | "
@@ -3838,6 +4576,17 @@ for step in range(args.num_iterations + 1):
             "memory/phase38_default_branch_margin": debiased_phase38_default_branch_margin,
             "memory/phase38_default_recovery_ce": debiased_phase38_default_recovery_ce,
             "memory/phase38_default_branch_applied": debiased_phase38_default_branch_applied,
+            "memory/phase38_branchpoint_loss": debiased_phase38_branchpoint_loss,
+            "memory/phase38_branchpoint_margin": debiased_phase38_branchpoint_margin,
+            "memory/phase38_branchpoint_recovery_ce": debiased_phase38_branchpoint_recovery_ce,
+            "memory/phase38_branchpoint_applied": debiased_phase38_branchpoint_applied,
+            "memory/phase38_branchpoint_answer_start": debiased_phase38_branchpoint_answer_start,
+            "memory/phase38_branchpoint_fact_branch": debiased_phase38_branchpoint_fact_branch,
+            "memory/phase38_branchpoint_no_memory_default": debiased_phase38_branchpoint_no_memory_default,
+            "memory/phase38_branchpoint_wrong_span": debiased_phase38_branchpoint_wrong_span,
+            "memory/phase38_branchpoint_partial_wrong": debiased_phase38_branchpoint_partial_wrong,
+            "memory/phase38_branchpoint_wrong_after_key": debiased_phase38_branchpoint_wrong_after_key,
+            "memory/phase38_branchpoint_repeated": debiased_phase38_branchpoint_repeated,
             "memory/phase38_probe_loss": debiased_phase38_probe_loss,
             "memory/phase38_probe_margin": debiased_phase38_probe_margin,
             "memory/phase38_applied": debiased_phase38_applied,

@@ -16,7 +16,12 @@ The guiding principle is simple: persistent memory should behave like additional
 
 ## Current Bottom Line
 
-The unified attention read architecture is still the right foundation:
+The symmetric read/write architecture is the right foundation, but the latest
+evidence says the remaining bottleneck is not "can the model read memory?" It
+is "can the decoder reliably treat memory as an arbitrary copy source during
+live generation?"
+
+The unified attention read path is active and useful:
 
 \[
 \mathrm{Attn}(Q, [K_M;K_C], [V_M;V_C])
@@ -28,21 +33,61 @@ What we achieved:
 
 - Memory is represented as latent torch tensors, not prompt text or Python dicts.
 - Memory K/V is injected into transformer attention, so the decoder remains a normal transformer decoder.
-- The first symmetric attention-like write path is implemented: memory slots query context-token keys and route through an explicit no-write option.
+- The symmetric attention-like write path is implemented: memory slots query context-token keys and route through an explicit no-write option.
 - Ablations show memory causally improves key-token probabilities and exact recall.
 - Layer probes show memory usage across layers, especially middle and later layers.
 - The training harness now measures token probabilities, no-memory collapse, memory mass by layer, live deterministic recall, sampled recall, branch errors, repetition, and default/habit failures.
+- The V4 long run showed stable improvement in supervised/token/probe metrics over thousands of steps: lower answer CE, better anchor/key-token margins, better span-hard-token margins, and positive probe binding margins.
+- High-cardinality name and normal-chat data improved the closed-list problem; the model is no longer just learning a few dog names.
 
 What we did not achieve yet:
 
 - Robust live exact recall across sessions.
 - Stable current-vs-old correction, for example `Clover` should override older `Miso`.
 - Reliable post-key stopping and continuation, for example `Fig` should not become `Figaro`.
-- A trained and validated symmetric writer. The architecture is now present, but it still has to earn its keep on GPU runs.
+- Reliable arbitrary-string recall, for example `Buh` should not become `Bist` and `Taloobrook` should not become a fluent but unrelated name.
+- Positive whole-trajectory preference margins. Teacher-forced and probe metrics improve faster than generated-answer arbitration.
 - A Titans-style test-time learned neural memory.
 - A MemoryLLM-style self-updatable memory pool evaluation pipeline at scale.
 
-The most honest diagnosis is: memory read works, but the generation policy is still brittle under self-generated prefixes. Teacher-forced token probabilities can look much better than live sampled answers. The model often has the right fact available but still picks a wrong branch, repeats, or lets a default answer template dominate.
+The most honest diagnosis is: memory read/write now works well enough to expose
+the real failure. The model often has the right fact available, but the frozen
+or lightly trained trunk does not yet have a strong enough generic policy for:
+
+```text
+retrieve relevant memory span -> emit the exact span -> stop or continue naturally
+```
+
+This matches the useful version of the "attention mostly recognizes what the
+weights already understand" hypothesis. Memory can supply new data, but the
+weights must already know the operation for using arbitrary data. V5 therefore
+trains that operation directly, with full-model adaptation for a short phase and
+strong guardrails so ordinary chat behavior does not get bulldozed.
+
+## V5 Plan: Arbitrary Copy With Real Guardrails
+
+V5 keeps the symmetric architecture and changes the training problem. Instead
+of mostly asking for named entities from a large but still human-looking pool,
+it adds truly arbitrary values:
+
+- character-random spans of length 1 to 15 from `[a-zA-Z0-9 -_.]`
+- token-random spans bucketed by token length
+- varied memory types beyond pet names: project codes, branches, secrets, notes, devices, contacts, dates, preferences, regions, incident ids, aliases, and short exact strings
+- no-memory guardrails where the correct answer is "I do not have that saved"
+- irrelevant-memory guardrails where memory is present but should not affect the answer
+- real original-distribution chat data through SmolTalk/KL guardrails, not only synthetic guardrail rows
+
+The training run is one 100k-step script with three phases:
+
+| Phase | Steps | Trainable weights | Purpose |
+| --- | ---: | --- | --- |
+| A | 30k | memory + interface | Learn arbitrary memory binding and exact-copy pressure without destabilizing the trunk. |
+| B | 10k | full model at very low LR | Teach the trunk/LM head the generic arbitrary-copy operation that frozen weights may not already support. |
+| C | 60k | memory + interface | Polish trajectory preference, branchpoint recovery, no-memory deference, and normal-chat preservation after the full-model adaptation. |
+
+Phase B deliberately uses a smaller device batch. Phase A and C use the largest
+safe batch for the 24GB GPU. This avoids repeating the OOM failure while still
+using the GPU aggressively.
 
 ## Visual Overview
 
@@ -669,6 +714,9 @@ Implemented:
 - rollout and trajectory diagnostics
 - phase 1, 2, 2.5, 3, 3.5, 3.6, 3.7, and 3.8 training harnesses
 - symmetric-memory GPU launcher: `dev/run_symmetric_memory_training.sh`
+- V4 high-variety live-session, branchpoint, no-memory, irrelevant-memory, and normal-chat curriculum shards
+- V5 arbitrary-character and arbitrary-token exact-copy curriculum shards
+- phase-specific batch sizing so full-trunk adaptation can run at a smaller batch inside the same long training script
 - diagrams for normal attention, unified memory attention, write selection, and training alignment
 
 Not implemented:
@@ -678,18 +726,28 @@ Not implemented:
 - correction-aware differentiable overwrite
 - MemoryLLM-style full self-update retention benchmark
 - automatic best-window checkpoint selection
+- event-level memory routing or a pointer distribution over retrieved memory tokens
 
 ## Recommended Next Step
 
-The next serious step is to train and evaluate the new writer, not to add another stronger loss to the old one:
+The next serious step is V5 full-copy training from the best current symmetric
+checkpoint, not another narrow dog-name patch:
 
-1. Add best-window checkpoint selection to the current harness.
-2. Run `dev/run_symmetric_memory_training.sh` from the original checkpoint on GPU.
-3. Train only the memory/interface parameters first.
-4. Evaluate with no-memory ablations and live rollout at every short checkpoint.
-5. Add CE-derived surprise and correction-aware overwrite once the symmetric writer is stable.
+1. Stop the current V4 continuation once the latest good checkpoint is safe.
+2. Generate the V5 curriculum with arbitrary character strings, token-random spans, broader memory fields, no-memory rows, irrelevant-memory rows, and real SmolTalk guardrails.
+3. Train a 100k-step A/B/C schedule:
+   - A: memory/interface exact-copy stabilization
+   - B: short low-LR full-model arbitrary-copy adaptation
+   - C: memory/interface trajectory and guardrail polish
+4. Keep checkpoint pruning on and evaluate checkpoints with live two-process recall, no-memory ablation, token probabilities, and layer memory usage.
+5. If V5 still plateaus with negative trajectory margins, then change architecture rather than add more loss pressure:
+   - event-level memory routing: retrieve top-k written events, then attend inside those events
+   - explicit recency/currentness features for correction cases
+   - a generic pointer distribution over retrieved memory tokens
 
-This is the clean path that respects the original goal: a generic transformer attention system with memory, not an ad-hoc external store.
+This keeps the core promise intact: a generic transformer attention system with
+memory, trained to copy arbitrary remembered data, not a hand-coded dog-name
+lookup table wearing a trench coat.
 
 ## References
 

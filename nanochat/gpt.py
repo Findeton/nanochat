@@ -313,16 +313,26 @@ class Block(nn.Module):
     def compute_write_salience(self, key_source, controller):
         return controller.write_gate(norm(key_source)).squeeze(-1)
 
-    def _select_write_positions(self, key_source, value_source, controller):
+    def _select_write_positions(self, key_source, value_source, controller, source_mask=None):
         max_write_tokens = min(max(1, self.episodic_max_write_tokens), key_source.size(1))
+        if source_mask is not None:
+            source_mask = source_mask.to(device=key_source.device, dtype=torch.bool)
+            if source_mask.dim() == 1:
+                source_mask = source_mask.unsqueeze(0).expand(key_source.size(0), -1)
         if key_source.dim() != 3 or key_source.size(1) <= max_write_tokens:
             positions = torch.arange(key_source.size(1), device=key_source.device, dtype=torch.long).unsqueeze(0).expand(key_source.size(0), -1)
-            return key_source, value_source, positions
-        top_idx = self.compute_write_salience(key_source, controller).topk(max_write_tokens, dim=1).indices
+            return key_source, value_source, positions, source_mask
+        salience = self.compute_write_salience(key_source, controller)
+        if source_mask is not None:
+            salience = salience.masked_fill(~source_mask, -float("inf"))
+        top_idx = salience.topk(max_write_tokens, dim=1).indices
         top_idx = top_idx.sort(dim=1).values
         key_gather = top_idx.unsqueeze(-1).expand(-1, -1, key_source.size(-1))
         value_gather = top_idx.unsqueeze(-1).expand(-1, -1, value_source.size(-1))
-        return key_source.gather(1, key_gather), value_source.gather(1, value_gather), top_idx
+        selected_mask = None
+        if source_mask is not None:
+            selected_mask = source_mask.gather(1, top_idx)
+        return key_source.gather(1, key_gather), value_source.gather(1, value_gather), top_idx, selected_mask
 
     def _budget_mask(self, strengths, budget):
         budget = min(max(int(budget), 0), strengths.size(1))
@@ -334,8 +344,15 @@ class Block(nn.Module):
         mask = torch.zeros_like(strengths)
         return mask.scatter(1, top_idx, 1.0)
 
-    def build_episodic_state(self, key_source, value_source, controller, reward=0.0):
-        key_source, value_source, source_positions = self._select_write_positions(key_source, value_source, controller)
+    def build_episodic_state(self, key_source, value_source, controller, reward=0.0, source_mask=None):
+        key_source, value_source, source_positions, source_mask = self._select_write_positions(
+            key_source,
+            value_source,
+            controller,
+            source_mask=source_mask,
+        )
+        if source_mask is not None and not source_mask.any():
+            return self.episodic_memory.empty_state(batch_size=key_source.size(0), device=key_source.device, dtype=value_source.dtype)
         write_keys = controller.write_key_proj(norm(key_source))
         write_values = value_source + controller.write_value_proj(norm(value_source))
 
@@ -355,6 +372,8 @@ class Block(nn.Module):
         slot_queries = slot_queries.unsqueeze(0).expand(write_keys.size(0), -1, -1)
         write_scores = controller.scale_memory_scores(torch.einsum("bse,bte->bst", norm(slot_queries), norm(write_keys)))
         write_scores = write_scores + write_priority.unsqueeze(1)
+        if source_mask is not None:
+            write_scores = write_scores.masked_fill(~source_mask.unsqueeze(1), -1e4)
 
         token_count = max(int(write_scores.size(-1)), 1)
         no_write_score = write_scores.new_full((*write_scores.shape[:-1], 1), math.log(token_count))
@@ -364,6 +383,8 @@ class Block(nn.Module):
         token_to_slot = torch.softmax(write_scores.float(), dim=1).to(dtype=write_values.dtype)
 
         att = slot_to_token * token_to_slot
+        if source_mask is not None:
+            att = att * source_mask.unsqueeze(1).to(dtype=att.dtype)
         raw_strengths = att.sum(dim=-1).clamp(min=0.0, max=1.0)
         att = att / raw_strengths.unsqueeze(-1).clamp_min(1e-6)
 
@@ -794,9 +815,15 @@ class GPT(nn.Module):
             for block in self.transformer.h
         ]
 
-    def build_memory_state_from_block_ios(self, block_ios, reward=0.0):
+    def build_memory_state_from_block_ios(self, block_ios, reward=0.0, source_mask=None):
         return [
-            block.build_episodic_state(key_source, value_source, self.episodic_controller, reward=reward)
+            block.build_episodic_state(
+                key_source,
+                value_source,
+                self.episodic_controller,
+                reward=reward,
+                source_mask=source_mask,
+            )
             for block, (key_source, value_source) in zip(self.transformer.h, block_ios)
         ]
 
@@ -1085,7 +1112,13 @@ class GPT(nn.Module):
 
     @torch.no_grad()
     def has_live_memory(self):
-        return any((block.episodic_memory.strengths > 1e-6).any().item() for block in self.transformer.h)
+        for block in self.transformer.h:
+            memory = block.episodic_memory
+            if int(memory.num_slots.item()) > 0:
+                return True
+            if (memory.strengths > 1e-6).any().item():
+                return True
+        return False
 
     @torch.no_grad()
     def memorize(self, idx, reward=0.0):
@@ -1236,7 +1269,7 @@ class GPT(nn.Module):
             group["initial_lr"] = group["lr"]
         return optimizer
 
-    def _compute_logits(self, idx, kv_cache=None, memory_override=None):
+    def _compute_logits(self, idx, kv_cache=None, memory_override=None, compute_memory_probe=False):
         x, cos_sin = self._prepare_inputs(idx, kv_cache=kv_cache)
         recall_mask = self._build_recall_mask(idx)
         x, x_backout, _ = self._run_trunk(
@@ -1254,27 +1287,34 @@ class GPT(nn.Module):
 
         softcap = 15
         logits = self.lm_head(x)
-        top_block = self.transformer.h[-1]
-        top_override = None if memory_override is None else memory_override[-1]
-        top_details = top_block.read_episodic_memory_details(
-            x,
-            self.episodic_controller,
-            state_override=top_override,
-            recall_mask=recall_mask,
-        )
-        top_memory = top_details["retrieved"]
-        memory_probe_logits = self.lm_head(norm(top_memory))
         logits = logits[..., :self.config.vocab_size].float()
-        memory_probe_logits = memory_probe_logits[..., :self.config.vocab_size].float()
         logits = softcap * torch.tanh(logits / softcap)
-        memory_probe_logits = softcap * torch.tanh(memory_probe_logits / softcap)
-        return logits, memory_probe_logits, top_details["query"], top_memory
+
+        memory_probe_logits = None
+        top_query = None
+        top_memory = None
+        if compute_memory_probe:
+            top_block = self.transformer.h[-1]
+            top_override = None if memory_override is None else memory_override[-1]
+            top_details = top_block.read_episodic_memory_details(
+                x,
+                self.episodic_controller,
+                state_override=top_override,
+                recall_mask=recall_mask,
+            )
+            top_memory = top_details["retrieved"]
+            memory_probe_logits = self.lm_head(norm(top_memory))
+            memory_probe_logits = memory_probe_logits[..., :self.config.vocab_size].float()
+            memory_probe_logits = softcap * torch.tanh(memory_probe_logits / softcap)
+            top_query = top_details["query"]
+        return logits, memory_probe_logits, top_query, top_memory
 
     def forward(self, idx, targets=None, kv_cache=None, loss_reduction="mean", memory_override=None, return_components=False):
         logits, memory_probe_logits, top_query, top_memory = self._compute_logits(
             idx,
             kv_cache=kv_cache,
             memory_override=memory_override,
+            compute_memory_probe=return_components,
         )
         if targets is not None:
             loss = F.cross_entropy(logits.view(-1, logits.size(-1)), targets.view(-1), ignore_index=-1, reduction=loss_reduction)

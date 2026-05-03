@@ -30,11 +30,35 @@ log() {
   echo "[$(date -Is)] $*"
 }
 
-dataset_args=(
-  --dataset "${ROOT}/data/kv_campaign/stage1_identity.jsonl"
-  --dataset "${ROOT}/data/kv_campaign/stage2_structured.jsonl"
-  --dataset "${ROOT}/data/kv_campaign/stage3_mixed.jsonl"
-)
+if [[ "${USE_CURRICULUM_EVAL:-1}" == "1" && -f "${ROOT}/data/kv_campaign/curriculum_eval_identity.jsonl" ]]; then
+  dataset_args=(
+    --dataset "${ROOT}/data/kv_campaign/curriculum_eval_identity.jsonl"
+    --dataset "${ROOT}/data/kv_campaign/curriculum_eval_binding.jsonl"
+    --dataset "${ROOT}/data/kv_campaign/curriculum_eval_structured.jsonl"
+    --dataset "${ROOT}/data/kv_campaign/curriculum_eval_guardrail.jsonl"
+  )
+  if [[ -f "${ROOT}/data/kv_campaign/curriculum_eval_answer_realization.jsonl" ]]; then
+    dataset_args+=(
+      --dataset "${ROOT}/data/kv_campaign/curriculum_eval_answer_realization.jsonl"
+    )
+  fi
+  if [[ -f "${ROOT}/data/kv_campaign/curriculum_eval_contextual_drag.jsonl" ]]; then
+    dataset_args+=(
+      --dataset "${ROOT}/data/kv_campaign/curriculum_eval_contextual_drag.jsonl"
+    )
+  fi
+  if [[ -f "${ROOT}/data/kv_campaign/curriculum_eval_heuristic_override.jsonl" ]]; then
+    dataset_args+=(
+      --dataset "${ROOT}/data/kv_campaign/curriculum_eval_heuristic_override.jsonl"
+    )
+  fi
+else
+  dataset_args=(
+    --dataset "${ROOT}/data/kv_campaign/stage1_identity.jsonl"
+    --dataset "${ROOT}/data/kv_campaign/stage2_structured.jsonl"
+    --dataset "${ROOT}/data/kv_campaign/stage3_mixed.jsonl"
+  )
+fi
 
 cd "${ROOT}" || exit 1
 export PYTHONPATH="${ROOT}"
